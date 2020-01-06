@@ -61,9 +61,10 @@ sub tokenize {
       }
 
       default{
-        my $prev = JSON::PP->new->pretty->encode($tokens[ scalar(@tokens) - 1 ]);
-        my $substr = substr($toml, pos($toml), 30) // 'undef';
-        die "syntax error at:\n-->$substr\n\nprevious token was: $prev\n";
+        my $pos    = pos $toml;
+        my $line   = line_number($toml, $pos);
+        my $substr = substr($toml, $pos, 30) // 'undef';
+        die "toml syntax error on line $line:\n\t--> $substr\n";
       }
     }
   }
@@ -216,6 +217,13 @@ sub tokenize_integer {
 sub tokenize_float {
   my $toml = shift;
   return 0 + $toml;
+}
+
+sub line_number {
+  my ($toml, $pos) = @_;
+  my $substr = substr $toml, 0, $pos + 1;
+  my @lines = $substr =~ /((?&NL)) $TOML/g;
+  return scalar @lines;
 }
 
 1;

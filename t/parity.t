@@ -5,20 +5,39 @@
 # represented in the synopsis example
 #-------------------------------------------------------------------------------
 use Test2::V0;
+use Data::Dumper;
 use TOML::Tiny::Parser;
-use TOML;
 
 my $toml = do{ local $/; <DATA> };
 
-my $parser = TOML::Tiny::Parser->new(
-  inflate_datetime => 0,
-  inflate_boolean  => 0,
-);
+subtest 'TOML::Parser' => sub{
+  use TOML::Parser;
 
-my $got = $parser->parse($toml);
-my $exp = from_toml($toml);
+  subtest 'defaults' => sub{
+    my $exp = TOML::Parser->new->parse($toml);
+    my $got = TOML::Tiny::Parser->new->parse($toml);
+    is $got, $exp, 'equivalence'
+      or diag Dumper({got => $got, expected => $exp});
+  };
 
-is $got, $exp, 'parity with TOML module';
+  subtest 'inflate_boolean' => sub{
+    my $inflate = sub{ shift eq 'true' ? 'yes' : 'no' };
+    my $exp = TOML::Parser->new(inflate_boolean => $inflate)->parse($toml);
+    my $got = TOML::Tiny::Parser->new(inflate_boolean => $inflate)->parse($toml);
+    is $got, $exp, 'equivalence'
+      or diag Dumper({got => $got, expected => $exp});
+  };
+
+  subtest 'inflate_datetime' => sub{
+    require DateTime::Format::ISO8601;
+    my $inflate = sub{ DateTime::Format::ISO8601->parse_datetime(shift) };
+    my $exp = TOML::Parser->new(inflate_datetime => $inflate)->parse($toml);
+    my $got = TOML::Tiny::Parser->new(inflate_datetime => $inflate)->parse($toml);
+    is $got, $exp, 'equivalence'
+      or diag Dumper({got => $got, expected => $exp});
+  };
+};
+
 done_testing;
 
 __DATA__

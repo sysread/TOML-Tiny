@@ -1,7 +1,7 @@
 use Test2::V0;
-use TOML::Tiny;
+use TOML::Tiny::Grammar;
 
-my $re = qr{ ((?&KeyValuePair)) $TOML::Tiny::GRAMMAR_V5 }x;
+my $re = qr{ ((?&KeyValuePair)) $TOML }x;
 
 my @valid = (
   q{foo= "bar"},

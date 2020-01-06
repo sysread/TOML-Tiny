@@ -1,7 +1,7 @@
 use Test2::V0;
-use TOML::Tiny;
+use TOML::Tiny::Grammar;
 
-my $re = qr{ ((?&Boolean)) $TOML::Tiny::GRAMMAR_V5 }x;
+my $re = qr{ ((?&Boolean)) $TOML }x;
 
 like 'true', $re, 'true';
 like 'false', $re, 'false';

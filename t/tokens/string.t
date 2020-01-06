@@ -1,5 +1,5 @@
 use Test2::V0;
-use TOML::Tiny;
+use TOML::Tiny::Grammar;
 
 sub test_simple_matches {
   my ($re, @tests) = @_;
@@ -13,7 +13,7 @@ sub test_simple_matches {
 subtest 'escaped characters' => sub{
   my $re = qr{
     ((?&EscapeChar))
-    $TOML::Tiny::GRAMMAR_V5
+    $TOML
   }x;
 
   test_simple_matches($re,
@@ -34,7 +34,7 @@ subtest 'escaped characters' => sub{
 subtest 'string literals' => sub{
   my $re = qr{
     ((?&StringLiteral))
-    $TOML::Tiny::GRAMMAR_V5
+    $TOML
   }x;
 
   test_simple_matches($re,
@@ -46,7 +46,7 @@ subtest 'string literals' => sub{
 subtest 'basic strings' => sub{
   my $re = qr{
     ((?&BasicString))
-    $TOML::Tiny::GRAMMAR_V5
+    $TOML
   }x;
 
   test_simple_matches($re,
@@ -60,7 +60,7 @@ subtest 'basic strings' => sub{
 subtest 'multi-line strings' => sub{
   my $re = qr{
     ((?&MultiLineString))
-    $TOML::Tiny::GRAMMAR_V5
+    $TOML
   }x;
 
   test_simple_matches($re,
@@ -87,7 +87,7 @@ subtest 'multi-line strings' => sub{
 subtest 'multi-line string literals' => sub{
   my $re = qr{
     ((?&MultiLineStringLiteral))
-    $TOML::Tiny::GRAMMAR_V5
+    $TOML
   }x;
 
   test_simple_matches($re,

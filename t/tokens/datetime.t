@@ -1,7 +1,7 @@
 use Test2::V0;
-use TOML::Tiny;
+use TOML::Tiny::Grammar;
 
-my $re = qr{ ((?&DateTime)) $TOML::Tiny::GRAMMAR_V5 }x;
+my $re = qr{ ((?&DateTime)) $TOML }x;
 
 my @valid = (
   '1979-05-27T07:32:00Z',

@@ -1,11 +1,26 @@
 package TOML::Tiny;
-# ABSTRACT: a minimal TOML parser and serializer
+# ABSTRACT: a minimal, pure perl TOML parser and serializer
 
 use strict;
 use warnings;
+use TOML::Tiny::Parser;
 
-use TOML::Tiny::Grammar;
+use parent 'Exporter';
 
-our $GRAMMAR_V5 = $TOML::Tiny::Grammar::GRAMMAR_V5;
+our @EXPORT = qw(
+  from_toml
+  to_toml
+);
+
+sub from_toml {
+  my $source = shift;
+  my $parser = TOML::Tiny::Parser->new(@_);
+  my $toml = eval{ $parser->parse($source) };
+  return ($toml, $@);
+}
+
+sub to_toml {
+  my $data = shift;
+}
 
 1;

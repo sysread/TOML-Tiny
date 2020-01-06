@@ -4,7 +4,7 @@
 
 =head1 NAME
 
-TOML::Tiny - a minimal TOML parser and serializer
+TOML::Tiny - a minimal, pure perl TOML parser and serializer
 
 =head1 VERSION
 

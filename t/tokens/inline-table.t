@@ -1,7 +1,7 @@
 use Test2::V0;
-use TOML::Tiny;
+use TOML::Tiny::Grammar;
 
-my $re = qr{ ((?&InlineTable)) $TOML::Tiny::GRAMMAR_V5 }x;
+my $re = qr{ ((?&InlineTable)) $TOML }x;
 
 my @valid = (
   q|{ first = "Tom", last = "Preston-Werner" }|,

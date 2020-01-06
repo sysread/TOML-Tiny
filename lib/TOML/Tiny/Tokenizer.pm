@@ -2,166 +2,225 @@ package TOML::Tiny::Tokenizer;
 
 use strict;
 use warnings;
-use feature qw(switch);
+use feature qw(say switch);
 no warnings qw(experimental);
 
-use JSON::PP;
+use DDP;
+use Carp;
 use TOML::Tiny::Grammar;
 
-our $TOML = $TOML::Tiny::Grammar::GRAMMAR_V5;
+use Class::Struct 'TOML::Tiny::Token' => {
+  type  => '$',
+  line  => '$',
+  pos   => '$',
+  value => '$',
+};
 
-sub tokenize {
-  my $toml = shift;
-  my @tokens;
+sub new {
+  my ($class, %param) = @_;
 
-  TOKEN: while ((pos($toml) // 0) < length($toml)) {
-    for ($toml) {
+  my $self = bless{
+    source       => $param{source},
+    is_exhausted => 0,
+    position     => 0,
+    line         => 0,
+    tokens       => [],
+  }, $class;
+
+  return $self;
+}
+
+sub next_token {
+  my $self = shift;
+
+  if (!defined($self->{source})) {
+    return;
+  }
+
+  if ($self->{is_exhausted}) {
+    return;
+  }
+
+  if (!@{ $self->{tokens} }) {
+    my $root = $self->_make_token('table', []);
+    $self->push_token($root);
+    return $root;
+  }
+
+  # Update the regex engine's position marker in case some other regex
+  # attempted to match against the source string and reset it.
+  pos($self->{source}) = $self->{position};
+
+  my $token;
+
+  while (!defined($token) && !$self->{is_exhausted}) {
+    for ($self->{source}) {
+      when (/\G (?&NL) $TOML/xgc) {
+        ++$self->{line};
+      }
+
+      when (/\G (?&WSChar)+ $TOML/xgc) {
+        ;
+      }
+
+      when (/\G ((?&Key)) (?= (?&WS) =) $TOML/xgc) {
+         $token = $self->_make_token('key', $1);
+      }
+
       when (/\G ((?&Boolean)) $TOML/xgc) {
-        push @tokens, ['boolean', $1];
+        $token = $self->_make_token('boolean', $1);
       }
 
       when (/\G ((?&DateTime)) $TOML/xgc) {
-        push @tokens, ['datetime', $1];
+        $token = $self->_make_token('datetime', $1);
       }
 
-      when (/\G ((?&Float)) $TOML/xgc) {
-        push @tokens, ['float', tokenize_float($1)];
-      }
-
-      when (/\G ((?&Integer)) $TOML/xgc) {
-        push @tokens, ['integer', tokenize_integer($1)];
+      when (/\G ((?&Float) | (?&Integer)) $TOML/xgc) {
+        $token = $self->_make_token('number', $1);
       }
 
       when (/\G ((?&String)) $TOML/xgc) {
-        push @tokens, ['string', tokenize_string($1)];
+        $token = $self->_make_token('string', $1);
       }
 
-      when (/\G ((?&KeyValuePairDecl)) $TOML/xgc) {
-        push @tokens, tokenize_assignment($1);
+      when (/\G = /xgc) {
+        $token = $self->_make_token('assign', $1);
       }
 
-      when (/\G ((?&Array)) $TOML/xgc) {
-        push @tokens, tokenize_array($1);
+      when (/\G , /xgc) {
+        $token = $self->_make_token('comma', $1);
       }
 
-      when (/\G ((?&InlineTable)) $TOML/xgc) {
-        push @tokens, tokenize_inline_table($1);
-      }
-
-      when (/\G \[ (?&WS) ((?&Key)) (?&WS) \] (?&WS) (?&NL) $TOML/xgc) {
-        push @tokens, ['table', tokenize_key($1)];
+      when (/\G \[ (?&WS) ((?&Key)) (?&WS) \] $TOML/xgc) {
+        my $key = $self->tokenize_key($1);
+        $token = $self->_make_token('table', $key);
       }
 
       when (/\G \[\[ (?&WS) ((?&Key)) (?&WS) \]\] (?&WS) (?&NL) $TOML/xgc) {
-        push @tokens, ['array-of-tables', tokenize_key($1)];
+        my $key = $self->tokenize_key($1);
+        $token = $self->_make_token('array_table', $key);
       }
 
-      when (/\G (?: (?&WSChar) | (?&NLSeq) | (?&Comment) )+ $TOML/xgc) {
-        next TOKEN;
+      when (/\G \[ /xgc) {
+        $token = $self->_make_token('inline_array', $1);
       }
 
-      default{
-        my $pos    = pos $toml;
-        my $line   = line_number($toml, $pos);
-        my $substr = substr($toml, $pos, 30) // 'undef';
-        die "toml syntax error on line $line:\n\t--> $substr\n";
+      when (/\G \] /xgc) {
+        $token = $self->_make_token('inline_array_close', $1);
       }
-    }
-  }
 
-  return \@tokens;
-}
+      when (/\G \{ /xgc) {
+        $token = $self->_make_token('inline_table', $1);
+      }
 
-sub tokenize_inline_table {
-  my $toml = shift;
-  my @items;
-
-  $toml =~ s/^\s*\{\s*//;
-  $toml =~ s/\s*\}\s*$//;
-
-  ITEM: while ((pos($toml) // 0) < length($toml)) {
-    for ($toml) {
-      next ITEM when /\G\s*/gc;
-      next ITEM when /\G\{/gc;
-      next ITEM when /\G\}/gc;
-
-      when (/\G ((?&KeyValuePair)) (?&WS) ,? $TOML/xgc) {
-        push @items, tokenize_assignment($1);
+      when (/\G \} /xgc) {
+        $token = $self->_make_token('inline_table_close', $1);
       }
 
       default{
-        die "invalid inline table syntax: $toml";
+        my $substr = substr($self->{source}, $self->{position}, 30) // 'undef';
+        die "toml syntax error on line $self->{line}\n\t--> $substr\n";
       }
     }
+
+    $self->push_token($token);
+    $self->update_position;
   }
 
-  return ['inline-table', \@items];
+  return $token;
 }
 
-sub tokenize_array {
-  my $toml = shift;
-  my @items;
-
-  $toml =~ s/^\s*\[\s*//;
-  $toml =~ s/\s*\]\s*$//;
-
-  ITEM: while ((pos($toml) // 0) < length($toml)) {
-    my $pos = pos($toml) // 0;
-    for ($toml) {
-      when (/\G ((?&Value)) (?&WS) [,]? $TOML/xgc) {
-        push @items, @{ tokenize($1) };
-      }
-
-      next ITEM when /\G\s*/gc;
-      next ITEM when /\G\[/gc;
-      next ITEM when /\G\]/gc;
-
-      default{
-        die "invalid array syntax: $toml";
-      }
-    }
-  }
-
-  return ['array', \@items];
+sub push_token {
+  my $self = shift;
+  my $token = shift // return;
+  push @{$self->{tokens}}, $token;
 }
 
-sub tokenize_assignment {
-  my $toml = shift;
+sub pop_token {
+  my $self = shift;
+  pop @{$self->{tokens}};
+}
 
-  for ($toml) {
-    when (/\G(?&WS) ((?&Key)) (?&WS) = (?&WS) ((?&Value)) (?&NL)? $TOML/xgc) {
-      my $key = tokenize_key($1);
-      my $val = tokenize($2);
-      return ['assignment', $key, @$val];
-    }
+sub _make_token {
+  my ($self, $type, $value) = @_;
 
-    default{
-      die "invalid assignment syntax: $toml";
-    }
+  my $token = TOML::Tiny::Token->new(
+    type  => $type,
+    line  => $self->{line},
+    pos   => $self->{position},
+  );
+
+  $self->update_position;
+
+  if (my $tokenize = $self->can("tokenize_$type")) {
+    $value = $tokenize->($self, $value);
   }
+
+  $token->value($value);
+
+  return $token;
+}
+
+sub current_line {
+  my $self = shift;
+  my $rest = substr $self->{source}, $self->{position};
+  my $stop = index $rest, "\n";
+  substr $rest, 0, $stop;
+}
+
+sub update_position {
+  my $self = shift;
+  $self->{position} = pos($self->{source}) // 0;
+  $self->{is_exhausted} = $self->{position} >= length($self->{source});
+}
+
+sub error {
+  my $self  = shift;
+  my $token = shift;
+  my $msg   = shift // 'unknown';
+  my $line  = $token ? $token->line : $self->{line};
+  croak "toml: parse error at line $line: $msg\n";
 }
 
 sub tokenize_key {
+  my $self = shift;
   my $toml = shift;
 
   for ($toml) {
-    return ['dotted-key', $1] when /^ ((?&DottedKey)) $TOML/x;
-    return ['quoted-key', $1] when /^ ((?&QuotedKey)) $TOML/x;
-    return ['bare-key', $1]   when /^ ((?&BareKey)) $TOML/x;
+    my @parts;
 
-    default{
-      die "invalid key: syntax $toml";
+    $toml =~ qr{
+      (
+        (?:
+          ( (?&QuotedKey) | (?&BareKey) )
+          [.]?
+          (?{push @parts, $^N})
+        )+
+      )
+      $TOML
+    }x;
+
+    for (@parts) {
+      s/^["']//;
+      s/["']$//;
     }
+
+    return \@parts;
   }
 }
 
 sub tokenize_string {
+  my $self = shift;
   my $toml = shift;
   my $str = '';
 
   for ($toml) {
     when (/^ ((?&MultiLineString)) $TOML/x) {
       $str = substr $1, 3, length($1) - 6;
+
+      my @newlines = $str =~ /((?&NL)) $TOML/xg;
+      $self->{line} += scalar( grep{ defined $_ } @newlines );
+
       $str =~ s/^(?&WS) (?&NL) $TOML//x;
     }
 
@@ -171,22 +230,23 @@ sub tokenize_string {
 
     when (/^ ((?&MultiLineStringLiteral)) $TOML/x) {
       $str = substr $1, 3, length($1) - 6;
+
+      my @newlines = $str =~ /(?&NL) $TOML/xg;
+      $self->{line} += scalar( grep{ defined $_ } @newlines );
+
       $str =~ s/^(?&WS) (?&NL) $TOML//x;
     }
 
     when (/^ ((?&StringLiteral)) $TOML/x) {
       $str = substr($1, 1, length($1) - 2);
     }
-
-    default{
-      die "invalid string syntax: $toml";
-    }
   }
 
   return ''.$str;
 }
 
-sub tokenize_integer {
+sub tokenize_number {
+  my $self = shift;
   my $toml = shift;
 
   for ($toml) {
@@ -202,28 +262,9 @@ sub tokenize_integer {
     when (/(?&Hex) $TOML/x) {
       return hex $toml;
     }
-
-    when (/(?&Dec) $TOML/x) {
-    }
-
-    default{
-      die "invalid datetime syntax: $toml";
-    }
   }
 
   return 0 + $toml;
-}
-
-sub tokenize_float {
-  my $toml = shift;
-  return 0 + $toml;
-}
-
-sub line_number {
-  my ($toml, $pos) = @_;
-  my $substr = substr $toml, 0, $pos + 1;
-  my @lines = $substr =~ /((?&NL)) $TOML/g;
-  return scalar @lines;
 }
 
 1;

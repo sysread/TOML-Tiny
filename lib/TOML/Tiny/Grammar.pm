@@ -3,7 +3,13 @@ package TOML::Tiny::Grammar;
 use strict;
 use warnings;
 
-our $GRAMMAR_V5 = qr{
+use parent 'Exporter';
+
+our @EXPORT = qw(
+  $TOML
+);
+
+our $TOML = qr{
 
 (?(DEFINE)
   #-----------------------------------------------------------------------------
@@ -19,7 +25,7 @@ our $GRAMMAR_V5 = qr{
     | (?&InlineTable)
   )
 
-  (?<NLSeq> (?: \x0A) | (?: \x0D \x0A))
+  (?<NLSeq> \x0A | (?: \x0D \x0A))
   (?<NL> (?&NLSeq) | (?&Comment))
 
   (?<WSChar> [ \x20 \x09 ])       # (space, tab)
@@ -173,14 +179,14 @@ our $GRAMMAR_V5 = qr{
   )
 
   (?<StringLiteral>
-    (?: ' ([^']*) ')          # single quoted string (no escaped chars allowed)
+    (?: ' [^']* ')            # single quoted string (no escaped chars allowed)
   )
 
   (?<MultiLineStringLiteral>
     (?m)
     (?s)
     '''                       # opening triple-quote
-    (.)*?                     # capture
+    .*?
     '''                       # closing triple-quote
     (?-s)
     (?-m)
@@ -189,7 +195,7 @@ our $GRAMMAR_V5 = qr{
   (?<BasicString>
     (?:
       "                       # opening quote
-      (?:                     # capture escape sequences or any char except " or \
+      (?:                     # escape sequences or any char except " or \
           (?: (?&EscapeChar) )
         | [^"\\]
       )*
@@ -200,7 +206,7 @@ our $GRAMMAR_V5 = qr{
   (?<MultiLineString>
     (?s)
     """                       # opening triple-quote
-    (                         # capture:
+    (?:
       (?: (?&EscapeChar) )    # escaped char
       | .
     )*?

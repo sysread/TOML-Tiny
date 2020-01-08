@@ -1,4 +1,1 @@
-* Serialization
-* Line numbers
-* Optimization
-* More complete unit tests
+Script to test with https://github.com/BurntSushi/toml-test

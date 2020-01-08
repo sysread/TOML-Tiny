@@ -5,7 +5,6 @@ use warnings;
 use feature qw(say switch);
 no warnings qw(experimental);
 
-use DDP;
 use Carp;
 use TOML::Tiny::Grammar;
 

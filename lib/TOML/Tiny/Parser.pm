@@ -126,12 +126,14 @@ sub parse_table {
 
       when (/array_table/) {
         $self->pop_keys;
-        $self->parse_array_table($token);
+        @_ = ($self, $token);
+        goto \&parse_array_table;
       }
 
       when (/table/) {
         $self->pop_keys;
-        $self->parse_table($token);
+        @_ = ($self, $token);
+        goto \&parse_table;
       }
 
       default{
@@ -164,12 +166,14 @@ sub parse_array_table {
 
       when (/array_table/) {
         $self->pop_keys;
-        $self->parse_array_table($token);
+        @_ = ($self, $token);
+        goto \&parse_array_table;
       }
 
       when (/table/) {
         $self->pop_keys;
-        $self->parse_table($token);
+        @_ = ($self, $token);
+        goto \&parse_table;
       }
 
       default{

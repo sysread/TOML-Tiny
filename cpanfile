@@ -1,4 +1,5 @@
 requires 'perl' => '>= 5.014';
+requires 'Scalar::Util' => '>= 1.14';
 
 recommends 'Types::Serialiser' => 0;
 

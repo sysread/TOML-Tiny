@@ -3,7 +3,11 @@ package TOML::Tiny;
 
 use strict;
 use warnings;
+use feature qw(switch);
+no warnings qw(experimental);
+
 use TOML::Tiny::Parser;
+use TOML::Tiny::Writer;
 
 use parent 'Exporter';
 
@@ -16,11 +20,16 @@ sub from_toml {
   my $source = shift;
   my $parser = TOML::Tiny::Parser->new(@_);
   my $toml = eval{ $parser->parse($source) };
-  return ($toml, $@);
+  if (wantarray) {
+    return ($toml, $@);
+  } else {
+    die $@ if $@;
+    return $toml;
+  }
 }
 
 sub to_toml {
-  my $data = shift;
+  goto \&TOML::Tiny::Writer::to_toml;
 }
 
 1;

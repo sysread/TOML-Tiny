@@ -212,48 +212,17 @@ sub tokenize_key {
   }
 }
 
-sub tokenize_string {
+sub tokenize_float {
+  use bignum;
   my $self = shift;
   my $toml = shift;
-  my $str = '';
-
-  for ($toml) {
-    when (/^ ((?&MultiLineString)) $TOML/x) {
-      $str = substr $1, 3, length($1) - 6;
-
-      my @newlines = $str =~ /((?&NL)) $TOML/xg;
-      $self->{line} += scalar( grep{ defined $_ } @newlines );
-
-      $str =~ s/^(?&WS) (?&NL) $TOML//x;
-      $str = unescape_str($str);
-    }
-
-    when (/^ ((?&BasicString)) $TOML/x) {
-      $str = substr($1, 1, length($1) - 2);
-      $str = unescape_str($str);
-    }
-
-    when (/^ ((?&MultiLineStringLiteral)) $TOML/x) {
-      $str = substr $1, 3, length($1) - 6;
-
-      my @newlines = $str =~ /(?&NL) $TOML/xg;
-      $self->{line} += scalar( grep{ defined $_ } @newlines );
-
-      $str =~ s/^(?&WS) (?&NL) $TOML//x;
-    }
-
-    when (/^ ((?&StringLiteral)) $TOML/x) {
-      $str = substr($1, 1, length($1) - 2);
-    }
-  }
-
-  return ''.$str;
+  $toml =~ s/_//g;
+  return 0 + $toml;
 }
 
-sub tokenize_float   { goto \&tokenize_number }
-sub tokenize_integer { goto \&tokenize_number }
+sub tokenize_integer {
+  use bigint;
 
-sub tokenize_number {
   my $self = shift;
   my $toml = shift;
 
@@ -275,6 +244,46 @@ sub tokenize_number {
   }
 
   return 0 + $toml;
+}
+
+sub tokenize_string {
+  my $self = shift;
+  my $toml = shift;
+  my $str = '';
+
+  for ($toml) {
+    when (/^ ((?&MultiLineString)) $TOML/x) {
+      $str = substr $1, 3, length($1) - 6;
+
+      my @newlines = $str =~ /((?&NL)) $TOML/xg;
+      $self->{line} += scalar( grep{ defined $_ } @newlines );
+
+      $str =~ s/^(?&WS) (?&NL) $TOML//x;
+      $str =~ s/\\(?&NL)\s* $TOML//xgs;
+      $str = unescape_str($str);
+    }
+
+    when (/^ ((?&BasicString)) $TOML/x) {
+      $str = substr($1, 1, length($1) - 2);
+      $str = unescape_str($str);
+    }
+
+    when (/^ ((?&MultiLineStringLiteral)) $TOML/x) {
+      $str = substr $1, 3, length($1) - 6;
+
+      my @newlines = $str =~ /(?&NL) $TOML/xg;
+      $self->{line} += scalar( grep{ defined $_ } @newlines );
+
+      $str =~ s/^(?&WS) (?&NL) $TOML//x;
+      $str =~ s/\\(?&NL)\s* $TOML//xgs;
+    }
+
+    when (/^ ((?&StringLiteral)) $TOML/x) {
+      $str = substr($1, 1, length($1) - 2);
+    }
+  }
+
+  return ''.$str;
 }
 
 # Adapted from TOML::Parser::Util

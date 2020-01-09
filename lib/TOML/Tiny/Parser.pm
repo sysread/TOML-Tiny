@@ -198,7 +198,23 @@ sub parse_value {
   my $token = shift // $self->next_token;
 
   if ($self->{annotated}) {
-    return {type => $token->type, value => ''.$token->value};
+    for ($token->type) {
+      when (/inline_table/) {
+        return $self->parse_inline_table;
+      }
+
+      when (/inline_array/) {
+        return $self->parse_inline_array;
+      }
+
+      when (/float|integer|string|bool|datetime/) {
+        return { type => $token->type, value => '' . $token->value };
+      }
+
+      default{
+        $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
+      }
+    }
   }
   else {
     for ($token->type) {

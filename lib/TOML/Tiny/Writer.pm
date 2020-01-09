@@ -102,6 +102,14 @@ sub to_toml {
       }
     }
 
+    when ('Math::BigInt') {
+      return $data->bstr;
+    }
+
+    when ('Math::BigFloat') {
+      return $data->bstr;
+    }
+
     when (defined) {
       die 'unhandled: '.Dumper($_);
     }

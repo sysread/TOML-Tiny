@@ -170,11 +170,11 @@ our $TOML = qr{
   # String
   #-----------------------------------------------------------------------------
   (?<EscapeChar>
-    \\                        # leading \
+    \x5C                        # leading \
     (?:
-        [\\/"btnfr]           # escapes: \\ \/ \b \t \n \f \r
-      | (?: u \d{4} )         # unicode (4 bytes)
-      | (?: U \d{8} )         # unicode (8 bytes)
+        [\x5C/"btnfr]           # escapes: \\ \/ \b \t \n \f \r
+      | (?: u [_0-9a-fA-F]{4} ) # unicode (4 bytes)
+      | (?: U [_0-9a-fA-F]{8} ) # unicode (8 bytes)
     )
   )
 

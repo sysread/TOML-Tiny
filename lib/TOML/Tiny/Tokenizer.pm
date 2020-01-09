@@ -2,8 +2,8 @@ package TOML::Tiny::Tokenizer;
 
 use strict;
 use warnings;
-use feature qw(say switch);
 no warnings qw(experimental);
+use v5.14;
 
 use Carp;
 use TOML::Tiny::Grammar;
@@ -67,15 +67,19 @@ sub next_token {
       }
 
       when (/\G ((?&Boolean)) $TOML/xgc) {
-        $token = $self->_make_token('boolean', $1);
+        $token = $self->_make_token('bool', $1);
       }
 
       when (/\G ((?&DateTime)) $TOML/xgc) {
         $token = $self->_make_token('datetime', $1);
       }
 
-      when (/\G ((?&Float) | (?&Integer)) $TOML/xgc) {
-        $token = $self->_make_token('number', $1);
+      when (/\G ((?&Float)) $TOML/xgc) {
+        $token = $self->_make_token('float', $1);
+      }
+
+      when (/\G ((?&Integer)) $TOML/xgc) {
+        $token = $self->_make_token('integer', $1);
       }
 
       when (/\G ((?&String)) $TOML/xgc) {
@@ -221,10 +225,12 @@ sub tokenize_string {
       $self->{line} += scalar( grep{ defined $_ } @newlines );
 
       $str =~ s/^(?&WS) (?&NL) $TOML//x;
+      $str = unescape_str($str);
     }
 
     when (/^ ((?&BasicString)) $TOML/x) {
       $str = substr($1, 1, length($1) - 2);
+      $str = unescape_str($str);
     }
 
     when (/^ ((?&MultiLineStringLiteral)) $TOML/x) {
@@ -244,9 +250,14 @@ sub tokenize_string {
   return ''.$str;
 }
 
+sub tokenize_float   { goto \&tokenize_number }
+sub tokenize_integer { goto \&tokenize_number }
+
 sub tokenize_number {
   my $self = shift;
   my $toml = shift;
+
+  $toml =~ s/_//g;
 
   for ($toml) {
     when (/(?&Oct) $TOML/x) {
@@ -264,6 +275,35 @@ sub tokenize_number {
   }
 
   return 0 + $toml;
+}
+
+# Adapted from TOML::Parser::Util
+sub unescape_str {
+  my $str = shift;
+
+  $str =~ s/((?&EscapeChar)) $TOML/
+    my $ch = $1; for ($1) {
+      $ch = "\x08" when '\b';
+      $ch = "\x09" when '\t';
+      $ch = "\x0A" when '\n';
+      $ch = "\x0C" when '\f';
+      $ch = "\x0D" when '\r';
+      $ch = "\x22" when '\"';
+      $ch = "\x2F" when '\/';
+      $ch = "\x5C" when '\\\\';
+      default{
+        my $c = substr $1, 2;
+        $c = chr(hex($c));
+        if ($c ne "\0") {
+          $ch = $c;
+        }
+      }
+    }
+
+    $ch;
+  /xge;
+
+  return $str;
 }
 
 1;

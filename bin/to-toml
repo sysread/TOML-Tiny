@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use v5.14;
+use lib './lib';
+
+use TOML::Tiny qw(to_toml);
+use JSON::PP qw(decode_json);
+
+my $json = do{ local $/; <STDIN> };
+my $data = decode_json $json;
+my $toml = eval{ to_toml $data };
+
+if ($@) {
+  warn $@;
+  exit 1;
+}
+
+say $toml;
+exit 0;

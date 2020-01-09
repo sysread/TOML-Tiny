@@ -2,8 +2,8 @@ package TOML::Tiny::Parser;
 
 use strict;
 use warnings;
-use feature qw(say switch);
 no warnings qw(experimental);
+use v5.14;
 
 use TOML::Tiny::Tokenizer;
 
@@ -21,6 +21,7 @@ sub new {
   bless{
     inflate_datetime => $param{inflate_datetime} || sub{ shift },
     inflate_boolean  => $param{inflate_boolean}  || sub{ shift eq 'true' ? $TRUE : $FALSE },
+    annotated        => $param{annotated},
   }, $class;
 }
 
@@ -115,6 +116,8 @@ sub parse_table {
   $self->expect_type($token, 'table');
   $self->push_keys($token);
 
+  my $node = $self->scan_to_key([$self->get_keys]);
+
   TOKEN: while (my $token = $self->next_token) {
     for ($token->type) {
       when (/key/) {
@@ -194,16 +197,21 @@ sub parse_value {
   my $self = shift;
   my $token = shift // $self->next_token;
 
-  for ($token->type) {
-    return $token->value when /number/;
-    return $token->value when /string/;
-    return $self->{inflate_boolean}->($token->value) when /boolean/;
-    return $self->{inflate_datetime}->($token->value) when /datetime/;
-    return $self->parse_inline_table when /inline_table/;
-    return $self->parse_inline_array when /inline_array/;
+  if ($self->{annotated}) {
+    return {type => $token->type, value => ''.$token->value};
+  }
+  else {
+    for ($token->type) {
+      return $token->value when /float|integer/;
+      return $token->value when /string/;
+      return $self->{inflate_boolean}->($token->value) when /bool/;
+      return $self->{inflate_datetime}->($token->value) when /datetime/;
+      return $self->parse_inline_table when /inline_table/;
+      return $self->parse_inline_array when /inline_array/;
 
-    default{
-      $self->parse_error($token, "value expected (boolean, number, string, datetime, inline array, inline table), but found $_");
+      default{
+        $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
+      }
     }
   }
 }

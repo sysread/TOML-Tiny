@@ -59,22 +59,16 @@ our $TOML = qr{
   (?<KeyValuePairDecl> (?&Key) (?&WS) = (?&WS) (?&Value) (?&WS) (?&NL))
 
   (?<KeyValuePairList>
-      (?&KeyValuePair) (?&WS) [,] (?&WS) (?&KeyValuePairList)?
+      (?&KeyValuePair) (?&WS) (?: [,] (?&WS) (?&KeyValuePairList) )?
     | (?&KeyValuePair)
   )
 
   (?<InlineTable>
-    (?s)
-
     {
-      (?&WS) (?&NLSeq)? (?&WS)
-
+      (?&WS)
       (?&KeyValuePairList)
-
-      (?&WS) (?&NLSeq)? (?&WS)
+      (?&WS)
     }
-
-    (?-s)
   )
 
   (?<TableDecl>
@@ -136,10 +130,16 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   # Integer
   #-----------------------------------------------------------------------------
-  (?<Dec> [-+]? [_0-9]+)
-  (?<Hex> 0x[_0-9a-fA-F]+)
-  (?<Oct> 0o[_0-7]+)
-  (?<Bin> 0b[_01]+)
+  (?<DecChar> [0-9])
+  (?<HexChar> (?&DecChar) | [a-f A-F])
+  (?<OctChar> [0-7])
+  (?<BinChar> [01])
+
+  (?<Dec> [-+]? (?&DecChar) (?: (?&DecChar) | (?: _ (?&DecChar) ))*)
+  (?<Hex> 0x (?&HexChar) (?: (?&HexChar) | (?: [_] (?&HexChar) ))*)
+  (?<Oct> 0o (?&OctChar) (?: (?&OctChar) | (?: [_] (?&OctChar) ))*)
+  (?<Bin> 0b (?&BinChar) (?: (?&BinChar) | (?: [_] (?&BinChar) ))*)
+
   (?<Integer> (?&Hex) | (?&Oct) | (?&Bin) | (?&Dec))
 
   #-----------------------------------------------------------------------------

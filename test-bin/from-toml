@@ -12,7 +12,9 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $toml = do{ local $/; <STDIN> };
-my ($parsed, $error) = from_toml $toml, annotated => 1;
+my ($parsed, $error) = from_toml $toml,
+  annotated     => 1,
+  strict_arrays => 1;
 
 if ($error) {
   warn $error;

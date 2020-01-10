@@ -122,7 +122,7 @@ sub next_token {
       }
 
       default{
-        my $substr = substr($self->{source}, $self->{position}, 30) // 'undef';
+        my $substr = substr($self->{source}, $self->{position} - 20, 40) // 'undef';
         die "toml syntax error on line $self->{line}\n\t--> $substr\n";
       }
     }

@@ -130,12 +130,14 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   # Integer
   #-----------------------------------------------------------------------------
+  (?<DecFirstChar> [1-9])
   (?<DecChar> [0-9])
-  (?<HexChar> (?&DecChar) | [a-f A-F])
+  (?<HexChar> [0-9 a-f A-F])
   (?<OctChar> [0-7])
   (?<BinChar> [01])
 
-  (?<Dec> [-+]? (?&DecChar) (?: (?&DecChar) | (?: _ (?&DecChar) ))*)
+  (?<Zero> [-+]? 0)
+  (?<Dec> (?&Zero) | (?: [-+]? (?&DecFirstChar) (?: (?&DecChar) | (?: _ (?&DecChar) ))*))
   (?<Hex> 0x (?&HexChar) (?: (?&HexChar) | (?: [_] (?&HexChar) ))*)
   (?<Oct> 0o (?&OctChar) (?: (?&OctChar) | (?: [_] (?&OctChar) ))*)
   (?<Bin> 0b (?&BinChar) (?: (?&BinChar) | (?: [_] (?&BinChar) ))*)
@@ -147,7 +149,7 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   (?<Exponent> [eE] (?&Dec))
   (?<SpecialFloat> [-+]?  (?:inf) | (?:nan))
-  (?<Fraction> [.] [_0-9]+)
+  (?<Fraction> [.] (?&Dec) )
 
   (?<Float>
     (?:

@@ -26,6 +26,7 @@ sub new {
   bless{
     inflate_datetime => $param{inflate_datetime} || sub{ shift },
     inflate_boolean  => $param{inflate_boolean}  || sub{ shift eq 'true' ? $TRUE : $FALSE },
+    strict_arrays    => $param{strict_arrays},
     annotated        => $param{annotated},
   }, $class;
 }
@@ -41,8 +42,9 @@ sub parse {
   my ($self, $toml) = @_;
 
   $self->{tokenizer} = TOML::Tiny::Tokenizer->new(source => $toml);
-  $self->{keys} = [];
-  $self->{root} = {};
+  $self->{keys}      = [];
+  $self->{root}      = {};
+  $self->{tables}    = {}; # "seen" hash of explicitly defined table names
 
   $self->parse_table;
   my $result = $self->{root};
@@ -50,6 +52,7 @@ sub parse {
   delete $self->{tokenizer};
   delete $self->{keys};
   delete $self->{root};
+  delete $self->{tables};
 
   return annotate($result) if $self->{annotated};
   return $result;
@@ -109,10 +112,12 @@ sub get_keys {
 
 sub set_keys {
   my $self  = shift;
-  my $value = $self->parse_value;
+  my $value = shift // $self->parse_value;
   my @keys  = $self->get_keys;
   my $key   = pop @keys;
   my $node  = $self->scan_to_key(\@keys);
+  $self->parse_error(undef, 'duplicate key: '.join('.', @keys, $key))
+    if exists $node->{$key};
   $node->{$key} = $value;
 }
 
@@ -146,6 +151,28 @@ sub parse_table {
   $self->expect_type($token, 'table');
   $self->push_keys($token);
   $self->scan_to_key([$self->get_keys]);
+
+  my @keys = $self->get_keys;
+  my $key = join '.', @keys;
+  if (exists $self->{tables}{$key}) {
+    # Tables cannot be redefined, *except* when doing so within a goddamn table
+    # array. Gawd I hate TOML.
+    my $in_a_stupid_table_array = 0;
+    my $node = $self->{root};
+    for my $key (@keys) {
+      if (exists $node->{$key} && ref($node->{$key}) eq 'ARRAY') {
+        $in_a_stupid_table_array = 1;
+        last;
+      } else {
+        $node = $node->{$key};
+      }
+    }
+
+    $self->parse_error($token, "table $key is already defined")
+      unless $in_a_stupid_table_array;
+  } else {
+    $self->{tables}{$key} = 1;
+  }
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->type) {
@@ -298,6 +325,40 @@ sub parse_inline_array {
       default{
         push @array, $self->parse_value($token);
       }
+    }
+  }
+
+  if (@array > 1 && $self->{strict_arrays}) {
+    my @types = map{
+      my $type;
+
+      if (my $ref = ref $_) {
+        $type = $ref eq 'ARRAY' ? 'array' : 'table';
+      }
+      else {
+        if (/^(true|false)$/) {
+          $type = 'bool';
+        }
+        elsif (looks_like_number($_)) {
+          if ("$_" =~ /[.]/) {
+            $type = 'float';
+          } else {
+            $type = 'integer';
+          }
+        }
+        elsif (/(?&DateTime) $TOML/x) {
+          $type = 'datetime';
+        }
+        else {
+          $type = 'string';
+        }
+      }
+    } @array;
+
+    my $t = shift @types;
+    for (@types) {
+      $self->parse_error(undef, "expected value of type $t, but found $_")
+        if $_ ne $t;
     }
   }
 

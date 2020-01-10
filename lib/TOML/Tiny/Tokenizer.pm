@@ -56,6 +56,7 @@ sub next_token {
     for ($self->{source}) {
       when (/\G (?&NL) $TOML/xgc) {
         ++$self->{line};
+        $token = $self->_make_token('EOL');
       }
 
       when (/\G (?&WSChar)+ $TOML/xgc) {

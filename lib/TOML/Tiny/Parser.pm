@@ -33,7 +33,8 @@ sub new {
 sub next_token {
   my $self = shift;
   return unless $self->{tokenizer};
-  $self->{tokenizer}->next_token;
+  my $token = $self->{tokenizer}->next_token;
+  return $token;
 }
 
 sub parse {
@@ -85,7 +86,7 @@ $src
 
 sub expect_type {
   my ($self, $token, $expected) = @_;
-  my $actual = $token->type;
+  my $actual = eval{ $token->type }; use Carp; confess $@ if $@;
   $self->parse_error($token, "expected $expected, but found $actual")
     unless $actual eq $expected;
 }
@@ -144,16 +145,23 @@ sub parse_table {
   my $token = shift // $self->next_token;
   $self->expect_type($token, 'table');
   $self->push_keys($token);
-
-  my $node = $self->scan_to_key([$self->get_keys]);
+  $self->scan_to_key([$self->get_keys]);
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->type) {
+      next TOKEN when /EOL/;
+
       when (/key/) {
         $self->expect_type($self->next_token, 'assign');
         $self->push_keys($token);
         $self->set_keys;
         $self->pop_keys;
+
+        if (my $eol = $self->next_token) {
+          $self->expect_type($eol, 'EOL');
+        } else {
+          return;
+        }
       }
 
       when (/array_table/) {
@@ -189,6 +197,8 @@ sub parse_array_table {
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->type) {
+      next TOKEN when /EOL/;
+
       when (/key/) {
         $self->expect_type($self->next_token, 'assign');
         $self->push_keys($token);
@@ -282,6 +292,7 @@ sub parse_inline_array {
   TOKEN: while (my $token = $self->next_token) {
     for ($token->type) {
       next TOKEN when /comma/;
+      next TOKEN when /EOL/;
       last TOKEN when /inline_array_close/;
 
       default{

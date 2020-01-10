@@ -58,16 +58,8 @@ our $TOML = qr{
   (?<KeyValuePair> (?&Key) (?&WS) = (?&WS) (?&Value))
   (?<KeyValuePairDecl> (?&Key) (?&WS) = (?&WS) (?&Value) (?&WS) (?&NL))
 
-  (?<InlineTableSep>
-    (?&WS)
-    [,]
-    (?&WS)
-    (?&NLSeq)?
-    (?&WS)
-  )
-
   (?<KeyValuePairList>
-      (?&KeyValuePair) (?&InlineTableSep) (?&KeyValuePairList)?
+      (?&KeyValuePair) (?&WS) [,] (?&WS) (?&KeyValuePairList)?
     | (?&KeyValuePair)
   )
 

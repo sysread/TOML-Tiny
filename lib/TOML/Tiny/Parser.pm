@@ -86,7 +86,7 @@ $src
 
 sub expect_type {
   my ($self, $token, $expected) = @_;
-  my $actual = eval{ $token->type }; use Carp; confess $@ if $@;
+  my $actual = $token->type;
   $self->parse_error($token, "expected $expected, but found $actual")
     unless $actual eq $expected;
 }

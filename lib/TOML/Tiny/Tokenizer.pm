@@ -3,9 +3,9 @@ package TOML::Tiny::Tokenizer;
 use strict;
 use warnings;
 no warnings qw(experimental);
+use charnames qw(:full);
 use v5.18;
 
-use Carp;
 use TOML::Tiny::Grammar;
 
 use Class::Struct 'TOML::Tiny::Token' => {
@@ -182,7 +182,7 @@ sub error {
   my $token = shift;
   my $msg   = shift // 'unknown';
   my $line  = $token ? $token->line : $self->{line};
-  croak "toml: parse error at line $line: $msg\n";
+  die "toml: parse error at line $line: $msg\n";
 }
 
 sub tokenize_key {
@@ -241,12 +241,12 @@ sub tokenize_string {
 
       $str =~ s/^(?&WS) (?&NL) $TOML//x;
       $str =~ s/\\(?&NL)\s* $TOML//xgs;
-      $str = unescape_str($str);
+      $str = $self->unescape_str($str);
     }
 
     when (/^ ((?&BasicString)) $TOML/x) {
       $str = substr($1, 1, length($1) - 2);
-      $str = unescape_str($str);
+      $str = $self->unescape_str($str);
     }
 
     when (/^ ((?&MultiLineStringLiteral)) $TOML/x) {
@@ -269,6 +269,7 @@ sub tokenize_string {
 
 # Adapted from TOML::Parser::Util
 sub unescape_str {
+  my $self = shift;
   my $str = shift;
 
   $str =~ s/((?&EscapeChar)) $TOML/
@@ -281,11 +282,13 @@ sub unescape_str {
       $ch = "\x22" when '\"';
       $ch = "\x2F" when '\/';
       $ch = "\x5C" when '\\\\';
+
       default{
-        my $c = substr $1, 2;
-        $c = chr(hex($c));
-        if ($c ne "\0") {
-          $ch = $c;
+        my $hex = hex substr($ch, 2);
+        if (charnames::viacode($hex)) {
+          $ch = chr $hex;
+        } else {
+          $self->error(undef, "invalid unicode escape: $ch");
         }
       }
     }

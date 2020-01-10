@@ -3,7 +3,7 @@ package TOML::Tiny::Tokenizer;
 use strict;
 use warnings;
 no warnings qw(experimental);
-use v5.14;
+use v5.18;
 
 use Carp;
 use TOML::Tiny::Grammar;

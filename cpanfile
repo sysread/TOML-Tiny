@@ -1,5 +1,6 @@
-requires 'perl' => '>= 5.014';
+requires 'perl' => '>= 5.018';
 requires 'Scalar::Util' => '>= 1.14';
+requires 'Data::Dumper' => '0';
 
 recommends 'Types::Serialiser' => 0;
 

@@ -3,8 +3,8 @@ package TOML::Tiny;
 
 use strict;
 use warnings;
-use feature qw(switch);
 no warnings qw(experimental);
+use v5.18;
 
 use TOML::Tiny::Parser;
 use TOML::Tiny::Writer;

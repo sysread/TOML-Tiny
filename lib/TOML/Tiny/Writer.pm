@@ -2,9 +2,8 @@ package TOML::Tiny::Writer;
 
 use strict;
 use warnings;
-
-use feature qw(switch state);
 no warnings qw(experimental);
+use v5.18;
 
 use Data::Dumper;
 use Scalar::Util qw(looks_like_number);

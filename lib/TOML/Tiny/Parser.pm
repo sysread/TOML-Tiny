@@ -5,6 +5,11 @@ use warnings;
 no warnings qw(experimental);
 use v5.14;
 
+use Carp;
+use Data::Dumper;
+use List::Util qw(all);
+use Scalar::Util qw(looks_like_number);
+use TOML::Tiny::Grammar;
 use TOML::Tiny::Tokenizer;
 
 our $TRUE  = 1;
@@ -45,13 +50,37 @@ sub parse {
   delete $self->{keys};
   delete $self->{root};
 
+  return annotate($result) if $self->{annotated};
   return $result;
 }
 
 sub parse_error {
   my ($self, $token, $msg) = @_;
   my $line = $token ? $token->line : 'EOF';
-  die "toml parse error at line $line: $msg\n";
+  if ($self->{annotated}) {
+    my $root = Dumper($self->{root});
+    my $tok  = Dumper($token);
+    my $src  = substr $self->{tokenizer}{source}, $self->{tokenizer}{position} - 20, 40;
+
+    confess qq{
+toml parse error at line $line:
+    $msg
+
+Current token:
+$tok
+
+Parse state:
+$root
+
+Source near location of error:
+...
+$src
+...
+
+    };
+  } else {
+    die "toml parse error at line $line: $msg\n";
+  }
 }
 
 sub expect_type {
@@ -197,37 +226,51 @@ sub parse_value {
   my $self = shift;
   my $token = shift // $self->next_token;
 
-  if ($self->{annotated}) {
-    for ($token->type) {
-      when (/inline_table/) {
-        return $self->parse_inline_table;
-      }
-
-      when (/inline_array/) {
-        return $self->parse_inline_array;
-      }
-
-      when (/float|integer|string|bool|datetime/) {
-        return { type => $token->type, value => '' . $token->value };
-      }
-
-      default{
-        $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
+  for ($token->type) {
+    when (/float/) {
+      if ($self->{annotated}) {
+        return $token->value;
+      } else {
+        use bignum;
+        return $token->value + 0;
       }
     }
-  }
-  else {
-    for ($token->type) {
-      return $token->value when /float|integer/;
-      return $token->value when /string/;
-      return $self->{inflate_boolean}->($token->value) when /bool/;
-      return $self->{inflate_datetime}->($token->value) when /datetime/;
-      return $self->parse_inline_table when /inline_table/;
-      return $self->parse_inline_array when /inline_array/;
 
-      default{
-        $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
+    when (/integer/) {
+      if ($self->{annotated}) {
+        return $token->value;
+      } else {
+        for (my $n = $token->value) {
+          use bigint;
+
+          when (/(?&Oct) $TOML/x) {
+            $n =~ s/^0o/0/; # convert to perl's octal format
+            return oct $n;
+          }
+
+          when (/(?&Bin) $TOML/x) {
+            return oct $n;
+          }
+
+          when (/(?&Hex) $TOML/x) {
+            return hex $n;
+          }
+
+          default{
+            return $n + 0;
+          }
+        }
       }
+    }
+
+    return $token->value when /string/;
+    return $self->{inflate_boolean}->($token->value) when /bool/;
+    return $self->{inflate_datetime}->($token->value) when /datetime/;
+    return $self->parse_inline_table when /inline_table/;
+    return $self->parse_inline_array when /inline_array/;
+
+    default{
+      $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
     }
   }
 }
@@ -251,12 +294,8 @@ sub parse_inline_array {
 }
 
 sub parse_inline_table {
-  my $self = shift;
-
-  my @keys = $self->get_keys;
-  my $key  = pop @keys;
-  my $node = $self->scan_to_key(\@keys);
-  $node->{$key} //= {};
+  my $self  = shift;
+  my $table = {};
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->type) {
@@ -265,9 +304,8 @@ sub parse_inline_table {
 
       when (/key/) {
         $self->expect_type($self->next_token, 'assign');
-        $self->push_keys($token);
-        $self->set_keys;
-        $self->pop_keys;
+        my $key = $token->value->[0];
+        $table->{ $key } = $self->parse_value;
       }
 
       default{
@@ -276,7 +314,60 @@ sub parse_inline_table {
     }
   }
 
-  return $node->{$key};
+  return $table;
+}
+
+sub annotate {
+  my $value = shift;
+
+  for (ref $value) {
+    when ('HASH') {
+      $value->{$_} = annotate($value->{$_})
+        for keys %$value;
+
+      return $value;
+    }
+
+    when ('ARRAY') {
+      my $is_table_array = @$value == 0 || grep{ ref($_) ne 'HASH' } @$value;
+
+      $value->[$_] = annotate($value->[$_])
+        for 0..(scalar(@$value) - 1);
+
+      if ($is_table_array) {
+        return {type => 'array', value => $value};
+      } else {
+        return $value;
+      }
+    }
+
+    when ('JSON::PP::Boolean') {
+      return {type => 'bool', value => $value ? 'true' : 'false'};
+    }
+
+    default{
+      if ($value =~ /^(true|false)$/) {
+        return {type => 'bool', value => $value};
+      }
+
+      if ($value =~ /^(?&Float)$ $TOML/x) {
+        return {type => 'float', value => $value};
+      }
+
+      if ($value =~ /^(?&Integer)$ $TOML/x) {
+        return {type => 'integer', value => $value};
+      }
+
+      if ($value =~ /^(?&DateTime)$ $TOML/x) {
+        return {type => 'datetime', value => $value};
+      }
+
+      return {
+        type  => 'string',
+        value => $value,
+      };
+    }
+  }
 }
 
 1;

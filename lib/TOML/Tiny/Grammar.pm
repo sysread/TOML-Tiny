@@ -31,7 +31,7 @@ our $TOML = qr{
   (?<WSChar> [ \x20 \x09 ])       # (space, tab)
   (?<WS> (?&WSChar)*)
 
-  (?<Comment> \x23 .* (?&NLSeq))
+  (?<Comment> \x23 .* (?&NLSeq)?)
 
   #-----------------------------------------------------------------------------
   # Array of tables

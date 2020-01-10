@@ -94,12 +94,12 @@ sub next_token {
         $token = $self->_make_token('comma', $1);
       }
 
-      when (/\G \[ (?&WS) ((?&Key)) (?&WS) \] $TOML/xgc) {
+      when (/\G \[ (?&WS) ((?&Key)) (?&WS) \] (?&WS) (?=(?&NL) | $)$TOML/xgc) {
         my $key = $self->tokenize_key($1);
         $token = $self->_make_token('table', $key);
       }
 
-      when (/\G \[\[ (?&WS) ((?&Key)) (?&WS) \]\] (?&WS) (?&NL) $TOML/xgc) {
+      when (/\G \[\[ (?&WS) ((?&Key)) (?&WS) \]\] (?&WS) (?=(?&NL) | $) $TOML/xgc) {
         my $key = $self->tokenize_key($1);
         $token = $self->_make_token('array_table', $key);
       }
@@ -213,37 +213,18 @@ sub tokenize_key {
 }
 
 sub tokenize_float {
-  use bignum;
   my $self = shift;
   my $toml = shift;
   $toml =~ s/_//g;
-  return 0 + $toml;
+  $toml;
 }
 
 sub tokenize_integer {
-  use bigint;
-
   my $self = shift;
   my $toml = shift;
-
   $toml =~ s/_//g;
-
-  for ($toml) {
-    when (/(?&Oct) $TOML/x) {
-      $toml =~ s/^0o/0/; # convert to perl's octal format
-      return oct $toml;
-    }
-
-    when (/(?&Bin) $TOML/x) {
-      return oct $toml;
-    }
-
-    when (/(?&Hex) $TOML/x) {
-      return hex $toml;
-    }
-  }
-
-  return 0 + $toml;
+  $toml =~ s/^[+]//;
+  return $toml;
 }
 
 sub tokenize_string {

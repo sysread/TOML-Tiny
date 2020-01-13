@@ -29,8 +29,8 @@ subtest 'TOML::Parser' => sub{
   };
 
   subtest 'inflate_datetime' => sub{
-    require DateTime::Format::ISO8601;
-    my $inflate = sub{ DateTime::Format::ISO8601->parse_datetime(shift) };
+    require DateTime::Format::RFC3339;
+    my $inflate = sub{ DateTime::Format::RFC3339->parse_datetime(shift) };
     my $exp = TOML::Parser->new(inflate_datetime => $inflate)->parse($toml);
     my $got = TOML::Tiny::Parser->new(inflate_datetime => $inflate)->parse($toml);
     is $got, $exp, 'equivalence'

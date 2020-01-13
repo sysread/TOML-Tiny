@@ -1,0 +1,79 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+no warnings 'experimental';
+use lib './lib';
+use v5.18;
+
+use DateTime;
+use DateTime::Format::RFC3339;
+use Math::BigInt;
+use Math::BigFloat;
+use JSON::PP;
+use JSON::PP::Boolean;
+use TOML::Tiny qw(to_toml);
+
+binmode STDIN,  ':encoding(UTF-8)';
+binmode STDOUT, ':encoding(UTF-8)';
+
+sub deannotate {
+  my $data = shift;
+
+  for (ref $data) {
+    when ('HASH') {
+      if (exists $data->{type} && exists $data->{value} && keys(%$data) == 2) {
+        for ($data->{type}) {
+          when ('bool') {
+            my $bool = !!($data->{value} eq 'true');
+            return bless \$bool, 'JSON::PP::Boolean';
+          }
+
+          when ('integer') {
+            return Math::BigInt->new($data->{value});
+          }
+
+          when ('float') {
+            # Math::BigFloat's constructor will return a Math::BigInt for
+            # non-fractional values. This works around that to force a
+            # BigFloat.
+            return Math::BigFloat->bzero + Math::BigFloat->new($data->{value});
+          }
+
+          when ('datetime') {
+            return DateTime::Format::RFC3339->parse_datetime($data->{value});
+          }
+
+          when ('array') {
+            return [ map{ deannotate($_) } @{$data->{value}} ];
+          }
+
+          default{
+            return $data->{value};
+          }
+        }
+      }
+
+      my %object;
+      $object{$_} = deannotate($data->{$_}) for keys %$data;
+      return \%object;
+    }
+
+    when ('ARRAY') {
+      return [ map{ deannotate($_) } @$data ];
+    }
+
+    default{
+      return $data;
+    }
+  }
+}
+
+my $src  = do{ local $/; <STDIN> };
+my $json = JSON::PP->new->utf8(0)->decode($src);
+my $data = deannotate($json);
+my $toml = to_toml($data);
+
+say $toml;
+
+exit 0;

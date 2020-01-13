@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use v5.14;
+use v5.18;
 use lib './lib';
 
 use JSON::PP   qw();

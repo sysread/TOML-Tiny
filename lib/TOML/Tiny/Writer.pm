@@ -7,6 +7,7 @@ use v5.18;
 
 use Data::Dumper;
 use Scalar::Util qw(looks_like_number);
+use Math::BigFloat;
 use TOML::Tiny::Grammar;
 
 my @KEYS;
@@ -64,7 +65,6 @@ sub to_toml {
         push @buff, to_toml($data->{$k});
         pop @KEYS;
       }
-
     }
 
     when ('ARRAY') {
@@ -83,6 +83,10 @@ sub to_toml {
 
     when (/JSON::PP::Boolean/) {
       return $$data ? 'true' : 'false';
+    }
+
+    when (/DateTime/) {
+      return $data->stringify;
     }
 
     when ('') {
@@ -106,7 +110,7 @@ sub to_toml {
     }
 
     when ('Math::BigFloat') {
-      return $data->bstr;
+      return $data->bnstr;
     }
 
     when (defined) {

@@ -211,13 +211,9 @@ overriding the parser by setting C<$TOML::Parser>.
 
 =head1 DIFFERENCES FROM TOML AND TOML::Parser
 
-=over
-
-=item L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
+L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
 tighten things up. C<TOML::Tiny> defaults to strict parsing, with the exception
 of optionally setting C<strict_arrays>.
-
-=back
 
 =head1 ACKNOWLEDGEMENTS
 

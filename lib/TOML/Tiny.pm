@@ -85,7 +85,8 @@ sub parse {
 
   # Object API
   my $parser = TOML::Tiny->new;
-  my $result = $parser->parse($toml);
+  my $data = $parser->decode($toml);
+  say $parser->encode($data);
 
 
 =head1 DESCRIPTION
@@ -210,5 +211,6 @@ overriding the parser by setting C<$TOML::Parser>.
 
 =head1 DIFFERENCES FROM TOML AND TOML::Parser MODULES
 
-
-=head1 TOML VERSION COMPATIBILITY
+L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
+tighten things up. C<TOML::Tiny> defaults to strict parsing, with the exception
+of optionally setting C<strict_arrays>.

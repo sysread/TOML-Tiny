@@ -1,4 +1,5 @@
 package TOML::Tiny::Parser;
+# ABSTRACT: parser used by TOML::Tiny
 
 use strict;
 use warnings;

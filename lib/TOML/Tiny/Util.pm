@@ -1,4 +1,5 @@
 package TOML::Tiny::Util;
+# ABSTRACT: utility functions used by TOML::Tiny
 
 use strict;
 use warnings;

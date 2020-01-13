@@ -1,4 +1,5 @@
 package TOML::Tiny::Tokenizer;
+# ABSTRACT: tokenizer used by TOML::Tiny
 
 use strict;
 use warnings;

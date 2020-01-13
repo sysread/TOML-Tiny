@@ -1,4 +1,5 @@
 package TOML::Tiny::Grammar;
+# ABSTRACT: exports regex definition of TOML grammar
 
 use strict;
 use warnings;
@@ -247,3 +248,44 @@ our $TOML = qr{
 }x;
 
 1;
+
+=head1 SYNOPSIS
+
+  use TOML::Tiny::Grammar;
+
+  if ($src =~ /(?&MultiLineString) $TOML/x) {
+    ...
+  }
+
+=head1 DESCRIPTION
+
+Exports C<$TOML>, a regex grammar for parsing TOML source.
+
+=head1 RULES
+
+=head2 (?&WS)
+=head2 (?&NL)
+=head2 (?&Comment)
+
+=head2 (?&Value)
+=head3 (?&Boolean)
+=head3 (?&DateTime)
+=head3 (?&Float)
+=head3 (?&Integer)
+=head3 (?&String)
+=head3 (?&Array)
+=head3 (?&InlineTable)
+
+=head2 (?&Key)
+=head3 (?&BareKey)
+=head3 (?&QuotedKey)
+=head3 (?&DottedKey)
+
+=head2 (?&ArrayOfTables)
+=head2 (?&KeyValuePair)
+=head2 (?&KeyValuePairDecl)
+=head2 (?&TableDecl)
+=head2 (?&Table)
+=head2 (?&Array)
+
+=cut

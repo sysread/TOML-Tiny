@@ -108,7 +108,7 @@ L<TOML::Parser> modules, and could even be used to override C<$TOML::Parser>:
 =head1 EXPORTS
 
 C<TOML::Tiny> exports the following to functions for compatibility with the
-C<TOML> module. See L<TOML/FUNCTIONS>.
+L<TOML> module. See L<TOML/FUNCTIONS>.
 
 =head2 from_toml
 

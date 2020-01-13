@@ -11,6 +11,7 @@ use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
 use TOML::Tiny::Grammar;
 use TOML::Tiny::Tokenizer;
+use TOML::Tiny::Util qw(is_strict_array);
 
 our $TRUE  = 1;
 our $FALSE = 0;
@@ -329,37 +330,9 @@ sub parse_inline_array {
   }
 
   if (@array > 1 && $self->{strict_arrays}) {
-    my @types = map{
-      my $type;
-
-      if (my $ref = ref $_) {
-        $type = $ref eq 'ARRAY' ? 'array' : 'table';
-      }
-      else {
-        if (/^(true|false)$/) {
-          $type = 'bool';
-        }
-        elsif (looks_like_number($_)) {
-          if ("$_" =~ /[.]/) {
-            $type = 'float';
-          } else {
-            $type = 'integer';
-          }
-        }
-        elsif (/(?&DateTime) $TOML/x) {
-          $type = 'datetime';
-        }
-        else {
-          $type = 'string';
-        }
-      }
-    } @array;
-
-    my $t = shift @types;
-    for (@types) {
-      $self->parse_error(undef, "expected value of type $t, but found $_")
-        if $_ ne $t;
-    }
+    my ($ok, $err) = is_strict_array(\@array);
+    $self->parse_error(undef, $err)
+      unless $ok;
   }
 
   return \@array;

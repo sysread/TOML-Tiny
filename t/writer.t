@@ -1,12 +1,31 @@
 use Test2::V0;
 use TOML::Tiny;
 
-my $src  = do{ local $/; <DATA> };
-my $data = from_toml($src);
-my $toml = to_toml($data);
-my $got  = from_toml($toml);
+my $src = do{ local $/; <DATA> };
 
-is $got, $data, 'to_toml <=> from_toml';
+subtest basics => sub{
+  my $data = from_toml($src);
+  my $toml = to_toml($data);
+  my $got  = from_toml($toml);
+  is $got, $data, 'to_toml <=> from_toml';
+};
+
+subtest strict_arrays => sub{
+  subtest with_bad_array => sub{
+    my ($data, $error) = from_toml $src, strict_arrays => 1;
+    is $data, U, 'result undefined';
+    ok $error, 'error message';
+    like $error, qr/expected value of type/, $error, 'expected error';
+  };
+
+  subtest without_bad_array => sub{
+    my $toml = $src;
+    $toml =~ s/^hetero_array.*$//m;
+    my ($data, $error) = from_toml $toml, strict_arrays => 1;
+    ok $data, 'result defined';
+    ok !$error, 'no error';
+  };
+};
 
 done_testing;
 
@@ -14,6 +33,8 @@ __DATA__
 # This is a TOML document.
 
 title = "TOML Example"
+
+hetero_array = ["life", "universe", "everything", 42]
 
 [owner]
 name = "Tom Preston-Werner"

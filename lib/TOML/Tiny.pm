@@ -209,8 +209,18 @@ Alias for C<encode> to provide compatibility with C<TOML::Parser> when
 overriding the parser by setting C<$TOML::Parser>.
 
 
-=head1 DIFFERENCES FROM TOML AND TOML::Parser MODULES
+=head1 DIFFERENCES FROM TOML AND TOML::Parser
 
-L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
+=over
+
+=item L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
 tighten things up. C<TOML::Tiny> defaults to strict parsing, with the exception
 of optionally setting C<strict_arrays>.
+
+=back
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to L<ZipRecruiter|https://www.ziprecruiter.com> for encouraging their
+employees to contribute back to the open source ecosystem. Without their
+dedication to quality software development this distribution would not exist.

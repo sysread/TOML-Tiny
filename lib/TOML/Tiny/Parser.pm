@@ -9,7 +9,6 @@ use v5.18;
 use Carp;
 use Data::Dumper;
 use List::Util qw(all);
-use Scalar::Util qw(looks_like_number);
 use TOML::Tiny::Grammar;
 use TOML::Tiny::Tokenizer;
 use TOML::Tiny::Util qw(is_strict_array);
@@ -34,10 +33,7 @@ sub new {
 }
 
 sub next_token {
-  my $self = shift;
-  return unless $self->{tokenizer};
-  my $token = $self->{tokenizer}->next_token;
-  return $token;
+  $_[0]->{tokenizer} && $_[0]->{tokenizer}->next_token;
 }
 
 sub parse {
@@ -62,7 +58,7 @@ sub parse {
 
 sub parse_error {
   my ($self, $token, $msg) = @_;
-  my $line = $token ? $token->line : 'EOF';
+  my $line = $token ? $token->{line} : 'EOF';
   if ($self->{annotated}) {
     my $root = Dumper($self->{root});
     my $tok  = Dumper($token);
@@ -91,7 +87,7 @@ $src
 
 sub expect_type {
   my ($self, $token, $expected) = @_;
-  my $actual = $token->type;
+  my $actual = $token->{type};
   $self->parse_error($token, "expected $expected, but found $actual")
     unless $actual eq $expected;
 }
@@ -99,7 +95,7 @@ sub expect_type {
 
 sub push_keys {
   my ($self, $token) = @_;
-  push @{ $self->{keys} }, $token->value;
+  push @{ $self->{keys} }, $token->{value};
 }
 
 sub pop_keys {
@@ -124,14 +120,15 @@ sub set_keys {
 }
 
 sub scan_to_key {
-  my ($self, $keys) = @_;
+  my $self = shift;
+  my $keys = shift // [ $self->get_keys ];
   my $node = $self->{root};
 
   for my $key (@$keys) {
     if (exists $node->{$key}) {
       for (ref $node->{$key}) {
-        $node = $node->{$key}     when /HASH/;
-        $node = $node->{$key}[-1] when /ARRAY/;
+        $node = $node->{$key}     when 'HASH';
+        $node = $node->{$key}[-1] when 'ARRAY';
         default{
           my $full_key = join '.', @$keys;
           die "$full_key is already defined\n";
@@ -149,10 +146,10 @@ sub scan_to_key {
 
 sub parse_table {
   my $self  = shift;
-  my $token = shift // $self->next_token;
+  my $token = shift // $self->next_token // return; # may be undef on first token in empty document
   $self->expect_type($token, 'table');
   $self->push_keys($token);
-  $self->scan_to_key([$self->get_keys]);
+  $self->scan_to_key;
 
   my @keys = $self->get_keys;
   my $key = join '.', @keys;
@@ -177,10 +174,10 @@ sub parse_table {
   }
 
   TOKEN: while (my $token = $self->next_token) {
-    for ($token->type) {
-      next TOKEN when /EOL/;
+    for ($token->{type}) {
+      next TOKEN when 'EOL';
 
-      when (/key/) {
+      when ('key') {
         $self->expect_type($self->next_token, 'assign');
         $self->push_keys($token);
         $self->set_keys;
@@ -193,13 +190,13 @@ sub parse_table {
         }
       }
 
-      when (/array_table/) {
+      when ('array_table') {
         $self->pop_keys;
         @_ = ($self, $token);
         goto \&parse_array_table;
       }
 
-      when (/table/) {
+      when ('table') {
         $self->pop_keys;
         @_ = ($self, $token);
         goto \&parse_table;
@@ -225,7 +222,7 @@ sub parse_array_table {
   push @{ $node->{$key} }, {};
 
   TOKEN: while (my $token = $self->next_token) {
-    for ($token->type) {
+    for ($token->{type}) {
       next TOKEN when /EOL/;
 
       when (/key/) {
@@ -258,28 +255,28 @@ sub parse_key {
   my $self  = shift;
   my $token = shift // $self->next_token;
   $self->expect_type($token, 'key');
-  return $token->value;
+  return $token->{value};
 }
 
 sub parse_value {
   my $self = shift;
   my $token = shift // $self->next_token;
 
-  for ($token->type) {
+  for ($token->{type}) {
     when (/float/) {
       if ($self->{annotated}) {
-        return $token->value;
+        return $token->{value};
       } else {
         use bignum;
-        return $token->value + 0;
+        return $token->{value} + 0;
       }
     }
 
     when (/integer/) {
       if ($self->{annotated}) {
-        return $token->value;
+        return $token->{value};
       } else {
-        for (my $n = $token->value) {
+        for (my $n = $token->{value}) {
           use bigint;
 
           when (/(?&Oct) $TOML/x) {
@@ -302,9 +299,9 @@ sub parse_value {
       }
     }
 
-    return $token->value when /string/;
-    return $self->{inflate_boolean}->($token->value) when /bool/;
-    return $self->{inflate_datetime}->($token->value) when /datetime/;
+    return $token->{value} when /string/;
+    return $self->{inflate_boolean}->($token->{value}) when /bool/;
+    return $self->{inflate_datetime}->($token->{value}) when /datetime/;
     return $self->parse_inline_table when /inline_table/;
     return $self->parse_inline_array when /inline_array/;
 
@@ -319,7 +316,7 @@ sub parse_inline_array {
   my @array;
 
   TOKEN: while (my $token = $self->next_token) {
-    for ($token->type) {
+    for ($token->{type}) {
       next TOKEN when /comma/;
       next TOKEN when /EOL/;
       last TOKEN when /inline_array_close/;
@@ -344,13 +341,13 @@ sub parse_inline_table {
   my $table = {};
 
   TOKEN: while (my $token = $self->next_token) {
-    for ($token->type) {
+    for ($token->{type}) {
       next TOKEN when /comma/;
       last TOKEN when /inline_table_close/;
 
       when (/key/) {
         $self->expect_type($self->next_token, 'assign');
-        my $key = $token->value->[0];
+        my $key = $token->{value}[0];
         $table->{ $key } = $self->parse_value;
       }
 

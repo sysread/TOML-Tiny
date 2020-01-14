@@ -115,27 +115,25 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   # Key
   #-----------------------------------------------------------------------------
-  (?<BareKey> [-_a-zA-Z0-9]+)
+  (?<BareKey>   [-_a-zA-Z0-9]+)
   (?<QuotedKey> (?&BasicString) | (?&StringLiteral))
-  (?<DottedKey>
-    (?: (?&BareKey) | (?&QuotedKey) )
-    (?: (?&WS) [.] (?&WS) (?: (?&BareKey) | (?&QuotedKey) ) )+
-  )
-  (?<Key> (?&DottedKey) | (?&BareKey) | (?&QuotedKey) )
+  (?<SimpleKey> (?&BareKey) | (?&QuotedKey))
+  (?<DottedKey> (?&SimpleKey) (?: \x2E (?&SimpleKey) )+)
+  (?<Key>       (?&BareKey) | (?&QuotedKey) | (?&DottedKey))
 
   #-----------------------------------------------------------------------------
   # Boolean
   #-----------------------------------------------------------------------------
-  (?<Boolean> \b(?:true)|(?:false)\b)
+  (?<Boolean> (?: \b (?:true) | (?:false) \b ))
 
   #-----------------------------------------------------------------------------
   # Integer
   #-----------------------------------------------------------------------------
-  (?<DecFirstChar> [1-9])
-  (?<DecChar> [0-9])
-  (?<HexChar> [0-9 a-f A-F])
-  (?<OctChar> [0-7])
-  (?<BinChar> [01])
+  (?<DecFirstChar>  [1-9])
+  (?<DecChar>       [0-9])
+  (?<HexChar>       [0-9 a-f A-F])
+  (?<OctChar>       [0-7])
+  (?<BinChar>       [01])
 
   (?<Zero> [-+]? 0)
   (?<Dec> (?&Zero) | (?: [-+]? (?&DecFirstChar) (?: (?&DecChar) | (?: _ (?&DecChar) ))*))
@@ -148,18 +146,20 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   # Float
   #-----------------------------------------------------------------------------
-  (?<Exponent> [eE] (?&Dec))
-  (?<SpecialFloat> [-+]?  (?:inf) | (?:nan))
-  (?<Fraction> [.] (?&Dec) )
+  (?<Exponent>      [eE] (?&Dec))
+  (?<SpecialFloat>  [-+]? (?:inf) | (?:nan))
+  (?<Fraction>      [.] (?&Dec) )
 
   (?<Float>
-    (?:
-        (?: (?&Dec) (?&Fraction) (?&Exponent) )
-      | (?: (?&Dec) (?&Exponent) )
-      | (?: (?&Dec) (?&Fraction) )
-    )
-    |
-    (?&SpecialFloat)
+      (?:
+        (?&Dec)
+
+        (?:
+            (?: (?&Fraction) (?&Exponent)? )
+          | (?&Exponent)
+        )
+      )
+    | (?&SpecialFloat)
   )
 
   #-----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ our $TOML = qr{
   (?<EscapeChar>
     \x5C                        # leading \
     (?:
-        [\x5C"btnfr]            # escapes: \\ \b \t \n \f \r
+        [\x5C"btnfr]            # escapes: \\ \" \b \t \n \f \r
       | (?: u [_0-9a-fA-F]{4} ) # unicode (4 bytes)
       | (?: U [_0-9a-fA-F]{8} ) # unicode (8 bytes)
     )
@@ -192,22 +192,26 @@ our $TOML = qr{
     (?:
       "                       # opening quote
       (?:                     # escape sequences or any char except " or \
-          (?: (?&EscapeChar) )
-        | [^"\\]
+          [^"\\]
+        | (?&EscapeChar)
       )*
       "                       # closing quote
     )
   )
 
   (?<MultiLineString>
+    (?m)
     (?s)
     """                       # opening triple-quote
     (?:
-      (?: (?&EscapeChar) )    # escaped char
-      | .
+        [^"\\]
+      | "{1,2}                # 1-2 quotation marks
+      | (?&EscapeChar)        # escape
+      | (?: \\ $)
     )*?
     """                       # closing triple-quote
     (?-s)
+    (?-m)
   )
 
   (?<String>

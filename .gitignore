@@ -1,3 +1,4 @@
 .build
 scratch.pl
 TOML-Tiny-*
+nytprof*

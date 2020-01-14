@@ -27,10 +27,10 @@ our $TOML = qr{
     | (?&InlineTable)
   )
 
-  (?<NLSeq> \x0A | (?: \x0D \x0A))
+  (?<NLSeq> (?> \x0D? \x0A))
   (?<NL> (?&NLSeq) | (?&Comment))
 
-  (?<WSChar> [ \x20 \x09 ])       # (space, tab)
+  (?<WSChar> \x20 | \x09)       # (space, tab)
   (?<WS> (?&WSChar)*)
 
   (?<Comment> \x23 .* (?&NLSeq)?)
@@ -44,7 +44,7 @@ our $TOML = qr{
 
     \[\[ (?&Key) \]\] \n
     (?:
-        (?: (?&KeyValuePair) \n )
+        (?: (?&KeyValuePair) (?=(?&NLSeq)) )
       | (?&ArrayOfTables)
       | (?&Table)
     )*
@@ -126,7 +126,7 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   # Boolean
   #-----------------------------------------------------------------------------
-  (?<Boolean> \b(?:true)|(?:false))\b
+  (?<Boolean> \b(?:true)|(?:false)\b)
 
   #-----------------------------------------------------------------------------
   # Integer

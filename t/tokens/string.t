@@ -10,6 +10,18 @@ sub test_simple_matches {
   }
 }
 
+subtest 'string group' => sub{
+  use Regexp::Debugger;
+  my $re = qr{ ((?&String)) $TOML }x;
+
+  test_simple_matches($re,
+    [q{"A"}, q{"A"}, 'basic string'],
+    [q{'A'}, q{'A'}, 'string literal'],
+    [q{"""A"""}, q{"""A"""}, 'multi-line string'],
+    [q{'''A'''}, q{'''A'''}, 'multi-line string literal'],
+  );
+};
+
 subtest 'escaped characters' => sub{
   my $re = qr{
     ((?&EscapeChar))
@@ -64,44 +76,22 @@ subtest 'multi-line strings' => sub{
   }x;
 
   test_simple_matches($re,
-    [
-      qq{"""\nabc"""},
-      qq{"""\nabc"""},
-      'simple',
-    ],
-
-    [
-      qq{"""a\n"b"\nc"""},
-      qq{"""a\n"b"\nc"""},
-      'individual quotes within ml string',
-    ],
-
-    [
-      qq{"""foo"""bar"""},
-      qq{"""foo"""},
-      'invalid: triple-quotes appear within ml string',
-    ],
+    [ qq{"""\nabc"""}, qq{"""\nabc"""}, 'simple' ],
+    [ qq{""" " """}, q{""" " """}, 'containing 1 quote' ],
+    [ qq{""" "" """}, q{""" "" """}, 'containing 2 quotes' ],
+    [ qq{"""a\n"b"\nc"""}, qq{"""a\n"b"\nc"""}, 'individual quotes within ml string' ],
+    [ qq{"""foo"""bar"""}, qq{"""foo"""}, 'invalid: triple-quotes appear within ml string' ],
   );
 };
 
 subtest 'multi-line string literals' => sub{
-  my $re = qr{
-    ((?&MultiLineStringLiteral))
-    $TOML
-  }x;
+  my $re = qr{ ((?&MultiLineStringLiteral)) $TOML }x;
 
   test_simple_matches($re,
-    [
-      qq{'''\nabc'''},
-      qq{'''\nabc'''},
-      'simple',
-    ],
-
-    [
-      qq{'''foo'''bar'''},
-      qq{'''foo'''},
-      'invalid: triple-quotes appear within ml string',
-    ],
+    [ qq{'''\nabc'''}, qq{'''\nabc'''}, 'simple' ],
+    [ qq{''' ' '''}, q{''' ' '''}, 'containing 1 single tick' ],
+    [ qq{''' '' '''}, q{''' '' '''}, 'containing 2 single ticks' ],
+    [ qq{'''foo'''bar'''}, qq{'''foo'''}, 'invalid: triple-quotes appear within ml string' ],
   );
 };
 

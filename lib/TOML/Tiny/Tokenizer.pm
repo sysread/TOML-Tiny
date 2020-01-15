@@ -26,13 +26,8 @@ sub new {
 sub next_token {
   my $self = shift;
 
-  if (!defined($self->{source})) {
-    return;
-  }
-
-  if ($self->is_exhausted) {
-    return;
-  }
+  return unless defined $self->{source}
+      && $self->{position} < $self->{last_position};
 
   if (!@{ $self->{tokens} }) {
     my $root = $self->_make_token('table', []);
@@ -46,29 +41,29 @@ sub next_token {
 
   my $token;
 
-  while (!defined($token) && !$self->is_exhausted) {
+  state $key = qr/(?&Key) $TOML/x;
+
+  while ($self->{position} < $self->{last_position} && !$token) {
     for ($self->{source}) {
-      when (/\G (?&NL) $TOML/xgc) {
+      when (/\G [\x20 \x09]+/xgc) {
+        ;
+      }
+
+      when (/\G \x23 .*/xgc) {
+        ;
+      }
+
+      when (/\G \x0D? \x0A/xgc) {
         ++$self->{line};
         $token = $self->_make_token('EOL');
       }
 
-      when (/\G (?&WSChar)+ $TOML/xgc) {
-        ;
+      when (/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
+        $token = $self->_make_token('table', $self->tokenize_key($1));
       }
 
-      when (/\G ((?&Key)) (?&WS) (?= =) $TOML/xgc) {
-         $token = $self->_make_token('key', $1);
-      }
-
-      when (/\G \[ (?&WS) ((?&Key)) (?&WS) \] (?&WS) (?=(?&NL) | $)$TOML/xgc) {
-        my $key = $self->tokenize_key($1);
-        $token = $self->_make_token('table', $key);
-      }
-
-      when (/\G \[\[ (?&WS) ((?&Key)) (?&WS) \]\] (?&WS) (?=(?&NL) | $) $TOML/xgc) {
-        my $key = $self->tokenize_key($1);
-        $token = $self->_make_token('array_table', $key);
+      when (/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
+        $token = $self->_make_token('array_table', $self->tokenize_key($1));
       }
 
       when (/\G \[ /xgc) {
@@ -87,8 +82,24 @@ sub next_token {
         $token = $self->_make_token('inline_table_close', $1);
       }
 
+      when (/\G = /xgc) {
+        $token = $self->_make_token('assign', $1);
+      }
+
+      when (/\G , /xgc) {
+        $token = $self->_make_token('comma', $1);
+      }
+
+      when (/\G ($key) [\x20 \x09]* (?= =)/xgc) {
+         $token = $self->_make_token('key', $1);
+      }
+
       when (/\G ((?&Boolean)) $TOML/xgc) {
         $token = $self->_make_token('bool', $1);
+      }
+
+      when (/\G ((?&String)) $TOML/xgc) {
+        $token = $self->_make_token('string', $1);
       }
 
       when (/\G ((?&DateTime)) $TOML/xgc) {
@@ -103,20 +114,8 @@ sub next_token {
         $token = $self->_make_token('integer', $1);
       }
 
-      when (/\G ((?&String)) $TOML/xgc) {
-        $token = $self->_make_token('string', $1);
-      }
-
-      when (/\G = /xgc) {
-        $token = $self->_make_token('assign', $1);
-      }
-
-      when (/\G , /xgc) {
-        $token = $self->_make_token('comma', $1);
-      }
-
       default{
-        my $substr = substr($self->{source}, $self->{position} - 20, 40) // 'undef';
+        my $substr = substr($self->{source}, $self->{position}, 30) // 'undef';
         die "toml syntax error on line $self->{line}\n\t--> $substr\n";
       }
     }
@@ -130,8 +129,7 @@ sub next_token {
 
 sub push_token {
   my $self = shift;
-  my $token = shift // return;
-  push @{$self->{tokens}}, $token;
+  @_ && push @{$self->{tokens}}, @_;
 }
 
 sub pop_token {
@@ -141,15 +139,12 @@ sub pop_token {
 
 sub _make_token {
   my ($self, $type, $value) = @_;
-
-  my $token = {
+  return {
     type  => $type,
     line  => $self->{line},
     pos   => $self->{position},
     value => $self->can("tokenize_$type") ?  $self->can("tokenize_$type")->($self, $value) : $value,
   };
-
-  return $token;
 }
 
 sub current_line {
@@ -157,10 +152,6 @@ sub current_line {
   my $rest = substr $self->{source}, $self->{position};
   my $stop = index $rest, "\n";
   substr $rest, 0, $stop;
-}
-
-sub is_exhausted {
-  return $_[0]->{position} >= $_[0]->{last_position};
 }
 
 sub update_position {
@@ -194,18 +185,13 @@ sub tokenize_key {
 }
 
 sub tokenize_float {
-  my $self = shift;
-  my $toml = shift;
-  $toml =~ s/_//g;
-  $toml;
+  $_[1] =~ tr/_//d;
+  $_[1];
 }
 
 sub tokenize_integer {
-  my $self = shift;
-  my $toml = shift;
-  $toml =~ s/_//g;
-  $toml =~ s/^[+]//;
-  return $toml;
+  $_[1] =~ tr/_+//d;
+  $_[1];
 }
 
 sub tokenize_string {
@@ -219,7 +205,7 @@ sub tokenize_string {
     $str = substr $toml, 3, length($toml) - 6;
     my @newlines = $str =~ /(\x0D?\x0A)/g;
     $self->{line} += scalar @newlines;
-    $str =~ s/^(?&WS) (?&NL) $TOML//x; # trim leading whitespace
+    $str =~ s/^[\x20 \x09]* (?&NL) $TOML//x; # trim leading whitespace
     $str =~ s/\\(?&NL)\s* $TOML//xgs;  # trim newlines from lines ending in backslash
   } else {
     $str = substr($toml, 1, length($toml) - 2);

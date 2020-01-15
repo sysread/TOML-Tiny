@@ -27,7 +27,7 @@ our $TOML = qr{
     | (?&InlineTable)
   )
 
-  (?<NLSeq> (?> \x0D? \x0A))
+  (?<NLSeq> \x0D? \x0A)
   (?<NL> (?&NLSeq) | (?&Comment))
 
   (?<WSChar> \x20 | \x09)       # (space, tab)
@@ -115,10 +115,10 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   # Key
   #-----------------------------------------------------------------------------
-  (?<BareKey>   [-_a-zA-Z0-9]+)
-  (?<QuotedKey> (?&BasicString) | (?&StringLiteral))
-  (?<SimpleKey> (?&BareKey) | (?&QuotedKey))
-  (?<DottedKey> (?&SimpleKey) (?: \x2E (?&SimpleKey) )+)
+  (?<BareKey>   (?> [-_a-zA-Z0-9]+ ))
+  (?<QuotedKey> (?> (?&BasicString) | (?&StringLiteral)))
+  (?<SimpleKey> (?> (?&BareKey) | (?&QuotedKey)))
+  (?<DottedKey> (?> (?&SimpleKey) (?: \x2E (?&SimpleKey) )+))
   (?<Key>       (?&BareKey) | (?&QuotedKey) | (?&DottedKey))
 
   #-----------------------------------------------------------------------------
@@ -136,29 +136,39 @@ our $TOML = qr{
   (?<BinChar>       [01])
 
   (?<Zero> [-+]? 0)
-  (?<Dec> (?&Zero) | (?: [-+]? (?&DecFirstChar) (?: (?&DecChar) | (?: _ (?&DecChar) ))*))
-  (?<Hex> 0x (?&HexChar) (?: (?&HexChar) | (?: [_] (?&HexChar) ))*)
-  (?<Oct> 0o (?&OctChar) (?: (?&OctChar) | (?: [_] (?&OctChar) ))*)
-  (?<Bin> 0b (?&BinChar) (?: (?&BinChar) | (?: [_] (?&BinChar) ))*)
+  (?<Hex> 0x (?&HexChar) (?> _? (?&HexChar) )*)
+  (?<Oct> 0o (?&OctChar) (?> _? (?&OctChar) )*)
+  (?<Bin> 0b (?&BinChar) (?> _? (?&BinChar) )*)
+  (?<Dec>
+      (?&Zero)
+    | (?> [-+]? (?&DecFirstChar) (?> _?  (?&DecChar) )* )
+  )
 
-  (?<Integer> (?&Hex) | (?&Oct) | (?&Bin) | (?&Dec))
+  (?<Integer>
+    (?>
+        (?&Hex)
+      | (?&Oct)
+      | (?&Bin)
+      | (?&Dec)
+    )
+  )
 
   #-----------------------------------------------------------------------------
   # Float
   #-----------------------------------------------------------------------------
   (?<Exponent>      [eE] (?&Dec))
-  (?<SpecialFloat>  [-+]? (?:inf) | (?:nan))
+  (?<SpecialFloat>  [-+]? (?> (?:inf) | (?:nan)))
   (?<Fraction>      [.] (?&Dec) )
 
   (?<Float>
-      (?:
-        (?&Dec)
+    (?>
+      (?&Dec)
 
-        (?:
-            (?: (?&Fraction) (?&Exponent)? )
-          | (?&Exponent)
-        )
+      (?>
+          (?> (?&Fraction) (?&Exponent)? )
+        | (?&Exponent)
       )
+    )
     | (?&SpecialFloat)
   )
 
@@ -167,31 +177,32 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   (?<EscapeChar>
     \x5C                        # leading \
-    (?:
+    (?>
         [\x5C"btnfr]            # escapes: \\ \" \b \t \n \f \r
-      | (?: u [_0-9a-fA-F]{4} ) # unicode (4 bytes)
-      | (?: U [_0-9a-fA-F]{8} ) # unicode (8 bytes)
+      | (?> u [_0-9a-fA-F]{4} ) # unicode (4 bytes)
+      | (?> U [_0-9a-fA-F]{8} ) # unicode (8 bytes)
     )
   )
 
   (?<StringLiteral>
-    (?: ' [^']* ')            # single quoted string (no escaped chars allowed)
+    (?> ' [^']* ')            # single quoted string (no escaped chars allowed)
   )
 
   (?<MultiLineStringLiteral>
-    (?m)
-    (?s)
-    '''                       # opening triple-quote
-    .*?
-    '''                       # closing triple-quote
-    (?-s)
-    (?-m)
+    (?>
+      '''                     # opening triple-quote
+      (?>
+          [^']
+        | '{1,2}
+      )*?
+      '''                     # closing triple-quote
+    )
   )
 
   (?<BasicString>
-    (?:
+    (?>
       "                       # opening quote
-      (?:                     # escape sequences or any char except " or \
+      (?>                     # escape sequences or any char except " or \
           [^"\\]
         | (?&EscapeChar)
       )*
@@ -200,24 +211,20 @@ our $TOML = qr{
   )
 
   (?<MultiLineString>
-    (?m)
-    (?s)
     """                       # opening triple-quote
-    (?:
+    (?>
         [^"\\]
       | "{1,2}                # 1-2 quotation marks
       | (?&EscapeChar)        # escape
-      | (?: \\ $)
+      | (?: \\ (?&NLSeq))     # backslash-terminated line
     )*?
     """                       # closing triple-quote
-    (?-s)
-    (?-m)
   )
 
   (?<String>
-      (?&MultiLineString)
+      (?&MultiLineString)     # multi-line first or first two chars match empty basic string
     | (?&BasicString)
-    | (?&MultiLineStringLiteral)
+    | (?&MultiLineStringLiteral) 
     | (?&StringLiteral)
   )
 
@@ -225,28 +232,11 @@ our $TOML = qr{
   # Dates (RFC 3339)
   #   1985-04-12T23:20:50.52Z
   #-----------------------------------------------------------------------------
-  (?<Date> \d{4}-\d{2}-\d{2})
-
-  (?<Offset>
-      (?: [-+] \d{2}:\d{2} )
-    | [Z]
-  )
-
-  (?<SimpleTime>
-    \d{2}:\d{2}:\d{2}
-    (?: [.] \d+ )?
-  )
-
-  (?<Time>
-    (?&SimpleTime)
-    (?&Offset)?
-  )
-
-  (?<DateTime>
-      (?: (?&Date) [T ] (?&Time) )
-    | (?&Date)
-    | (?&Time)
-  )
+  (?<Date>        \d{4}-\d{2}-\d{2} )
+  (?<Offset>      (?: [-+] \d{2}:\d{2} ) | Z )
+  (?<SimpleTime>  \d{2}:\d{2}:\d{2} (?: \. \d+ )? )
+  (?<Time>        (?&SimpleTime) (?&Offset)? )
+  (?<DateTime>    (?> (?&Date) (?> [T ] (?&Time) )? ) | (?&Time) )
 )
 
 }x;

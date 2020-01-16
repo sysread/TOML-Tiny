@@ -59,10 +59,10 @@ sub parse {
 sub parse_error {
   my ($self, $token, $msg) = @_;
   my $line = $token ? $token->{line} : 'EOF';
-  if ($self->{annotated}) {
+  if ($self->{annotated} || $ENV{TOML_TINY_DEBUG}) {
     my $root = Dumper($self->{root});
     my $tok  = Dumper($token);
-    my $src  = substr $self->{tokenizer}{source}, $self->{tokenizer}{position} - 20, 40;
+    my $src  = substr $self->{tokenizer}{source}, $self->{tokenizer}{position}, 30;
 
     confess qq{
 toml parse error at line $line:

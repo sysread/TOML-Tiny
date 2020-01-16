@@ -158,7 +158,7 @@ our $TOML = qr{
   #-----------------------------------------------------------------------------
   (?<Exponent>      [eE] (?&Dec))
   (?<SpecialFloat>  [-+]? (?> (?:inf) | (?:nan)))
-  (?<Fraction>      [.] (?&Dec) )
+  (?<Fraction>      [.] (?&DecChar) (?> _? (?&DecChar) )* )
 
   (?<Float>
     (?>

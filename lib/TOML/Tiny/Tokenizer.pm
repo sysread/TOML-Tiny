@@ -16,11 +16,21 @@ sub new {
     source        => $param{source},
     last_position => length $param{source},
     position      => 0,
-    line          => 0,
+    line          => 1,
     tokens        => [],
   }, $class;
 
   return $self;
+}
+
+sub prev_token_type {
+  my $self = shift;
+
+  if (@{$self->{tokens}}) {
+    return $self->{tokens}[-1]{type} // 'EOL';
+  }
+
+  return 'EOL';
 }
 
 sub next_token {
@@ -44,26 +54,28 @@ sub next_token {
   state $key = qr/(?&Key) $TOML/x;
 
   while ($self->{position} < $self->{last_position} && !$token) {
-    for ($self->{source}) {
-      when (/\G [\x20 \x09]+/xgc) {
-        ;
-      }
+    my $prev = $self->prev_token_type;
+    my $newline = !!($prev eq 'EOL' || $prev eq 'table' || $prev eq 'array_table');
 
-      when (/\G \x23 .*/xgc) {
-        ;
-      }
+    for ($self->{source}) {
+      /\G[\x20\x09]+/gc;    # ignore whitespace
+      /\G\x23.*/gc && next; # ignore comments
+
+      last when /\G $/xgc;
 
       when (/\G \x0D? \x0A/xgc) {
         ++$self->{line};
         $token = $self->_make_token('EOL');
       }
 
-      when (/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
-        $token = $self->_make_token('table', $self->tokenize_key($1));
-      }
+      if ($newline) {
+        when (/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
+          $token = $self->_make_token('table', $self->tokenize_key($1));
+        }
 
-      when (/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
-        $token = $self->_make_token('array_table', $self->tokenize_key($1));
+        when (/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
+          $token = $self->_make_token('array_table', $self->tokenize_key($1));
+        }
       }
 
       when (/\G \[ /xgc) {
@@ -91,7 +103,7 @@ sub next_token {
       }
 
       when (/\G ($key) [\x20 \x09]* (?= =)/xgc) {
-         $token = $self->_make_token('key', $1);
+        $token = $self->_make_token('key', $1);
       }
 
       when (/\G ((?&Boolean)) $TOML/xgc) {

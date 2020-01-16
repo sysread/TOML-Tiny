@@ -4,6 +4,7 @@ use TOML::Tiny::Grammar;
 my $re = qr{ ((?&Float)) $TOML }x;
 
 my @valid = qw(
+  0.01
   +1.0
   3.1415
   -0.01

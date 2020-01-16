@@ -27,13 +27,9 @@ our $TOML = qr{
     | (?&InlineTable)
   )
 
-  (?<NLSeq> \x0D? \x0A)
-  (?<NL> (?&NLSeq) | (?&Comment))
-
-  (?<WSChar> \x20 | \x09)       # (space, tab)
-  (?<WS> (?&WSChar)*)
-
-  (?<Comment> \x23 .* (?&NLSeq)?)
+  (?<WS>   [ \x20 \x09 ]*)         # space, tab
+  (?<CRLF> \x0D? \x0A)             # cr? lf
+  (?<EOL>  (?: \x23 .*)? (?&CRLF)) # crlf or comment -> crlf
 
   #-----------------------------------------------------------------------------
   # Array of tables
@@ -42,9 +38,10 @@ our $TOML = qr{
     (?m)
     (?s)
 
-    \[\[ (?&Key) \]\] \n
+    \[\[ (?&Key) \]\] (?&EOL)
+
     (?:
-        (?: (?&KeyValuePair) (?=(?&NLSeq)) )
+        (?: (?&KeyValuePair) (?=(?&CRLF)) )
       | (?&ArrayOfTables)
       | (?&Table)
     )*
@@ -57,7 +54,7 @@ our $TOML = qr{
   # Table
   #-----------------------------------------------------------------------------
   (?<KeyValuePair> (?&Key) (?&WS) = (?&WS) (?&Value))
-  (?<KeyValuePairDecl> (?&Key) (?&WS) = (?&WS) (?&Value) (?&WS) (?&NL))
+  (?<KeyValuePairDecl> (?&Key) (?&WS) = (?&WS) (?&Value) (?&WS) (?&EOL))
 
   (?<KeyValuePairList>
       (?&KeyValuePair) (?&WS) (?: [,] (?&WS) (?&KeyValuePairList) )?
@@ -72,9 +69,7 @@ our $TOML = qr{
     }
   )
 
-  (?<TableDecl>
-    \[ (?&Key) \] \n
-  )
+  (?<TableDecl> \[ (?&Key) \] (?&EOL))
 
   (?<Table>
     (?&TableDecl)
@@ -91,7 +86,7 @@ our $TOML = qr{
     (?&WS)
     [,]
     (?&WS)
-    (?&NLSeq)?
+    (?&CRLF)?
     (?&WS)
   )
 
@@ -103,11 +98,11 @@ our $TOML = qr{
   (?<Array>
     \[
 
-    (?&WS) (?&NLSeq)? (?&WS)
+    (?&WS) (?&CRLF)? (?&WS)
 
     (?&List)
 
-    (?&WS) (?&NLSeq)? (?&WS)
+    (?&WS) (?&CRLF)? (?&WS)
 
     \]
   )
@@ -216,7 +211,7 @@ our $TOML = qr{
         [^"\\]
       | "{1,2}                # 1-2 quotation marks
       | (?&EscapeChar)        # escape
-      | (?: \\ (?&NLSeq))     # backslash-terminated line
+      | (?: \\ (?&CRLF))     # backslash-terminated line
     )*?
     """                       # closing triple-quote
   )
@@ -258,8 +253,7 @@ Exports C<$TOML>, a regex grammar for parsing TOML source.
 =head1 RULES
 
 =head2 (?&WS)
-=head2 (?&NL)
-=head2 (?&Comment)
+=head2 (?&EOL)
 
 =head2 (?&Value)
 =head3 (?&Boolean)

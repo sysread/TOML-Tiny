@@ -217,8 +217,8 @@ sub tokenize_string {
     $str = substr $toml, 3, length($toml) - 6;
     my @newlines = $str =~ /(\x0D?\x0A)/g;
     $self->{line} += scalar @newlines;
-    $str =~ s/^[\x20 \x09]* (?&NL) $TOML//x; # trim leading whitespace
-    $str =~ s/\\(?&NL)\s* $TOML//xgs;  # trim newlines from lines ending in backslash
+    $str =~ s/^[\x20 \x09]* (?&EOL) $TOML//x; # trim leading whitespace
+    $str =~ s/\\(?&EOL)\s* $TOML//xgs;        # trim newlines from lines ending in backslash
   } else {
     $str = substr($toml, 1, length($toml) - 2);
   }

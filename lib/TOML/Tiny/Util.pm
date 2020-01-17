@@ -6,7 +6,6 @@ use warnings;
 no warnings 'experimental';
 use v5.18;
 
-use Scalar::Util qw(looks_like_number);
 use TOML::Tiny::Grammar;
 
 use parent 'Exporter';

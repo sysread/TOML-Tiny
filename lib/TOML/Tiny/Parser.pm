@@ -8,7 +8,6 @@ use v5.18;
 
 use Carp;
 use Data::Dumper;
-use List::Util qw(all);
 use TOML::Tiny::Grammar;
 use TOML::Tiny::Tokenizer;
 use TOML::Tiny::Util qw(is_strict_array);

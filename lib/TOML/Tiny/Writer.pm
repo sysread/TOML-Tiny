@@ -68,18 +68,7 @@ sub to_toml {
 
           for (@table_array) {
             push @buff, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
-
-            for my $k (sort keys %$_) {
-              my $key = to_toml_key($k);
-              my $val = to_toml($_->{$k}, %param);
-
-              unless ($val) {
-                $val = '{}' if ref $_->{$k} eq 'HASH';
-                $val = '[]' if ref $_->{$k} eq 'ARRAY';
-              }
-
-              push @buff, "$key=$val";
-            }
+            push @buff, to_toml($_);
           }
 
           pop @KEYS;

@@ -52,6 +52,8 @@ sub next_token {
   my $token;
 
   state $key = qr/(?&Key) $TOML/x;
+  state $table = qr/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
+  state $array_table = qr/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
 
   while ($self->{position} < $self->{last_position} && !$token) {
     my $prev = $self->prev_token_type;
@@ -69,11 +71,11 @@ sub next_token {
       }
 
       if ($newline) {
-        when (/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
+        when (/$table/xgc) {
           $token = $self->_make_token('table', $self->tokenize_key($1));
         }
 
-        when (/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/xgc) {
+        when (/$array_table/xgc) {
           $token = $self->_make_token('array_table', $self->tokenize_key($1));
         }
       }
@@ -231,7 +233,7 @@ sub tokenize_string {
 }
 
 sub unescape_chars {
-  state %esc = (
+  state $esc = {
     '\b'   => "\x08",
     '\t'   => "\x09",
     '\n'   => "\x0A",
@@ -240,10 +242,10 @@ sub unescape_chars {
     '\"'   => "\x22",
     '\/'   => "\x2F",
     '\\\\' => "\x5C",
-  );
+  };
 
-  if (exists $esc{$_[0]}) {
-    return $esc{$_[0]};
+  if (exists $esc->{$_[0]}) {
+    return $esc->{$_[0]};
   }
 
   my $hex = hex substr($_[0], 2);

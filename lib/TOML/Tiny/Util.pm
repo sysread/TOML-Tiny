@@ -30,10 +30,10 @@ sub is_strict_array {
 
       when ('') {
         for ($value) {
-          $type = 'bool'      when /(?&Boolean)  $TOML/x;
-          $type = 'float'     when /(?&Float)    $TOML/x;
-          $type = 'integer'   when /(?&Integer)  $TOML/x;
-          $type = 'datetime'  when /(?&DateTime) $TOML/x;
+          $type = 'bool'      when /$Boolean/;
+          $type = 'float'     when /$Float/;
+          $type = 'integer'   when /$Integer/;
+          $type = 'datetime'  when /$DateTime/;
           default{ $type = 'string' };
         }
       }

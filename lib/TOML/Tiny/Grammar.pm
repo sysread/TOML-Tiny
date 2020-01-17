@@ -8,147 +8,128 @@ use v5.18;
 use parent 'Exporter';
 
 our @EXPORT = qw(
-  $TOML
+  $WS
+  $CRLF
+  $EOL
+  $Comment
+
+  $BareKey
+  $QuotedKey
+  $SimpleKey
+  $DottedKey
+  $Key
+
+  $Boolean
+
+  $Escape
+  $StringLiteral
+  $MultiLineStringLiteral
+  $BasicString
+  $MultiLineString
+  $String
+
+  $Date
+  $Time
+  $DateTime
+
+  $Hex
+  $Oct
+  $Bin
+  $Dec
+  $Integer
+
+  $Float
 );
 
-our $TOML = qr{
+our $WS      = qr/[\x20\x09]/;     # space, tab
+our $CRLF    = qr/\x0D?\x0A/;      # cr? lf
+our $Comment = qr/\x23.*/;         # #comment
+our $EOL     = qr/$Comment?$CRLF/; # crlf or comment + crlf
 
-(?(DEFINE)
-  #-----------------------------------------------------------------------------
-  # Misc
-  #-----------------------------------------------------------------------------
-  (?<WS>   [ \x20 \x09 ]*)         # space, tab
-  (?<CRLF> \x0D? \x0A)             # cr? lf
-  (?<EOL>  (?: \x23 .*)? (?&CRLF)) # crlf or comment -> crlf
-
-  #-----------------------------------------------------------------------------
-  # Key
-  #-----------------------------------------------------------------------------
-  (?<BareKey>   (?> [-_a-zA-Z0-9]+ ))
-  (?<QuotedKey> (?> (?&BasicString) | (?&StringLiteral)))
-  (?<SimpleKey> (?> (?&BareKey) | (?&QuotedKey)))
-  (?<DottedKey> (?> (?&SimpleKey) (?: \x2E (?&SimpleKey) )+))
-  (?<Key>       (?&BareKey) | (?&QuotedKey) | (?&DottedKey))
-
-  #-----------------------------------------------------------------------------
-  # Boolean
-  #-----------------------------------------------------------------------------
-  (?<Boolean> (?: \b (?:true) | (?:false) \b ))
-
-  #-----------------------------------------------------------------------------
-  # Integer
-  #-----------------------------------------------------------------------------
-  (?<DecFirstChar>  [1-9])
-  (?<DecChar>       [0-9])
-  (?<HexChar>       [0-9 a-f A-F])
-  (?<OctChar>       [0-7])
-  (?<BinChar>       [01])
-
-  (?<Zero> [-+]? 0)
-  (?<Hex> 0x (?&HexChar) (?> _? (?&HexChar) )*)
-  (?<Oct> 0o (?&OctChar) (?> _? (?&OctChar) )*)
-  (?<Bin> 0b (?&BinChar) (?> _? (?&BinChar) )*)
-  (?<Dec>
-      (?&Zero)
-    | (?> [-+]? (?&DecFirstChar) (?> _?  (?&DecChar) )* )
+our $Escape = qr{
+  \x5C                       # leading \
+  (?>
+      [\x5C"btnfr]           # escapes: \\ \" \b \t \n \f \r
+    | (?> u [_0-9a-fA-F]{4}) # unicode (4 bytes)
+    | (?> U [_0-9a-fA-F]{8}) # unicode (8 bytes)
   )
-
-  (?<Integer>
-    (?>
-        (?&Hex)
-      | (?&Oct)
-      | (?&Bin)
-      | (?&Dec)
-    )
-  )
-
-  #-----------------------------------------------------------------------------
-  # Float
-  #-----------------------------------------------------------------------------
-  (?<Exponent>      [eE] (?&Dec))
-  (?<SpecialFloat>  [-+]? (?> (?:inf) | (?:nan)))
-  (?<Fraction>      [.] (?&DecChar) (?> _? (?&DecChar) )* )
-
-  (?<Float>
-    (?>
-      (?&Dec)
-
-      (?>
-          (?> (?&Fraction) (?&Exponent)? )
-        | (?&Exponent)
-      )
-    )
-    | (?&SpecialFloat)
-  )
-
-  #-----------------------------------------------------------------------------
-  # String
-  #-----------------------------------------------------------------------------
-  (?<EscapeChar>
-    \x5C                        # leading \
-    (?>
-        [\x5C"btnfr]            # escapes: \\ \" \b \t \n \f \r
-      | (?> u [_0-9a-fA-F]{4} ) # unicode (4 bytes)
-      | (?> U [_0-9a-fA-F]{8} ) # unicode (8 bytes)
-    )
-  )
-
-  (?<StringLiteral>
-    (?> ' [^']* ')            # single quoted string (no escaped chars allowed)
-  )
-
-  (?<MultiLineStringLiteral>
-    (?>
-      '''                     # opening triple-quote
-      (?>
-          [^']
-        | '{1,2}
-      )*?
-      '''                     # closing triple-quote
-    )
-  )
-
-  (?<BasicString>
-    (?>
-      "                       # opening quote
-      (?>                     # escape sequences or any char except " or \
-          [^"\\]
-        | (?&EscapeChar)
-      )*
-      "                       # closing quote
-    )
-  )
-
-  (?<MultiLineString>
-    """                       # opening triple-quote
-    (?>
-        [^"\\]
-      | "{1,2}                # 1-2 quotation marks
-      | (?&EscapeChar)        # escape
-      | (?: \\ (?&CRLF))     # backslash-terminated line
-    )*?
-    """                       # closing triple-quote
-  )
-
-  (?<String>
-      (?&MultiLineString)     # multi-line first or first two chars match empty basic string
-    | (?&BasicString)
-    | (?&MultiLineStringLiteral) 
-    | (?&StringLiteral)
-  )
-
-  #-----------------------------------------------------------------------------
-  # Dates (RFC 3339)
-  #   1985-04-12T23:20:50.52Z
-  #-----------------------------------------------------------------------------
-  (?<Date>        \d{4}-\d{2}-\d{2} )
-  (?<Offset>      (?: [-+] \d{2}:\d{2} ) | Z )
-  (?<SimpleTime>  \d{2}:\d{2}:\d{2} (?: \. \d+ )? )
-  (?<Time>        (?&SimpleTime) (?&Offset)? )
-  (?<DateTime>    (?> (?&Date) (?> [T ] (?&Time) )? ) | (?&Time) )
-)
-
 }x;
+
+our $StringLiteral = qr/'[^']*'/; # single quoted string (no escaped chars allowed)
+
+our $MultiLineStringLiteral = qr{
+  '''                     # opening triple-quote
+  (?> [^'] | '{1,2} )*?
+  '''                     # closing triple-quote
+}x;
+
+our $BasicString = qr{
+    "                       # opening quote
+    (?>                     # escape sequences or any char except " or \
+        [^"\\]
+      | $Escape
+    )*
+    "                       # closing quote
+}x;
+
+our $MultiLineString = qr{
+  """                       # opening triple-quote
+  (?>
+      [^"\\]
+    | "{1,2}                # 1-2 quotation marks
+    | $Escape               # escape
+    | (?: \\ $CRLF)         # backslash-terminated line
+  )*?
+  """                       # closing triple-quote
+}x;
+
+our $String = qr/$MultiLineString | $BasicString | $MultiLineStringLiteral | $StringLiteral/x;
+
+our $BareKey   = qr/[-_a-zA-Z0-9]+/;
+our $QuotedKey = qr/$BasicString|$StringLiteral/;
+our $SimpleKey = qr/$BareKey|$QuotedKey/;
+our $DottedKey = qr/$SimpleKey(?:\.$SimpleKey)+/;
+our $Key       = qr/$BareKey|$QuotedKey|$DottedKey/;
+
+our $Boolean   = qr/\b(?:true)|(?:false)\b/;
+
+#-----------------------------------------------------------------------------
+# Dates (RFC 3339)
+#   1985-04-12T23:20:50.52Z
+#-----------------------------------------------------------------------------
+our $Date     = qr/\d{4}-\d{2}-\d{2}/;
+our $Offset   = qr/(?: [-+] \d{2}:\d{2} ) | Z/x;
+our $Time     = qr/\d{2}:\d{2}:\d{2} (?: \. \d+)? $Offset?/x;
+our $DateTime = qr/(?> $Date (?> [T ] $Time )?) | $Time/x;
+
+#-----------------------------------------------------------------------------
+# Integer
+#-----------------------------------------------------------------------------
+our $DecFirstChar = qr/[1-9]/;
+our $DecChar      = qr/[0-9]/;
+our $HexChar      = qr/[0-9 a-f A-F]/;
+our $OctChar      = qr/[0-7]/;
+our $BinChar      = qr/[01]/;
+
+our $Zero         = qr/[-+]? 0/x;
+our $Hex          = qr/0x $HexChar (?> _? $HexChar )*/x;
+our $Oct          = qr/0o $OctChar (?> _? $OctChar )*/x;
+our $Bin          = qr/0b $BinChar (?> _? $BinChar )*/x;
+our $Dec          = qr/$Zero | (?> [-+]? $DecFirstChar (?> _?  $DecChar )* )/x;
+our $Integer      = qr/$Hex | $Oct | $Bin | $Dec/x;
+
+#-----------------------------------------------------------------------------
+# Float
+#-----------------------------------------------------------------------------
+our $Exponent     = qr/[eE] $Dec/x;
+our $SpecialFloat = qr/[-+]? (?:inf) | (?:nan)/x;
+our $Fraction     = qr/\. $DecChar (?> _? $DecChar)*/x;
+
+our $Float = qr{
+    (?> $Dec (?> (?> $Fraction $Exponent?) | $Exponent ) )
+  | $SpecialFloat
+}x;
+
 
 1;
 
@@ -156,30 +137,49 @@ our $TOML = qr{
 
   use TOML::Tiny::Grammar;
 
-  if ($src =~ /(?&MultiLineString) $TOML/x) {
+  if ($src =~ /($MultiLineString)/) {
     ...
   }
 
 =head1 DESCRIPTION
 
-Exports C<$TOML>, a regex grammar for parsing TOML source.
+Exports various regexex for parsing TOML source.
 
-=head1 RULES
+=head1 PATTERNS
 
-=head2 White space
-=head3 (?&WS)
-=head3 (?&EOL)
+=head2 White space and ignorables
+=head3 $WS
+=head3 $CRLF
+=head3 $EOL
+=head3 $Comment
+
+=head2 Keys
+=head3 $BareKey
+=head3 $QuotedKey
+=head3 $SimpleKey
+=head3 $DottedKey
+=head3 $Key
 
 =head2 Values
-=head3 (?&Boolean)
-=head3 (?&DateTime)
-=head3 (?&Float)
-=head3 (?&Integer)
-=head3 (?&String)
+=head3 $Boolean
 
-=head2 (?&Key)
-=head3 (?&BareKey)
-=head3 (?&QuotedKey)
-=head3 (?&DottedKey)
+=head3 $Escape
+=head3 $StringLiteral
+=head3 $MultiLineStringLiteral
+=head3 $BasicString
+=head3 $MultiLineString
+=head3 $String
+
+=head3 $Date
+=head3 $Time
+=head3 $DateTime
+
+=head3 $Hex
+=head3 $Oct
+=head3 $Bin
+=head3 $Dec
+=head3 $Integer
+
+=head3 $Float
 
 =cut

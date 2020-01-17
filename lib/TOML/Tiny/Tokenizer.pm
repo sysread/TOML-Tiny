@@ -53,14 +53,9 @@ sub next_token {
   my $type;
   my $value;
 
-  state $key         = qr/(?&Key) $TOML/x;
-  state $key_set     = qr/\G ($key) [\x20 \x09]* (?= =)/x;
-  state $table       = qr/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
-  state $array_table = qr/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
-  state $string      = qr/\G ((?&String)) $TOML/x;
-  state $datetime    = qr/\G ((?&DateTime)) $TOML/x;
-  state $float       = qr/\G ((?&Float)) $TOML/x;
-  state $integer     = qr/\G ((?&Integer)) $TOML/x;
+  state $key_set     = qr/\G ($Key) $WS* (?= =)/x;
+  state $table       = qr/\G \[ $WS* ($Key) $WS* \] $WS* (?:$EOL | $)/x;
+  state $array_table = qr/\G \[\[ $WS* ($Key) $WS* \]\] $WS* (?:$EOL | $)/x;
 
   state $simple = {
     '['     => 'inline_array',
@@ -79,12 +74,12 @@ sub next_token {
     my $newline = !!($prev eq 'EOL' || $prev eq 'table' || $prev eq 'array_table');
 
     for ($self->{source}) {
-      /\G[\x20\x09]+/gc;      # ignore whitespace
-      /\G\x23.*$/mgc && next; # ignore comments
+      /\G$WS+/gc;               # ignore whitespace
+      /\G$Comment$/mgc && next;  # ignore comments
 
-      last when /\G $/xgc;
+      last when /\G$/gc;
 
-      when (/\G \x0D? \x0A/xgc) {
+      when (/\G$EOL/gc) {
         ++$self->{line};
         $type = 'EOL';
       }
@@ -111,22 +106,22 @@ sub next_token {
         $value = $1;
       }
 
-      when (/$string/xgc) {
+      when (/\G($String)/gc) {
         $type = 'string';
         $value = $1;
       }
 
-      when (/$datetime/xgc) {
+      when (/\G($DateTime)/gc) {
         $type = 'datetime';
         $value = $1;
       }
 
-      when (/$float/xgc) {
+      when (/\G($Float)/gc) {
         $type = 'float';
         $value = $1;
       }
 
-      when (/$integer/xgc) {
+      when (/\G($Integer)/gc) {
         $type = 'integer';
         $value = $1;
       }
@@ -164,16 +159,6 @@ sub pop_token {
   pop @{$self->{tokens}};
 }
 
-sub _make_token {
-  my ($self, $type, $value) = @_;
-  return {
-    type  => $type,
-    line  => $self->{line},
-    pos   => $self->{position},
-    value => $self->can("tokenize_$type") ?  $self->can("tokenize_$type")->($self, $value) : $value,
-  };
-}
-
 sub current_line {
   my $self = shift;
   my $rest = substr $self->{source}, $self->{position};
@@ -199,7 +184,7 @@ sub tokenize_key {
   my $toml = shift;
   my @keys;
 
-  while ($toml =~ s/^ ((?&SimpleKey)) [.]? $TOML//x) {
+  while ($toml =~ s/^ ($SimpleKey) [.]?//x) {
     push @keys, $1;
   }
 
@@ -230,10 +215,10 @@ sub tokenize_string {
 
   if ($ml) {
     $str = substr $toml, 3, length($toml) - 6;
-    my @newlines = $str =~ /(\x0D?\x0A)/g;
+    my @newlines = $str =~ /($CRLF)/g;
     $self->{line} += scalar @newlines;
-    $str =~ s/^[\x20 \x09]* (?&EOL) $TOML//x; # trim leading whitespace
-    $str =~ s/\\(?&EOL)\s* $TOML//xgs;        # trim newlines from lines ending in backslash
+    $str =~ s/^$WS* $EOL//x;  # trim leading whitespace
+    $str =~ s/\\$EOL\s*//xgs; # trim newlines from lines ending in backslash
   } else {
     $str = substr($toml, 1, length($toml) - 2);
   }
@@ -271,7 +256,7 @@ sub unescape_chars {
 }
 
 sub unescape_str {
-  state $re = qr/((?&EscapeChar)) $TOML/x;
+  state $re = qr/($Escape)/;
   $_[1] =~ s|$re|unescape_chars($1) // $_[0]->error(undef, "invalid unicode escape: $1")|xge;
   $_[1];
 }

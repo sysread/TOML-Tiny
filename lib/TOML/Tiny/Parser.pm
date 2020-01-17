@@ -269,16 +269,16 @@ sub parse_value {
       for (my $n = $token->{value}) {
         use bigint;
 
-        when (/(?&Oct) $TOML/x) {
+        when ($Oct) {
           $n =~ s/^0o/0/; # convert to perl's octal format
           return oct $n;
         }
 
-        when (/(?&Bin) $TOML/x) {
+        when ($Bin) {
           return oct $n;
         }
 
-        when (/(?&Hex) $TOML/x) {
+        when ($Hex) {
           return hex $n;
         }
 

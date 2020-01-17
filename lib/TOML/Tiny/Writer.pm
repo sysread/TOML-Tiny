@@ -127,7 +127,7 @@ sub to_toml {
           return $data;
         }
 
-        when (/(?&DateTime) $TOML/x) {
+        when (/$DateTime/) {
           return $data;
         }
 

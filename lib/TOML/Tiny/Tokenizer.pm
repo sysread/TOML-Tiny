@@ -51,9 +51,15 @@ sub next_token {
 
   my $token;
 
-  state $key = qr/(?&Key) $TOML/x;
-  state $table = qr/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
+  state $key         = qr/(?&Key) $TOML/x;
+  state $key_set     = qr/\G ($key) [\x20 \x09]* (?= =)/x;
+  state $table       = qr/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
   state $array_table = qr/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
+  state $bool        = qr/\G ((?&Boolean)) $TOML/x;
+  state $string      = qr/\G ((?&String)) $TOML/x;
+  state $datetime    = qr/\G ((?&DateTime)) $TOML/x;
+  state $float       = qr/\G ((?&Float)) $TOML/x;
+  state $integer     = qr/\G ((?&Integer)) $TOML/x;
 
   while ($self->{position} < $self->{last_position} && !$token) {
     my $prev = $self->prev_token_type;
@@ -104,27 +110,27 @@ sub next_token {
         $token = $self->_make_token('comma', $1);
       }
 
-      when (/\G ($key) [\x20 \x09]* (?= =)/xgc) {
+      when (/$key_set/xgc) {
         $token = $self->_make_token('key', $1);
       }
 
-      when (/\G ((?&Boolean)) $TOML/xgc) {
+      when (/$bool/xgc) {
         $token = $self->_make_token('bool', $1);
       }
 
-      when (/\G ((?&String)) $TOML/xgc) {
+      when (/$string/xgc) {
         $token = $self->_make_token('string', $1);
       }
 
-      when (/\G ((?&DateTime)) $TOML/xgc) {
+      when (/$datetime/xgc) {
         $token = $self->_make_token('datetime', $1);
       }
 
-      when (/\G ((?&Float)) $TOML/xgc) {
+      when (/$float/xgc) {
         $token = $self->_make_token('float', $1);
       }
 
-      when (/\G ((?&Integer)) $TOML/xgc) {
+      when (/$integer/xgc) {
         $token = $self->_make_token('integer', $1);
       }
 

@@ -51,7 +51,6 @@ sub encode {
 sub decode {
   my ($self, $data) = @_;
   TOML::Tiny::Writer::to_toml($data,
-    annotated     => $self->{annotated},
     strict_arrays => $self->{strict_arrays},
   );
 }
@@ -187,11 +186,6 @@ By default, C<TOML::Tiny> is flexible and supports heterogenous arrays. If you
 wish to require strictly typed arrays (for C<TOML>'s definition of "type",
 anyway), C<strict_arrays> will produce an error when encountering arrays with
 heterogenous types.
-
-=item annotated
-
-This is an internal flag to produce and expect C<JSON> compliant with
-L<BurntSushi's TOML test suite|https://github.com/BurntSushi/toml-test>.
 
 =back
 

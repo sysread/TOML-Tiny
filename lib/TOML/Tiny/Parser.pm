@@ -220,22 +220,22 @@ sub parse_array_table {
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->{type}) {
-      next TOKEN when /EOL/;
+      next TOKEN when 'EOL';
 
-      when (/key/) {
+      when ('key') {
         $self->expect_type($self->next_token, 'assign');
         $self->push_keys($token);
         $self->set_keys;
         $self->pop_keys;
       }
 
-      when (/array_table/) {
+      when ('array_table') {
         $self->pop_keys;
         @_ = ($self, $token);
         goto \&parse_array_table;
       }
 
-      when (/table/) {
+      when ('table') {
         $self->pop_keys;
         @_ = ($self, $token);
         goto \&parse_table;
@@ -260,12 +260,12 @@ sub parse_value {
   my $token = shift // $self->next_token;
 
   for ($token->{type}) {
-    when (/float/) {
+    when ('float') {
       use bignum;
       return $token->{value} + 0;
     }
 
-    when (/integer/) {
+    when ('integer') {
       for (my $n = $token->{value}) {
         use bigint;
 
@@ -288,11 +288,11 @@ sub parse_value {
       }
     }
 
-    return $token->{value} when /string/;
-    return $self->{inflate_boolean}->($token->{value}) when /bool/;
-    return $self->{inflate_datetime}->($token->{value}) when /datetime/;
-    return $self->parse_inline_table when /inline_table/;
-    return $self->parse_inline_array when /inline_array/;
+    return $token->{value} when 'string';
+    return $self->{inflate_boolean}->($token->{value}) when 'bool';
+    return $self->{inflate_datetime}->($token->{value}) when 'datetime';
+    return $self->parse_inline_table when 'inline_table';
+    return $self->parse_inline_array when 'inline_array';
 
     default{
       $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
@@ -306,9 +306,9 @@ sub parse_inline_array {
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->{type}) {
-      next TOKEN when /comma/;
-      next TOKEN when /EOL/;
-      last TOKEN when /inline_array_close/;
+      next TOKEN when 'comma';
+      next TOKEN when 'EOL';
+      last TOKEN when 'inline_array_close';
 
       default{
         push @array, $self->parse_value($token);
@@ -334,7 +334,7 @@ sub parse_inline_table {
       next TOKEN when /comma/;
       last TOKEN when /inline_table_close/;
 
-      when (/key/) {
+      when ('key') {
         $self->expect_type($self->next_token, 'assign');
         my $key = $token->{value}[0];
         $table->{ $key } = $self->parse_value;

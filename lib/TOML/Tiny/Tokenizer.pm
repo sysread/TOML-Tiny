@@ -85,12 +85,12 @@ sub next_token {
       }
 
       if ($newline) {
-        when (/$table/xgc) {
+        when (/$table/gc) {
           $type = 'table';
           $value = $self->tokenize_key($1);
         }
 
-        when (/$array_table/xgc) {
+        when (/$array_table/gc) {
           $type = 'array_table';
           $value = $self->tokenize_key($1);
         }
@@ -101,7 +101,7 @@ sub next_token {
         $type = $simple->{$value};
       }
 
-      when (/$key_set/xgc) {
+      when (/$key_set/gc) {
         $type = 'key';
         $value = $1;
       }

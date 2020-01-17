@@ -36,8 +36,9 @@ version 0.01
 =head1 DESCRIPTION
 
 C<TOML::Tiny> implements a pure-perl parser and generator for the
-L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML
-v5.0.
+L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v5
+(with a few caveats; see L</strict_arrays>) with support for more recent
+changes in pursuit of v6.
 
 C<TOML::Tiny> strives to maintain an interface compatible to the L<TOML> and
 L<TOML::Parser> modules, and could even be used to override C<$TOML::Parser>:
@@ -150,11 +151,40 @@ an array of mixed types if C<strict_arrays> was set.
 Alias for C<encode> to provide compatibility with C<TOML::Parser> when
 overriding the parser by setting C<$TOML::Parser>.
 
-=head1 DIFFERENCES FROM TOML AND TOML::Parser
+=head1 DIFFERENCES FROM L<TOML> AND L<TOML::Parser>
+
+C<TOML::Tiny> differs in a few significant ways from the L<TOML> module,
+particularly in adding support for newer C<TOML> features and strictness.
 
 L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
-tighten things up. C<TOML::Tiny> defaults to strict parsing, with the exception
-of optionally setting C<strict_arrays>.
+tighten things up. C<TOML::Tiny> defaults to (somehwat) stricter parsing, with
+the exception of permitting heterogenous arrays (illegal in v4 and v5, but
+permissible in the upcoming v6); optional enforcement of homogenous arrays is
+supported with C<strict_arrays>.
+
+C<TOML::Tiny> ignores invalid surrogate pairs within basic and multiline
+strings (L<TOML> may attempt to decode an invalid pair). Additionally, only
+those character escapes officially supported by TOML are interpreted as such by
+C<TOML::Tiny>.
+
+C<TOML::Tiny> supports stripping initial whitespace and handles lines
+terminating with a backslash correctly in multilne strings:
+
+  # TOML input
+  x="""
+  foo"""
+
+  y="""\
+     how now \
+       brown \
+  bureaucrat.\
+  """
+
+  # Perl output
+  {x => 'foo', y => 'how now brown bureaucrat.'}
+
+C<TOML::Tiny> includes support for integers specified in binary, octal or hex
+as well as the special float values C<inf> and C<nan>.
 
 =head1 ACKNOWLEDGEMENTS
 

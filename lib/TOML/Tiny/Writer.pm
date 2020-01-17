@@ -17,11 +17,6 @@ my @KEYS;
 sub to_toml {
   my $data = shift;
   my %param = @_;
-
-  if ($param{annotated} && caller ne 'TOML:Tiny::Writer') {
-    $data = deannotate($data);
-  }
-
   my @buff;
 
   for (ref $data) {
@@ -181,58 +176,6 @@ sub to_toml_string {
   $arg =~ s/([\x00-\x08\x0b\x0e-\x1f])/'\\u00' . unpack('H2', $1)/eg;
 
   return '"' . $arg . '"';
-}
-
-sub deannotate {
-  my $data = shift;
-
-  for (ref $data) {
-    when ('HASH') {
-      if (exists $data->{type} && exists $data->{value} && keys(%$data) == 2) {
-        for ($data->{type}) {
-          when ('bool') {
-            my $bool = !!($data->{value} eq 'true');
-            return bless \$bool, 'JSON::PP::Boolean';
-          }
-
-          when ('integer') {
-            return Math::BigInt->new($data->{value});
-          }
-
-          when ('float') {
-            # Math::BigFloat's constructor will return a Math::BigInt for
-            # non-fractional values. This works around that to force a
-            # BigFloat.
-            return Math::BigFloat->bzero + Math::BigFloat->new($data->{value});
-          }
-
-          when ('datetime') {
-            return DateTime::Format::RFC3339->parse_datetime($data->{value});
-          }
-
-          when ('array') {
-            return [ map{ deannotate($_) } @{$data->{value}} ];
-          }
-
-          default{
-            return $data->{value};
-          }
-        }
-      }
-
-      my %object;
-      $object{$_} = deannotate($data->{$_}) for keys %$data;
-      return \%object;
-    }
-
-    when ('ARRAY') {
-      return [ map{ deannotate($_) } @$data ];
-    }
-
-    default{
-      return $data;
-    }
-  }
 }
 
 1;

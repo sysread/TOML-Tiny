@@ -28,7 +28,6 @@ sub new {
     inflate_datetime => $param{inflate_datetime} || sub{ shift },
     inflate_boolean  => $param{inflate_boolean}  || sub{ shift eq 'true' ? $TRUE : $FALSE },
     strict_arrays    => $param{strict_arrays},
-    annotated        => $param{annotated},
   }, $class;
 }
 
@@ -52,14 +51,13 @@ sub parse {
   delete $self->{root};
   delete $self->{tables};
 
-  return annotate($result) if $self->{annotated};
   return $result;
 }
 
 sub parse_error {
   my ($self, $token, $msg) = @_;
   my $line = $token ? $token->{line} : 'EOF';
-  if ($self->{annotated} || $ENV{TOML_TINY_DEBUG}) {
+  if ($ENV{TOML_TINY_DEBUG}) {
     my $root = Dumper($self->{root});
     my $tok  = Dumper($token);
     my $src  = substr $self->{tokenizer}{source}, $self->{tokenizer}{position}, 30;
@@ -264,37 +262,29 @@ sub parse_value {
 
   for ($token->{type}) {
     when (/float/) {
-      if ($self->{annotated}) {
-        return $token->{value};
-      } else {
-        use bignum;
-        return $token->{value} + 0;
-      }
+      use bignum;
+      return $token->{value} + 0;
     }
 
     when (/integer/) {
-      if ($self->{annotated}) {
-        return $token->{value};
-      } else {
-        for (my $n = $token->{value}) {
-          use bigint;
+      for (my $n = $token->{value}) {
+        use bigint;
 
-          when (/(?&Oct) $TOML/x) {
-            $n =~ s/^0o/0/; # convert to perl's octal format
-            return oct $n;
-          }
+        when (/(?&Oct) $TOML/x) {
+          $n =~ s/^0o/0/; # convert to perl's octal format
+          return oct $n;
+        }
 
-          when (/(?&Bin) $TOML/x) {
-            return oct $n;
-          }
+        when (/(?&Bin) $TOML/x) {
+          return oct $n;
+        }
 
-          when (/(?&Hex) $TOML/x) {
-            return hex $n;
-          }
+        when (/(?&Hex) $TOML/x) {
+          return hex $n;
+        }
 
-          default{
-            return $n + 0;
-          }
+        default{
+          return $n + 0;
         }
       }
     }
@@ -358,59 +348,6 @@ sub parse_inline_table {
   }
 
   return $table;
-}
-
-sub annotate {
-  my $value = shift;
-
-  for (ref $value) {
-    when ('HASH') {
-      $value->{$_} = annotate($value->{$_})
-        for keys %$value;
-
-      return $value;
-    }
-
-    when ('ARRAY') {
-      my $is_table_array = @$value == 0 || grep{ ref($_) ne 'HASH' } @$value;
-
-      $value->[$_] = annotate($value->[$_])
-        for 0..(scalar(@$value) - 1);
-
-      if ($is_table_array) {
-        return {type => 'array', value => $value};
-      } else {
-        return $value;
-      }
-    }
-
-    when ('JSON::PP::Boolean') {
-      return {type => 'bool', value => $value ? 'true' : 'false'};
-    }
-
-    default{
-      if ($value =~ /^(true|false)$/) {
-        return {type => 'bool', value => $value};
-      }
-
-      if ($value =~ /^(?&Float)$ $TOML/x) {
-        return {type => 'float', value => $value};
-      }
-
-      if ($value =~ /^(?&Integer)$ $TOML/x) {
-        return {type => 'integer', value => $value};
-      }
-
-      if ($value =~ /^(?&DateTime)$ $TOML/x) {
-        return {type => 'datetime', value => $value};
-      }
-
-      return {
-        type  => 'string',
-        value => $value,
-      };
-    }
-  }
 }
 
 1;

@@ -137,7 +137,7 @@ our $Float = qr{
 
   use TOML::Tiny::Grammar;
 
-  if ($src =~ /($MultiLineString)/) {
+  if ($src =~ /$MultiLineString/) {
     ...
   }
 

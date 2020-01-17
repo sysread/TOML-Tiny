@@ -26,52 +26,56 @@ sub to_toml {
 
   for (ref $data) {
     when ('HASH') {
-      for my $k (grep{ ref($data->{$_}) !~ /HASH|ARRAY/ } sort keys %$data) {
-        my $key = to_toml_key($k);
-        my $val = to_toml($data->{$k}, %param);
-        push @buff, "$key=$val";
-      }
-
-      for my $k (grep{ ref $data->{$_} eq 'ARRAY' } sort keys %$data) {
-        my @inline;
-        my @table_array;
-
-        for my $v (@{$data->{$k}}) {
-          if (ref $v eq 'HASH') {
-            push @table_array, $v;
-          } else {
-            push @inline, $v;
-          }
-        }
-
-        if (@inline) {
+      if (!keys(%$data)) {
+        push @buff, '{}';
+      } else {
+        for my $k (grep{ ref($data->{$_}) !~ /HASH|ARRAY/ } sort keys %$data) {
           my $key = to_toml_key($k);
-          my $val = to_toml(\@inline, %param);
+          my $val = to_toml($data->{$k}, %param);
           push @buff, "$key=$val";
         }
 
-        if (@table_array) {
-          push @KEYS, $k;
+        for my $k (grep{ ref $data->{$_} eq 'ARRAY' } sort keys %$data) {
+          my @inline;
+          my @table_array;
 
-          for (@table_array) {
-            push @buff, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
-
-            for my $k (sort keys %$_) {
-              my $key = to_toml_key($k);
-              my $val = to_toml($_->{$k}, %param);
-              push @buff, "$key=$val";
+          for my $v (@{$data->{$k}}) {
+            if (ref $v eq 'HASH') {
+              push @table_array, $v;
+            } else {
+              push @inline, $v;
             }
           }
 
+          if (@inline) {
+            my $key = to_toml_key($k);
+            my $val = to_toml(\@inline, %param);
+            push @buff, "$key=$val";
+          }
+
+          if (@table_array) {
+            push @KEYS, $k;
+
+            for (@table_array) {
+              push @buff, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
+
+              for my $k (sort keys %$_) {
+                my $key = to_toml_key($k);
+                my $val = to_toml($_->{$k}, %param);
+                push @buff, "$key=$val";
+              }
+            }
+
+            pop @KEYS;
+          }
+        }
+
+        for my $k (grep{ ref $data->{$_} eq 'HASH' } sort keys %$data) {
+          push @KEYS, $k;
+          push @buff, '', '[' . join('.', map{ to_toml_key($_) } @KEYS) . ']';
+          push @buff, to_toml($data->{$k}, %param);
           pop @KEYS;
         }
-      }
-
-      for my $k (grep{ ref $data->{$_} eq 'HASH' } sort keys %$data) {
-        push @KEYS, $k;
-        push @buff, '', '[' . join('.', map{ to_toml_key($_) } @KEYS) . ']';
-        push @buff, to_toml($data->{$k}, %param);
-        pop @KEYS;
       }
     }
 

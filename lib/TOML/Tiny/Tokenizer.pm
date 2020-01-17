@@ -40,7 +40,7 @@ sub next_token {
       && $self->{position} < $self->{last_position};
 
   if (!@{ $self->{tokens} }) {
-    my $root = $self->_make_token('table', []);
+    my $root = {type => 'table', pos => 0, line => 1, value => []};
     $self->push_token($root);
     return $root;
   }
@@ -50,97 +50,104 @@ sub next_token {
   pos($self->{source}) = $self->{position};
 
   my $token;
+  my $type;
+  my $value;
 
   state $key         = qr/(?&Key) $TOML/x;
   state $key_set     = qr/\G ($key) [\x20 \x09]* (?= =)/x;
   state $table       = qr/\G \[ [\x20 \x09]* ($key) [\x20 \x09]* \] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
   state $array_table = qr/\G \[\[ [\x20 \x09]* ($key) [\x20 \x09]* \]\] [\x20 \x09]* (?= (:? \x23 .* )? (?: \x0D? \x0A) | $ )/x;
-  state $bool        = qr/\G ((?&Boolean)) $TOML/x;
   state $string      = qr/\G ((?&String)) $TOML/x;
   state $datetime    = qr/\G ((?&DateTime)) $TOML/x;
   state $float       = qr/\G ((?&Float)) $TOML/x;
   state $integer     = qr/\G ((?&Integer)) $TOML/x;
 
-  while ($self->{position} < $self->{last_position} && !$token) {
+  state $simple = {
+    '['     => 'inline_array',
+    ']'     => 'inline_array_close',
+    '{'     => 'inline_table',
+    '}'     => 'inline_table_close',
+    ','     => 'comma',
+    '='     => 'assign',
+    'true'  => 'bool',
+    'false' => 'bool',
+  };
+
+  # More complex matches with regexps
+  while ($self->{position} < $self->{last_position} && !defined($type)) {
     my $prev = $self->prev_token_type;
     my $newline = !!($prev eq 'EOL' || $prev eq 'table' || $prev eq 'array_table');
 
     for ($self->{source}) {
-      /\G[\x20\x09]+/gc;    # ignore whitespace
-      /\G\x23.*/gc && next; # ignore comments
+      /\G[\x20\x09]+/gc;      # ignore whitespace
+      /\G\x23.*$/mgc && next; # ignore comments
 
       last when /\G $/xgc;
 
       when (/\G \x0D? \x0A/xgc) {
         ++$self->{line};
-        $token = $self->_make_token('EOL');
+        $type = 'EOL';
       }
 
       if ($newline) {
         when (/$table/xgc) {
-          $token = $self->_make_token('table', $self->tokenize_key($1));
+          $type = 'table';
+          $value = $self->tokenize_key($1);
         }
 
         when (/$array_table/xgc) {
-          $token = $self->_make_token('array_table', $self->tokenize_key($1));
+          $type = 'array_table';
+          $value = $self->tokenize_key($1);
         }
       }
 
-      when (/\G \[ /xgc) {
-        $token = $self->_make_token('inline_array', $1);
-      }
-
-      when (/\G \] /xgc) {
-        $token = $self->_make_token('inline_array_close', $1);
-      }
-
-      when (/\G \{ /xgc) {
-        $token = $self->_make_token('inline_table', $1);
-      }
-
-      when (/\G \} /xgc) {
-        $token = $self->_make_token('inline_table_close', $1);
-      }
-
-      when (/\G = /xgc) {
-        $token = $self->_make_token('assign', $1);
-      }
-
-      when (/\G , /xgc) {
-        $token = $self->_make_token('comma', $1);
+      when (/\G ( [\[\]{}=,] | true | false )/xgc) {
+        $value = $1;
+        $type = $simple->{$value};
       }
 
       when (/$key_set/xgc) {
-        $token = $self->_make_token('key', $1);
-      }
-
-      when (/$bool/xgc) {
-        $token = $self->_make_token('bool', $1);
+        $type = 'key';
+        $value = $1;
       }
 
       when (/$string/xgc) {
-        $token = $self->_make_token('string', $1);
+        $type = 'string';
+        $value = $1;
       }
 
       when (/$datetime/xgc) {
-        $token = $self->_make_token('datetime', $1);
+        $type = 'datetime';
+        $value = $1;
       }
 
       when (/$float/xgc) {
-        $token = $self->_make_token('float', $1);
+        $type = 'float';
+        $value = $1;
       }
 
       when (/$integer/xgc) {
-        $token = $self->_make_token('integer', $1);
+        $type = 'integer';
+        $value = $1;
       }
 
       default{
         my $substr = substr($self->{source}, $self->{position}, 30) // 'undef';
-        die "toml syntax error on line $self->{line}\n\t--> $substr\n";
+        die "toml syntax error on line $self->{line}\n\t-->|$substr|\n";
       }
     }
 
-    $self->push_token($token);
+    if ($type) {
+      $token = {
+        line  => $self->{line},
+        pos   => $self->{pos},
+        type  => $type,
+        value => $self->can("tokenize_$type") ? $self->can("tokenize_$type")->($self, $value) : $value,
+      };
+
+      $self->push_token($token);
+    }
+
     $self->update_position;
   }
 

@@ -17,20 +17,10 @@ sub new {
     last_position => length $param{source},
     position      => 0,
     line          => 1,
-    tokens        => [],
+    last_token    => undef,
   }, $class;
 
   return $self;
-}
-
-sub prev_token_type {
-  my $self = shift;
-
-  if (@{$self->{tokens}}) {
-    return $self->{tokens}[-1]{type} // 'EOL';
-  }
-
-  return 'EOL';
 }
 
 sub next_token {
@@ -39,10 +29,8 @@ sub next_token {
   return unless defined $self->{source}
       && $self->{position} < $self->{last_position};
 
-  if (!@{ $self->{tokens} }) {
-    my $root = {type => 'table', pos => 0, line => 1, value => []};
-    $self->push_token($root);
-    return $root;
+  if (!$self->{last_token}) {
+    return $self->{last_token} = {type => 'table', pos => 0, line => 1, value => []};
   }
 
   # Update the regex engine's position marker in case some other regex
@@ -70,7 +58,7 @@ sub next_token {
 
   # More complex matches with regexps
   while ($self->{position} < $self->{last_position} && !defined($type)) {
-    my $prev = $self->prev_token_type;
+    my $prev = $self->{last_token} ? $self->{last_token}{type} : 'EOL';
     my $newline = !!($prev eq 'EOL' || $prev eq 'table' || $prev eq 'array_table');
 
     for ($self->{source}) {
@@ -133,30 +121,18 @@ sub next_token {
     }
 
     if ($type) {
-      $token = {
+      $token = $self->{last_token} = {
         line  => $self->{line},
         pos   => $self->{pos},
         type  => $type,
         value => $self->can("tokenize_$type") ? $self->can("tokenize_$type")->($self, $value) : $value,
       };
-
-      $self->push_token($token);
     }
 
     $self->update_position;
   }
 
   return $token;
-}
-
-sub push_token {
-  my $self = shift;
-  @_ && push @{$self->{tokens}}, @_;
-}
-
-sub pop_token {
-  my $self = shift;
-  pop @{$self->{tokens}};
 }
 
 sub current_line {

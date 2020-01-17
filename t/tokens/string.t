@@ -11,7 +11,6 @@ sub test_simple_matches {
 }
 
 subtest 'string group' => sub{
-  use Regexp::Debugger;
   my $re = qr{ ((?&String)) $TOML }x;
 
   test_simple_matches($re,

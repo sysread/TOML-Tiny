@@ -26,51 +26,74 @@ sub to_toml {
 
   for (ref $data) {
     when ('HASH') {
-      if (!keys(%$data)) {
-        push @buff, '{}';
-      } else {
-        for my $k (grep{ ref($data->{$_}) !~ /HASH|ARRAY/ } sort keys %$data) {
+      # Generate simple key/value pairs for scalar data
+      for my $k (grep{ ref($data->{$_}) !~ /HASH|ARRAY/ } sort keys %$data) {
+        my $key = to_toml_key($k);
+        my $val = to_toml($data->{$k}, %param);
+        push @buff, "$key=$val";
+      }
+
+      # For values which are arrays, generate inline arrays for non-table
+      # values, array-of-tables for table values.
+      ARRAY: for my $k (grep{ ref $data->{$_} eq 'ARRAY' } sort keys %$data) {
+        # Empty table
+        if (!@{$data->{$k}}) {
           my $key = to_toml_key($k);
-          my $val = to_toml($data->{$k}, %param);
+          push @buff, "$key=[]";
+          next ARRAY;
+        }
+
+        my @inline;
+        my @table_array;
+
+        # Sort table and non-table values into separate containers
+        for my $v (@{$data->{$k}}) {
+          if (ref $v eq 'HASH') {
+            push @table_array, $v;
+          } else {
+            push @inline, $v;
+          }
+        }
+
+        # Non-table values become an inline table
+        if (@inline) {
+          my $key = to_toml_key($k);
+          my $val = to_toml(\@inline, %param);
           push @buff, "$key=$val";
         }
 
-        for my $k (grep{ ref $data->{$_} eq 'ARRAY' } sort keys %$data) {
-          my @inline;
-          my @table_array;
+        # Table values become an array-of-tables
+        if (@table_array) {
+          push @KEYS, $k;
 
-          for my $v (@{$data->{$k}}) {
-            if (ref $v eq 'HASH') {
-              push @table_array, $v;
-            } else {
-              push @inline, $v;
-            }
-          }
+          for (@table_array) {
+            push @buff, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
 
-          if (@inline) {
-            my $key = to_toml_key($k);
-            my $val = to_toml(\@inline, %param);
-            push @buff, "$key=$val";
-          }
+            for my $k (sort keys %$_) {
+              my $key = to_toml_key($k);
+              my $val = to_toml($_->{$k}, %param);
 
-          if (@table_array) {
-            push @KEYS, $k;
-
-            for (@table_array) {
-              push @buff, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
-
-              for my $k (sort keys %$_) {
-                my $key = to_toml_key($k);
-                my $val = to_toml($_->{$k}, %param);
-                push @buff, "$key=$val";
+              unless ($val) {
+                $val = '{}' if ref $_->{$k} eq 'HASH';
+                $val = '[]' if ref $_->{$k} eq 'ARRAY';
               }
+
+              push @buff, "$key=$val";
             }
-
-            pop @KEYS;
           }
-        }
 
-        for my $k (grep{ ref $data->{$_} eq 'HASH' } sort keys %$data) {
+          pop @KEYS;
+        }
+      }
+
+      # Sub-tables
+      for my $k (grep{ ref $data->{$_} eq 'HASH' } sort keys %$data) {
+        if (!keys(%{$data->{$k}})) {
+          # Empty table
+          my $key = to_toml_key($k);
+          push @buff, "$key={}";
+        } else {
+          # Generate [table]
           push @KEYS, $k;
           push @buff, '', '[' . join('.', map{ to_toml_key($_) } @KEYS) . ']';
           push @buff, to_toml($data->{$k}, %param);

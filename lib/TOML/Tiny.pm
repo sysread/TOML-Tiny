@@ -126,6 +126,13 @@ errors will result in returning two values, C<undef> and an error message.
 
   my ($result, $error) = from_toml($toml_string);
 
+Homogenous array strictures are enabled by passing C<strict_arrays>:
+
+  # Croaks
+  my $result = from_toml(q{mixed=[1, 2, "three"]})
+
+Additional arguments may be passed after the toml source string; see L</new>.
+
 =head2 to_toml
 
 Encodes a hash ref as a C<TOML>-formatted string.
@@ -135,6 +142,10 @@ Encodes a hash ref as a C<TOML>-formatted string.
   # [foo]
   # bar="bat"
 
+Homogenous array strictures are enabled by passing C<strict_arrays>:
+
+  # Croaks
+  my $toml = to_toml({mixed => [1, 2, "three"]}, strict_arrays => 1);
 
 =head1 OBJECT API
 

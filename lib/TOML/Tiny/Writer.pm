@@ -157,7 +157,11 @@ sub to_toml_key {
     return $str;
   }
 
-  return qq{"$str"};
+  if ($str =~ /^"/) {
+    return qq{'$str'};
+  } else {
+    return qq{"$str"};
+  }
 }
 
 sub to_toml_string {

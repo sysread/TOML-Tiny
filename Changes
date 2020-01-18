@@ -1,4 +1,6 @@
 {{$NEXT}}
+-Remove automatic inflation of numerical types using Math::Big(Int|Float);
+ this may now be done with inflate_integer and inflate_float
 
 0.02 2020-01-17
 -Add MANIFEST.SKIP to prevent dzil from including author scripts

@@ -187,6 +187,32 @@ If you wish to override this, you can provide your own routine to generate value
     },
   );
 
+=item inflate_integer
+
+TOML integers are 64 bit and may not match the size of the compiled perl's
+internal integer type. By default, integers are left as-is as perl strings
+which may be upgraded as needed by the caller.
+
+  my $parser = TOML::Tiny->new(
+    inflate_integer => sub{
+      use bignum;
+      return 0 + shift;
+    }
+  );
+
+=item inflate_float
+
+TOML floats are 64 bit and may not match the size of the compiled perl's
+internal float type. By default, integers are left as-is as perl strings which
+may be upgraded as needed by the caller.
+
+  my $parser = TOML::Tiny->new(
+    inflate_float => sub{
+      use bignum;
+      return 0 + shift;
+    }
+  );
+
 =item strict_arrays
 
 C<TOML v5> specified homogenous arrays. This has since been removed and will no

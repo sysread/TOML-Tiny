@@ -7,7 +7,6 @@ use v5.18;
 
 use Data::Dumper;
 use DateTime::Format::RFC3339;
-use Math::BigFloat;
 use Scalar::Util qw(looks_like_number);
 use TOML::Tiny::Grammar;
 use TOML::Tiny::Util qw(is_strict_array);

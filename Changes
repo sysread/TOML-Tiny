@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.03 2020-01-18
 -Remove automatic inflation of numerical types using Math::Big(Int|Float);
  this may now be done with inflate_integer and inflate_float
 

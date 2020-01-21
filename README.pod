@@ -195,6 +195,9 @@ the exception of permitting heterogenous arrays (illegal in v4 and v5, but
 permissible in the upcoming v6); optional enforcement of homogenous arrays is
 supported with C<strict_arrays>.
 
+C<TOML::Tiny> supports a number of options which do not exist in L<TOML>:
+L</inflate_integer>, L</inflate_float>, and L</strict_arrays>.
+
 C<TOML::Tiny> ignores invalid surrogate pairs within basic and multiline
 strings (L<TOML> may attempt to decode an invalid pair). Additionally, only
 those character escapes officially supported by TOML are interpreted as such by

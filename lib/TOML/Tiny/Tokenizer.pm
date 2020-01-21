@@ -121,11 +121,14 @@ sub next_token {
     }
 
     if ($type) {
+      state $tokenizers = {};
+      my $tokenize = $tokenizers->{$type} //= $self->can("tokenize_$type") || 0;
+
       $token = $self->{last_token} = {
         line  => $self->{line},
         pos   => $self->{pos},
         type  => $type,
-        value => $self->can("tokenize_$type") ? $self->can("tokenize_$type")->($self, $value) : $value,
+        value => $tokenize ? $tokenize->($self, $value) : $value,
       };
     }
 
@@ -158,11 +161,7 @@ sub error {
 sub tokenize_key {
   my $self = shift;
   my $toml = shift;
-  my @keys;
-
-  while ($toml =~ s/^ ($SimpleKey) [.]?//x) {
-    push @keys, $1;
-  }
+  my @keys = $toml =~ /($SimpleKey)\.?/g;
 
   for (@keys) {
     s/^["']//;
@@ -185,8 +184,9 @@ sub tokenize_integer {
 sub tokenize_string {
   my $self = shift;
   my $toml = shift;
-  my $ml   = $toml =~ /^(?:''')|(?:""")/;
-  my $lit  = $toml =~ /^'/;
+  my $ml   = index($toml, q{'''}) == 0
+          || index($toml, q{"""}) == 0;
+  my $lit  = index($toml, q{'}) == 0;
   my $str  = '';
 
   if ($ml) {
@@ -203,7 +203,7 @@ sub tokenize_string {
     $str = $self->unescape_str($str);
   }
 
-  return ''.$str;
+  return $str;
 }
 
 sub unescape_chars {

@@ -1,4 +1,5 @@
 {{$NEXT}}
+-Performance improvements in TOML::Tiny::Tokenizer->next_token
 
 0.05 2020-01-21
 -POD fixes for TOML::Tiny::Grammar

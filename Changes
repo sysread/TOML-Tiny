@@ -1,4 +1,6 @@
 {{$NEXT}}
+-Remove superfluous dependency on DateTime::Format::RFC3339, which was only
+ needed for unit tests
 
 0.03 2020-01-18
 -Remove automatic inflation of numerical types using Math::Big(Int|Float);

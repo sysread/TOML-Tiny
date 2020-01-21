@@ -26,7 +26,6 @@ sub new {
   bless{
     inflate_integer  => $param{inflate_integer}  || sub{ shift },
     inflate_float    => $param{inflate_float}    || sub{ shift },
-    inflate_number   => $param{inflate_number}   || sub{ shift },
     inflate_datetime => $param{inflate_datetime} || sub{ shift },
     inflate_boolean  => $param{inflate_boolean}  || sub{ shift eq 'true' ? $TRUE : $FALSE },
     strict_arrays    => $param{strict_arrays},

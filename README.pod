@@ -8,7 +8,7 @@ TOML::Tiny - a minimal, pure perl TOML parser and serializer
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 
@@ -218,6 +218,16 @@ terminating with a backslash correctly in multilne strings:
 
 C<TOML::Tiny> includes support for integers specified in binary, octal or hex
 as well as the special float values C<inf> and C<nan>.
+
+=head1 SEE ALSO
+
+=over
+
+=item L<TOML::Tiny::Grammar>
+
+Regexp scraps used by C<TOML::Tiny> to parse TOML source.
+
+=back
 
 =head1 ACKNOWLEDGEMENTS
 

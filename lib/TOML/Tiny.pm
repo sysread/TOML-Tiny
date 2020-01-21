@@ -276,6 +276,16 @@ terminating with a backslash correctly in multilne strings:
 C<TOML::Tiny> includes support for integers specified in binary, octal or hex
 as well as the special float values C<inf> and C<nan>.
 
+=head1 SEE ALSO
+
+=over
+
+=item L<TOML::Tiny::Grammar>
+
+Regexp scraps used by C<TOML::Tiny> to parse TOML source.
+
+=back
+
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to L<ZipRecruiter|https://www.ziprecruiter.com> for encouraging their

@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.06 2020-03-30
 -Performance improvements in TOML::Tiny::Tokenizer->next_token
 -Fix totally broken OO interface (thanks noctux)
 

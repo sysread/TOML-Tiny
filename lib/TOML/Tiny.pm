@@ -43,12 +43,12 @@ sub new {
   bless{ %param, parser => TOML::Tiny::Parser->new(%param) }, $class;
 }
 
-sub encode {
+sub decode {
   my ($self, $source) = @_;
-  $self->{parser}->parse;
+  $self->{parser}->parse($source);
 }
 
-sub decode {
+sub encode {
   my ($self, $data) = @_;
   TOML::Tiny::Writer::to_toml($data,
     strict_arrays => $self->{strict_arrays},
@@ -59,7 +59,7 @@ sub decode {
 # For compatibility with TOML::from_toml's use of $TOML::Parser
 #-------------------------------------------------------------------------------
 sub parse {
-  goto \&encode;
+  goto \&decode;
 }
 
 1;
@@ -237,7 +237,7 @@ an array of mixed types if C<strict_arrays> was set.
 
 =head2 parse
 
-Alias for C<encode> to provide compatibility with C<TOML::Parser> when
+Alias for C<decode> to provide compatibility with C<TOML::Parser> when
 overriding the parser by setting C<$TOML::Parser>.
 
 

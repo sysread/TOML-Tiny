@@ -181,7 +181,7 @@ an array of mixed types if C<strict_arrays> was set.
 
 =head2 parse
 
-Alias for C<encode> to provide compatibility with C<TOML::Parser> when
+Alias for C<decode> to provide compatibility with C<TOML::Parser> when
 overriding the parser by setting C<$TOML::Parser>.
 
 =head1 DIFFERENCES FROM L<TOML> AND L<TOML::Parser>

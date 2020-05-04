@@ -191,8 +191,9 @@ If you wish to override this, you can provide your own routine to generate value
 =item inflate_integer
 
 TOML integers are 64 bit and may not match the size of the compiled perl's
-internal integer type. By default, integers are left as-is as perl strings
-which may be upgraded as needed by the caller.
+internal integer type. By default, integers other than smallish
+decimal integers are left as-is as perl strings which may be upgraded
+as needed by the caller.
 
   my $parser = TOML::Tiny->new(
     inflate_integer => sub{

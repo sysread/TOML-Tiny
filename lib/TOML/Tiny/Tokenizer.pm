@@ -178,7 +178,7 @@ sub tokenize_float {
 
 sub tokenize_integer {
   $_[1] =~ tr/_+//d;
-  $_[1];
+  $_[1] !~ m/^0[xob]/ && $_[1] + 0 eq $_[0] ? $_[1] + 0 : "$_[1]"
 }
 
 sub tokenize_string {

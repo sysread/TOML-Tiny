@@ -1,6 +1,7 @@
 
 package TOML::Tiny::Faithful;
 use parent TOML::Tiny;
+use DateTime::Format::ISO8601;
 use DateTime::Format::RFC3339;
 
 use DateTime;
@@ -13,7 +14,8 @@ our @EXPORT = qw(
 
 sub _options {
   inflate_datetime => sub {
-    DateTime::Format::RFC3339->parse_datetime(shift);
+    # RFC3339 bombs out if there is no timezone, so we parse with 8601
+    DateTime::Format::ISO8601->parse_datetime(shift)
   },
   inflate_integer => sub { 
     use bignum;

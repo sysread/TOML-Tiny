@@ -28,6 +28,8 @@ boolf=false
 boolt=true
 boolfs="false"
 boolts="true"
+dtlocal=1979-05-27T00:32:00.643144312
+dtlocals="1979-05-27T00:32:00.643144312"
 };
 
 sub norm ($) {

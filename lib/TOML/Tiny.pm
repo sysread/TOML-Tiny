@@ -52,6 +52,7 @@ sub encode {
   my ($self, $data) = @_;
   TOML::Tiny::Writer::to_toml($data,
     strict_arrays => $self->{strict_arrays},
+    datetime_formatter => $self->{datetime_formatter},
     no_string_guessing => $self->{no_string_guessing},
   );
 }
@@ -240,6 +241,16 @@ Dates and times which weren't built with DateTime come out as strings.
 
 Specifying C<inflate_float>, C<inflate_integer>, and
 C<inflate_datetime> is likely to be helpful with this option.
+
+=item datetime_formatter
+
+When encoding a DateTime object, by default C<TOML::Tiny> will use the
+default formatter.  This is not right for TOML which requires RFC3339.
+If you have C<DateTime::Format::RFC3339> available, use this instead:
+
+  my $parser = TOML::Tiny->new(
+    datetime_formatter => DateTime::Format::RFC3339->new(),
+  );
 
 =back
 

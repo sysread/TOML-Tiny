@@ -110,7 +110,8 @@ sub to_toml {
     }
 
     when (/DateTime/) {
-      return $data->stringify;
+      my $formatter = $param{datetime_formatter};
+      return $formatter ? $formatter->format_datetime($data) : "$data";
     }
 
     when ('Math::BigInt') {

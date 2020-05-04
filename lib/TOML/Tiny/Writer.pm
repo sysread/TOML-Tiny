@@ -12,6 +12,8 @@ use TOML::Tiny::Util qw(is_strict_array);
 
 my @KEYS;
 
+use B qw( svref_2object SVf_IOK SVf_NOK );
+
 sub to_toml {
   my $data = shift;
   my %param = @_;
@@ -117,6 +119,20 @@ sub to_toml {
 
     when ('Math::BigFloat') {
       return $data->bnstr;
+    }
+
+    when (!! $param{no_string_guessing}) {
+      # Thanks to ikegami on Stack Overflow for the trick!
+      # https://stackoverflow.com/questions/12686335/how-to-tell-apart-numeric-scalars-and-string-scalars-in-perl/12693984#12693984
+
+      my $sv = svref_2object(\$data);
+      my $svflags = $sv->FLAGS;
+
+      if ($svflags & (SVf_IOK | SVf_NOK)) {
+	return $data;
+      } else {
+	return to_toml_string($data);
+      }
     }
 
     when ('') {

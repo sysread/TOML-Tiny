@@ -52,6 +52,7 @@ sub encode {
   my ($self, $data) = @_;
   TOML::Tiny::Writer::to_toml($data,
     strict_arrays => $self->{strict_arrays},
+    no_string_guessing => $self->{no_string_guessing},
   );
 }
 
@@ -223,6 +224,21 @@ By default, C<TOML::Tiny> is flexible and supports heterogenous arrays. If you
 wish to require strictly typed arrays (for C<TOML>'s definition of "type",
 anyway), C<strict_arrays> will produce an error when encountering arrays with
 heterogenous types.
+
+=item no_string_guessing
+
+When encoding a Perl scalar it is not always clear what the TOML type
+of the value is supposed to be.  By default, C<TOML::Tiny> will, for
+unblessed scalars, guess based on the scalar's appearance.  Strings
+that look like numbers, or like datetimes, will be encoded as such.
+
+With no_string_guessing, C<TOML::Tiny> will look at the perl innards
+to find the currently stored value type.  If it is a number, the
+scalar will be encoded as a number.  If it's a string, as a string.
+Dates and times which weren't built with DateTime come out as strings.
+
+Specifying C<inflate_float>, C<inflate_integer>, and
+C<inflate_datetime> is likely to be helpful with this option.
 
 =back
 

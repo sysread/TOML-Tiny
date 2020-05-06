@@ -24,7 +24,7 @@ sub _options {
   },
   inflate_float => sub { 0. + shift; },
   no_string_guessing => 1,
-  datetime_formatter => DateTime::Format::RFC3339->new(),
+  datetime_formatter => TOML::Tiny::Faithful::DateTime::Formatter->new(),
 }
 
 sub new {
@@ -38,6 +38,30 @@ sub from_toml {
 sub to_toml {
   my $source = shift;
   TOML::Tiny::to_toml($source, _options(), @_);
+}
+
+package TOML::Tiny::Faithful::DateTime::Formatter;
+use DateTime::Format::RFC3339;
+
+our $base = DateTime::Format::RFC3339->new();
+
+sub new ($) {
+    my ($class) = @_;
+    bless { }, $class;
+}
+
+sub format_datetime {
+    my ($self,$dt) = @_;
+    # RFC3339 always prints a timezone.  This is correct for RFC3339
+    # but in our application we sometimes have "local datetime"s
+    # where the time_zone is DateTime::TimeZone::Floating.
+    # We could use ISO8601 but it never prints the nanoseconds.
+    # It is easier to strip the timezone offset than add the ns.
+    my $r = DateTime::Format::RFC3339->new()->format_datetime($dt);
+    if ((ref $dt->time_zone()) =~ m/Floating/) {
+	$r =~ s/\+[0-9:.]+$//;
+    }
+    $r
 }
 
 1;

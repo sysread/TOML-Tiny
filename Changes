@@ -1,4 +1,5 @@
 {{$NEXT}}
+-Fix bug in TOML table output generation (thanks ijackson)
 
 0.07 2020-05-08
 -Add support for floating time zones in TOML output (thanks ijackson)

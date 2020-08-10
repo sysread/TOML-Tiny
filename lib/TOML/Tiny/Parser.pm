@@ -8,9 +8,11 @@ use v5.18;
 
 use Carp;
 use Data::Dumper;
-use TOML::Tiny::Grammar;
-use TOML::Tiny::Tokenizer;
 use TOML::Tiny::Util qw(is_strict_array);
+
+require Math::BigFloat;
+require TOML::Tiny::Grammar;
+require TOML::Tiny::Tokenizer;
 
 our $TRUE  = 1;
 our $FALSE = 0;
@@ -340,9 +342,23 @@ sub inflate_float {
     return 0 + $value;
   }
 
-  # TODO: What about scientific notation?
+  #-----------------------------------------------------------------------------
+  # Scientific notation is a hairier situation. In order to determine whether a
+  # value will fit inside a perl svnv, we can't just coerce the value to a
+  # number and then test it against the string, because, for example, this will
+  # always be false:
+  #
+  #     9 eq "3e2"
+  #
+  # Instead, we are forced to test the coerced value against a BigFloat, which
+  # is capable of holding the number.
+  #-----------------------------------------------------------------------------
+  if ($value =~ /[eE]/) {
+    if (Math::BigFloat->new($value)->beq(0 + $value)) {
+      return 0 + $value;
+    }
+  }
 
-  #$self->parse_error($token, "encountered a large float ($token->{value}) but no inflate_float routine was provided");
   return '' . $value;
 }
 
@@ -361,7 +377,6 @@ sub inflate_integer {
     return 0 + $value;
   }
 
-  #$self->parse_error($token, "encountered a large integer ($token->{value}) but no inflate_integer routine was provided");
   return '' . $value;
 }
 

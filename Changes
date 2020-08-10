@@ -1,4 +1,6 @@
 {{$NEXT}}
+-Fix warning when calling `to_toml(from_toml(...))`
+-Fix bug allowing perl to stringify numbers
 
 0.08 2020-06-25
 -Fix bug in TOML table output generation (thanks ijackson)

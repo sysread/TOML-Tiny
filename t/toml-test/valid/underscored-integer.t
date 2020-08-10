@@ -13,20 +13,20 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'million' => bless( {
+                                     '_file' => '(eval 376)',
+                                     'operator' => 'CODE(...)',
                                      '_lines' => [
                                                    6
                                                  ],
-                                     '_file' => '(eval 428)',
                                      'code' => sub {
-                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                    use strict;
                                                    no feature ':all';
                                                    use feature ':5.16';
                                                    require Math::BigInt;
                                                    'Math::BigInt'->new('1000000')->beq($_);
                                                },
-                                     'name' => '<Custom Code>',
-                                     'operator' => 'CODE(...)'
+                                     'name' => '<Custom Code>'
                                    }, 'Test2::Compare::Custom' )
              };
 

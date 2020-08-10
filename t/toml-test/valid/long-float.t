@@ -12,38 +12,38 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
+               'neglongpi' => bless( {
+                                       'operator' => 'CODE(...)',
+                                       '_file' => '(eval 369)',
+                                       'name' => '<Custom Code>',
+                                       '_lines' => [
+                                                     6
+                                                   ],
+                                       'code' => sub {
+                                                     BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                     use strict;
+                                                     no feature ':all';
+                                                     use feature ':5.16';
+                                                     require Math::BigFloat;
+                                                     'Math::BigFloat'->new('-3.141592653589793')->beq($_);
+                                                 }
+                                     }, 'Test2::Compare::Custom' ),
                'longpi' => bless( {
                                     '_lines' => [
                                                   6
                                                 ],
-                                    '_file' => '(eval 421)',
+                                    'name' => '<Custom Code>',
                                     'code' => sub {
-                                                  BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                  BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                   use strict;
                                                   no feature ':all';
                                                   use feature ':5.16';
                                                   require Math::BigFloat;
                                                   'Math::BigFloat'->new('3.141592653589793')->beq($_);
                                               },
-                                    'name' => '<Custom Code>',
-                                    'operator' => 'CODE(...)'
-                                  }, 'Test2::Compare::Custom' ),
-               'neglongpi' => bless( {
-                                       '_lines' => [
-                                                     6
-                                                   ],
-                                       'name' => '<Custom Code>',
-                                       'operator' => 'CODE(...)',
-                                       'code' => sub {
-                                                     BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
-                                                     use strict;
-                                                     no feature ':all';
-                                                     use feature ':5.16';
-                                                     require Math::BigFloat;
-                                                     'Math::BigFloat'->new('-3.141592653589793')->beq($_);
-                                                 },
-                                       '_file' => '(eval 420)'
-                                     }, 'Test2::Compare::Custom' )
+                                    'operator' => 'CODE(...)',
+                                    '_file' => '(eval 368)'
+                                  }, 'Test2::Compare::Custom' )
              };
 
 

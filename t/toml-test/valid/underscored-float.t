@@ -17,16 +17,16 @@ my $expected1 = {
                                                          6
                                                        ],
                                            'code' => sub {
-                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                          use strict;
                                                          no feature ':all';
                                                          use feature ':5.16';
                                                          require Math::BigFloat;
                                                          'Math::BigFloat'->new('9.109109383e-31')->beq($_);
                                                      },
-                                           '_file' => '(eval 427)',
-                                           'operator' => 'CODE(...)',
-                                           'name' => '<Custom Code>'
+                                           'name' => '<Custom Code>',
+                                           '_file' => '(eval 375)',
+                                           'operator' => 'CODE(...)'
                                          }, 'Test2::Compare::Custom' )
              };
 

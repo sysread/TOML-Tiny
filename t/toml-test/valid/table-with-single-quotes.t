@@ -16,20 +16,20 @@ my $expected1 = {
                         'b' => {
                                  'c' => {
                                           'answer' => bless( {
+                                                               'operator' => 'CODE(...)',
+                                                               '_file' => '(eval 374)',
+                                                               'name' => '<Custom Code>',
                                                                '_lines' => [
                                                                              6
                                                                            ],
                                                                'code' => sub {
-                                                                             BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                                             BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                              use strict;
                                                                              no feature ':all';
                                                                              use feature ':5.16';
                                                                              require Math::BigInt;
                                                                              'Math::BigInt'->new('42')->beq($_);
-                                                                         },
-                                                               '_file' => '(eval 426)',
-                                                               'operator' => 'CODE(...)',
-                                                               'name' => '<Custom Code>'
+                                                                         }
                                                              }, 'Test2::Compare::Custom' )
                                         }
                                }

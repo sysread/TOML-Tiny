@@ -12,12 +12,12 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'oneline' => 'This string has a \' quote character.',
                'multiline' => 'This string
 has \' a quote character
 and more than
 one newline
 in it.',
+               'oneline' => 'This string has a \' quote character.',
                'firstnl' => 'This string has a \' quote character.'
              };
 

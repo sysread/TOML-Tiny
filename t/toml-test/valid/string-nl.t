@@ -12,13 +12,13 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'lit_nl_end' => 'value\\n',
                'nl_mid' => 'val
 ue',
-               'lit_nl_mid' => 'val\\nue',
                'nl_end' => 'value
 ',
-               'lit_nl_uni' => 'val\\ue'
+               'lit_nl_uni' => 'val\\ue',
+               'lit_nl_mid' => 'val\\nue',
+               'lit_nl_end' => 'value\\n'
              };
 
 

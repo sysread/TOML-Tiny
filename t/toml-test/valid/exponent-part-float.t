@@ -12,52 +12,52 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
+               'million' => bless( {
+                                     'name' => '<Custom Code>',
+                                     '_lines' => [
+                                                   6
+                                                 ],
+                                     'code' => sub {
+                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                   use strict;
+                                                   no feature ':all';
+                                                   use feature ':5.16';
+                                                   require Math::BigFloat;
+                                                   'Math::BigFloat'->new('1000000')->beq($_);
+                                               },
+                                     '_file' => '(eval 327)',
+                                     'operator' => 'CODE(...)'
+                                   }, 'Test2::Compare::Custom' ),
                'minustenth' => bless( {
                                         '_lines' => [
                                                       6
                                                     ],
-                                        'operator' => 'CODE(...)',
                                         'name' => '<Custom Code>',
                                         'code' => sub {
-                                                      BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                      BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                       use strict;
                                                       no feature ':all';
                                                       use feature ':5.16';
                                                       require Math::BigFloat;
                                                       'Math::BigFloat'->new('-0.1')->beq($_);
                                                   },
-                                        '_file' => '(eval 377)'
+                                        '_file' => '(eval 325)',
+                                        'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
-               'million' => bless( {
-                                     '_lines' => [
-                                                   6
-                                                 ],
-                                     'operator' => 'CODE(...)',
-                                     'name' => '<Custom Code>',
-                                     '_file' => '(eval 379)',
-                                     'code' => sub {
-                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
-                                                   use strict;
-                                                   no feature ':all';
-                                                   use feature ':5.16';
-                                                   require Math::BigFloat;
-                                                   'Math::BigFloat'->new('1000000')->beq($_);
-                                               }
-                                   }, 'Test2::Compare::Custom' ),
                'beast' => bless( {
+                                   'name' => '<Custom Code>',
                                    '_lines' => [
                                                  6
                                                ],
                                    'code' => sub {
-                                                 BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                 BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                  use strict;
                                                  no feature ':all';
                                                  use feature ':5.16';
                                                  require Math::BigFloat;
                                                  'Math::BigFloat'->new('666')->beq($_);
                                              },
-                                   '_file' => '(eval 378)',
-                                   'name' => '<Custom Code>',
+                                   '_file' => '(eval 326)',
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' )
              };

@@ -16,14 +16,14 @@ my $expected1 = {
                         'b' => {
                                  'c' => {
                                           'answer' => bless( {
+                                                               'operator' => 'CODE(...)',
+                                                               '_file' => '(eval 346)',
+                                                               'name' => '<Custom Code>',
                                                                '_lines' => [
                                                                              6
                                                                            ],
-                                                               'operator' => 'CODE(...)',
-                                                               'name' => '<Custom Code>',
-                                                               '_file' => '(eval 398)',
                                                                'code' => sub {
-                                                                             BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                                             BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                              use strict;
                                                                              no feature ':all';
                                                                              use feature ':5.16';

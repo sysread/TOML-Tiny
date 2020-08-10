@@ -13,20 +13,20 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                '~!@$^&*()_+-`1234567890[]|/?><.,;:\'' => bless( {
-                                                                  'operator' => 'CODE(...)',
-                                                                  'name' => '<Custom Code>',
                                                                   'code' => sub {
-                                                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                                 use strict;
                                                                                 no feature ':all';
                                                                                 use feature ':5.16';
                                                                                 require Math::BigInt;
                                                                                 'Math::BigInt'->new('1')->beq($_);
                                                                             },
-                                                                  '_file' => '(eval 413)',
                                                                   '_lines' => [
                                                                                 6
-                                                                              ]
+                                                                              ],
+                                                                  'name' => '<Custom Code>',
+                                                                  'operator' => 'CODE(...)',
+                                                                  '_file' => '(eval 361)'
                                                                 }, 'Test2::Compare::Custom' )
              };
 

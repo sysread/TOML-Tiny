@@ -14,6 +14,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'albums' => [
                              {
+                               'name' => 'Born to Run',
                                'songs' => [
                                             {
                                               'name' => 'Jungleland'
@@ -21,8 +22,7 @@ my $expected1 = {
                                             {
                                               'name' => 'Meeting Across the River'
                                             }
-                                          ],
-                               'name' => 'Born to Run'
+                                          ]
                              },
                              {
                                'name' => 'Born in the USA',

@@ -18,12 +18,12 @@ my $expected1 = {
                                'first_name' => 'Bruce'
                              },
                              {
-                               'last_name' => 'Clapton',
-                               'first_name' => 'Eric'
+                               'first_name' => 'Eric',
+                               'last_name' => 'Clapton'
                              },
                              {
-                               'first_name' => 'Bob',
-                               'last_name' => 'Seger'
+                               'last_name' => 'Seger',
+                               'first_name' => 'Bob'
                              }
                            ]
              };

@@ -12,13 +12,13 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'multiline_empty_one' => '',
-               'equivalent_one' => 'The quick brown fox jumps over the lazy dog.',
-               'multiline_empty_three' => '',
                'multiline_empty_two' => '',
+               'equivalent_two' => 'The quick brown fox jumps over the lazy dog.',
+               'equivalent_one' => 'The quick brown fox jumps over the lazy dog.',
+               'multiline_empty_one' => '',
+               'multiline_empty_three' => '',
                'multiline_empty_four' => '',
-               'equivalent_three' => 'The quick brown fox jumps over the lazy dog.',
-               'equivalent_two' => 'The quick brown fox jumps over the lazy dog.'
+               'equivalent_three' => 'The quick brown fox jumps over the lazy dog.'
              };
 
 

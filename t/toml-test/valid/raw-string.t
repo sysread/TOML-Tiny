@@ -12,13 +12,13 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'backspace' => 'This string has a \\b backspace character.',
                'newline' => 'This string has a \\n new line character.',
-               'formfeed' => 'This string has a \\f form feed character.',
-               'carriage' => 'This string has a \\r carriage return character.',
+               'slash' => 'This string has a \\/ slash character.',
                'backslash' => 'This string has a \\\\ backslash character.',
+               'carriage' => 'This string has a \\r carriage return character.',
                'tab' => 'This string has a \\t tab character.',
-               'slash' => 'This string has a \\/ slash character.'
+               'formfeed' => 'This string has a \\f form feed character.',
+               'backspace' => 'This string has a \\b backspace character.'
              };
 
 

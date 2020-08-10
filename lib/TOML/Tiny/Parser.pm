@@ -340,7 +340,10 @@ sub inflate_float {
     return 0 + $value;
   }
 
-  $self->parse_error($token, "encountered a large float but no inflate_float routine was provided");
+  # TODO: What about scientific notation?
+
+  #$self->parse_error($token, "encountered a large float ($token->{value}) but no inflate_float routine was provided");
+  return '' . $value;
 }
 
 sub inflate_integer {
@@ -358,7 +361,8 @@ sub inflate_integer {
     return 0 + $value;
   }
 
-  $self->parse_error($token, "encountered a large integer but no inflate_integer routine was provided");
+  #$self->parse_error($token, "encountered a large integer ($token->{value}) but no inflate_integer routine was provided");
+  return '' . $value;
 }
 
 1;

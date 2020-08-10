@@ -16,20 +16,20 @@ my $expected1 = {
                         '"b"' => {
                                    'c' => {
                                             'answer' => bless( {
+                                                                 '_file' => '(eval 372)',
+                                                                 'operator' => 'CODE(...)',
                                                                  'code' => sub {
-                                                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                                use strict;
                                                                                no feature ':all';
                                                                                use feature ':5.16';
                                                                                require Math::BigInt;
                                                                                'Math::BigInt'->new('42')->beq($_);
                                                                            },
-                                                                 '_file' => '(eval 424)',
-                                                                 'name' => '<Custom Code>',
-                                                                 'operator' => 'CODE(...)',
                                                                  '_lines' => [
                                                                                6
-                                                                             ]
+                                                                             ],
+                                                                 'name' => '<Custom Code>'
                                                                }, 'Test2::Compare::Custom' )
                                           }
                                  }

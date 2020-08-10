@@ -12,8 +12,8 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'newline' => 'lf',
-               'os' => 'unix'
+               'os' => 'unix',
+               'newline' => 'lf'
              };
 
 

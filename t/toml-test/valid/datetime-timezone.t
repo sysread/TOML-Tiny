@@ -17,7 +17,7 @@ my $expected1 = {
                                                        11
                                                      ],
                                          'code' => sub {
-                                                       BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x54"}
+                                                       BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                        use strict;
                                                        no feature ':all';
                                                        use feature ':5.16';
@@ -27,9 +27,9 @@ my $expected1 = {
                                                        $got->set_time_zone('UTC');
                                                        return 'DateTime'->compare($got, $exp) == 0;
                                                    },
-                                         '_file' => '(eval 372)',
                                          'name' => '<Custom Code>',
-                                         'operator' => 'CODE(...)'
+                                         'operator' => 'CODE(...)',
+                                         '_file' => '(eval 320)'
                                        }, 'Test2::Compare::Custom' )
              };
 

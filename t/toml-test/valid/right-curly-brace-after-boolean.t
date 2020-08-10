@@ -13,9 +13,9 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'black' => {
-                            'python' => '>3.6',
+                            'allow_prereleases' => 1,
                             'version' => '>=18.9b0',
-                            'allow_prereleases' => 1
+                            'python' => '>3.6'
                           }
              };
 

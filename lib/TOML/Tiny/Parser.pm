@@ -24,8 +24,8 @@ eval{
 sub new {
   my ($class, %param) = @_;
   bless{
-    inflate_integer  => $param{inflate_integer}  || sub{ shift },
-    inflate_float    => $param{inflate_float}    || sub{ shift },
+    inflate_integer  => $param{inflate_integer},
+    inflate_float    => $param{inflate_float},
     inflate_datetime => $param{inflate_datetime} || sub{ shift },
     inflate_boolean  => $param{inflate_boolean}  || sub{ shift eq 'true' ? $TRUE : $FALSE },
     strict_arrays    => $param{strict_arrays},
@@ -263,8 +263,8 @@ sub parse_value {
 
   for ($token->{type}) {
     return $token->{value} when 'string';
-    return $self->{inflate_float}->($token->{value}) when 'float';
-    return $self->{inflate_integer}->($token->{value}) when 'integer';
+    return $self->inflate_float($token) when 'float';
+    return $self->inflate_integer($token) when 'integer';
     return $self->{inflate_boolean}->($token->{value}) when 'bool';
     return $self->{inflate_datetime}->($token->{value}) when 'datetime';
     return $self->parse_inline_table when 'inline_table';
@@ -323,6 +323,42 @@ sub parse_inline_table {
   }
 
   return $table;
+}
+
+sub inflate_float {
+  my $self  = shift;
+  my $token = shift;
+  my $value = $token->{value};
+
+  # Caller-defined inflation routine
+  if ($self->{inflate_float}) {
+    return $self->{inflate_float}->($value);
+  }
+
+  # Not a bignum
+  if (0 + $value eq $value) {
+    return 0 + $value;
+  }
+
+  $self->parse_error($token, "encountered a large float but no inflate_float routine was provided");
+}
+
+sub inflate_integer {
+  my $self  = shift;
+  my $token = shift;
+  my $value = $token->{value};
+
+  # Caller-defined inflation routine
+  if ($self->{inflate_integer}) {
+    return $self->{inflate_integer}->($value);
+  }
+
+  # Not a bignum
+  if (0 + $value eq $value) {
+    return 0 + $value;
+  }
+
+  $self->parse_error($token, "encountered a large integer but no inflate_integer routine was provided");
 }
 
 1;

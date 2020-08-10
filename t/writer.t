@@ -91,7 +91,12 @@ no_tz   = $no_tz_str
 
     is $data->{with_tz}, $with_tz_str, 'datetime with time zone reproduced faithfully';
     is $data->{no_tz}, $no_tz_str, 'datetime without time zone reproduced faithfully';
-  }
+  };
+
+  subtest 'numeric types are not stringified by perl' => sub{
+    is to_toml(from_toml('port=1234')), 'port=1234', 'ints';
+    is to_toml(from_toml('pi=3.14')), 'pi=3.14', 'floats';
+  };
 };
 
 done_testing;

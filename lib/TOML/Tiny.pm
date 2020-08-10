@@ -387,4 +387,6 @@ A big thank you to those who have contributed code or bug reports:
 
 =item L<noctux|https://github.com/noctux>
 
+=item L<oschwald|https://github.com/oschwald>
+
 =back

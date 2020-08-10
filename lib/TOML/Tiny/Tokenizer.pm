@@ -173,12 +173,12 @@ sub tokenize_key {
 
 sub tokenize_float {
   $_[1] =~ tr/_//d;
-  0 + $_[1]; # coerce to number
+  $_[1];
 }
 
 sub tokenize_integer {
   $_[1] =~ tr/_+//d;
-  0 + $_[1]; # coerce to number
+  $_[1];
 }
 
 sub tokenize_string {

@@ -1,5 +1,4 @@
 {{$NEXT}}
--Fix bug allowing numbers to be stringified by perl (thanks oschwald)
 
 0.08 2020-06-25
 -Fix bug in TOML table output generation (thanks ijackson)

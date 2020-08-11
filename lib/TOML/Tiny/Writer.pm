@@ -136,7 +136,7 @@ sub to_toml {
     }
 
     when ('Math::BigFloat') {
-      return $data->bnstr;
+      return $data->bstr;
     }
 
     when ('') {

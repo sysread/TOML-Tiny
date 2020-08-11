@@ -11,6 +11,7 @@ use Data::Dumper;
 use TOML::Tiny::Util qw(is_strict_array);
 
 require Math::BigFloat;
+require Math::BigInt;
 require TOML::Tiny::Grammar;
 require TOML::Tiny::Tokenizer;
 
@@ -359,7 +360,7 @@ sub inflate_float {
     }
   }
 
-  return '' . $value;
+  return Math::BigFloat->new($value);
 }
 
 sub inflate_integer {
@@ -372,12 +373,37 @@ sub inflate_integer {
     return $self->{inflate_integer}->($value);
   }
 
+  # Hex
+  if ($value =~ /^0x/) {
+    no warnings 'portable';
+    my $hex = hex $value;
+    my $big = Math::BigInt->new($value);
+    return $big->beq($hex) ? $hex : $big;
+  }
+
+  # Octal
+  if ($value =~ /^0o/) {
+    no warnings 'portable';
+    $value =~ s/^0o/0/;
+    my $oct = oct $value;
+    my $big = Math::BigInt->from_oct($value);
+    return $big->beq($oct) ? $oct : $big;
+  }
+
+  # Binary
+  if ($value =~ /^0b/) {
+    no warnings 'portable';
+    my $bin = oct $value; # oct handles 0b as binary
+    my $big = Math::BigInt->new($value);
+    return $big->beq($bin) ? $bin : $big;
+  }
+
   # Not a bignum
   if (0 + $value eq $value) {
     return 0 + $value;
   }
 
-  return '' . $value;
+  return Math::BigInt->new($value);
 }
 
 1;

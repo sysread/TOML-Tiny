@@ -99,6 +99,13 @@ subtest 'floats' => sub{
   is from_toml('x=+inf'), {x => 'inf'}, '+inf';
   is from_toml('x=-inf'), {x => -'inf'}, '-inf';
 
+  for (qw(nan +nan -nan)) {
+    is from_toml("x=$_"), hash{
+      field x => 'NaN';
+      end;
+    }, $_;
+  }
+
   is from_toml('x=nan'), {x => 'NaN'}, 'nan';
   is from_toml('x=+nan'), {x => 'NaN'}, '+nan';
   is from_toml('x=-nan'), {x => 'NaN'}, '-nan';

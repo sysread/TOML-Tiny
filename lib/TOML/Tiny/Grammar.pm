@@ -39,6 +39,7 @@ our @EXPORT = qw(
   $Integer
 
   $Float
+  $SpecialFloat
 );
 
 our $WS      = qr/[\x20\x09]/;     # space, tab
@@ -202,5 +203,7 @@ Exports various regexex for parsing TOML source.
 =head3 $Integer
 
 =head3 $Float
+
+=head2 $SpecialFloat
 
 =cut

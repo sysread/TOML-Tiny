@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.09 2020-08-11
 -Fix warning when calling `to_toml(from_toml(...))`
 -Fix bug allowing perl to stringify numbers (thanks oschwald)
 -Fix bug disallowing weird forms of nan (+nan, -nan)

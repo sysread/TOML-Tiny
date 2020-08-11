@@ -16,12 +16,12 @@ my $expected1 = {
                         'b' => {
                                  'c' => {
                                           'answer' => bless( {
-                                                               'operator' => 'CODE(...)',
-                                                               '_file' => '(eval 346)',
-                                                               'name' => '<Custom Code>',
                                                                '_lines' => [
                                                                              6
                                                                            ],
+                                                               'operator' => 'CODE(...)',
+                                                               'name' => '<Custom Code>',
+                                                               '_file' => '(eval 346)',
                                                                'code' => sub {
                                                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                              use strict;
@@ -45,19 +45,22 @@ is($actual, $expected1, 'implicit-groups - from_toml') or do{
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
+  diag '';
   diag 'ACTUAL:';
   diag Dumper($actual);
 };
 
-is(eval{ from_toml(to_toml($actual)) }, $actual, 'implicit-groups - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'implicit-groups - to_toml') or do{
   diag 'INPUT:';
   diag Dumper($actual);
 
+  diag '';
   diag 'TOML OUTPUT:';
   diag to_toml($actual);
 
+  diag '';
   diag 'REPARSED OUTPUT:';
-  diag Dumper(from_toml(to_toml($actual)));
+  diag Dumper(scalar from_toml(to_toml($actual)));
 };
 
 done_testing;

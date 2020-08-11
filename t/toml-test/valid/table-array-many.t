@@ -18,12 +18,12 @@ my $expected1 = {
                                'last_name' => 'Springsteen'
                              },
                              {
-                               'first_name' => 'Eric',
-                               'last_name' => 'Clapton'
+                               'last_name' => 'Clapton',
+                               'first_name' => 'Eric'
                              },
                              {
-                               'first_name' => 'Bob',
-                               'last_name' => 'Seger'
+                               'last_name' => 'Seger',
+                               'first_name' => 'Bob'
                              }
                            ]
              };
@@ -46,19 +46,22 @@ is($actual, $expected1, 'table-array-many - from_toml') or do{
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
+  diag '';
   diag 'ACTUAL:';
   diag Dumper($actual);
 };
 
-is(eval{ from_toml(to_toml($actual)) }, $actual, 'table-array-many - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'table-array-many - to_toml') or do{
   diag 'INPUT:';
   diag Dumper($actual);
 
+  diag '';
   diag 'TOML OUTPUT:';
   diag to_toml($actual);
 
+  diag '';
   diag 'REPARSED OUTPUT:';
-  diag Dumper(from_toml(to_toml($actual)));
+  diag Dumper(scalar from_toml(to_toml($actual)));
 };
 
 done_testing;

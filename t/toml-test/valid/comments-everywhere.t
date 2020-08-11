@@ -13,28 +13,12 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'group' => {
-                            'answer' => bless( {
-                                                 '_lines' => [
-                                                               6
-                                                             ],
-                                                 'name' => '<Custom Code>',
-                                                 'code' => sub {
-                                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                               use strict;
-                                                               no feature ':all';
-                                                               use feature ':5.16';
-                                                               require Math::BigInt;
-                                                               'Math::BigInt'->new('42')->beq($_);
-                                                           },
-                                                 'operator' => 'CODE(...)',
-                                                 '_file' => '(eval 314)'
-                                               }, 'Test2::Compare::Custom' ),
                             'more' => [
                                         bless( {
-                                                 'name' => '<Custom Code>',
                                                  '_lines' => [
                                                                6
                                                              ],
+                                                 'operator' => 'CODE(...)',
                                                  'code' => sub {
                                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                use strict;
@@ -44,11 +28,10 @@ my $expected1 = {
                                                                'Math::BigInt'->new('42')->beq($_);
                                                            },
                                                  '_file' => '(eval 315)',
-                                                 'operator' => 'CODE(...)'
+                                                 'name' => '<Custom Code>'
                                                }, 'Test2::Compare::Custom' ),
                                         bless( {
-                                                 'operator' => 'CODE(...)',
-                                                 '_file' => '(eval 316)',
+                                                 'name' => '<Custom Code>',
                                                  'code' => sub {
                                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                use strict;
@@ -57,12 +40,29 @@ my $expected1 = {
                                                                require Math::BigInt;
                                                                'Math::BigInt'->new('42')->beq($_);
                                                            },
+                                                 '_file' => '(eval 316)',
+                                                 'operator' => 'CODE(...)',
+                                                 '_lines' => [
+                                                               6
+                                                             ]
+                                               }, 'Test2::Compare::Custom' )
+                                      ],
+                            'answer' => bless( {
+                                                 'operator' => 'CODE(...)',
                                                  '_lines' => [
                                                                6
                                                              ],
+                                                 'code' => sub {
+                                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                               use strict;
+                                                               no feature ':all';
+                                                               use feature ':5.16';
+                                                               require Math::BigInt;
+                                                               'Math::BigInt'->new('42')->beq($_);
+                                                           },
+                                                 '_file' => '(eval 314)',
                                                  'name' => '<Custom Code>'
                                                }, 'Test2::Compare::Custom' )
-                                      ]
                           }
              };
 
@@ -97,19 +97,22 @@ is($actual, $expected1, 'comments-everywhere - from_toml') or do{
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
+  diag '';
   diag 'ACTUAL:';
   diag Dumper($actual);
 };
 
-is(eval{ from_toml(to_toml($actual)) }, $actual, 'comments-everywhere - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'comments-everywhere - to_toml') or do{
   diag 'INPUT:';
   diag Dumper($actual);
 
+  diag '';
   diag 'TOML OUTPUT:';
   diag to_toml($actual);
 
+  diag '';
   diag 'REPARSED OUTPUT:';
-  diag Dumper(from_toml(to_toml($actual)));
+  diag Dumper(scalar from_toml(to_toml($actual)));
 };
 
 done_testing;

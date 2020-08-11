@@ -13,6 +13,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'a b' => bless( {
+                                 '_file' => '(eval 360)',
                                  'code' => sub {
                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                use strict;
@@ -21,11 +22,10 @@ my $expected1 = {
                                                require Math::BigInt;
                                                'Math::BigInt'->new('1')->beq($_);
                                            },
+                                 'name' => '<Custom Code>',
                                  '_lines' => [
                                                6
                                              ],
-                                 'name' => '<Custom Code>',
-                                 '_file' => '(eval 360)',
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' )
              };
@@ -38,19 +38,22 @@ is($actual, $expected1, 'key-space - from_toml') or do{
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
+  diag '';
   diag 'ACTUAL:';
   diag Dumper($actual);
 };
 
-is(eval{ from_toml(to_toml($actual)) }, $actual, 'key-space - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'key-space - to_toml') or do{
   diag 'INPUT:';
   diag Dumper($actual);
 
+  diag '';
   diag 'TOML OUTPUT:';
   diag to_toml($actual);
 
+  diag '';
   diag 'REPARSED OUTPUT:';
-  diag Dumper(from_toml(to_toml($actual)));
+  diag Dumper(scalar from_toml(to_toml($actual)));
 };
 
 done_testing;

@@ -12,45 +12,12 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'milliseconds' => bless( {
-                                          '_file' => '(eval 318)',
-                                          'operator' => 'CODE(...)',
-                                          'name' => '<Custom Code>',
-                                          '_lines' => [
-                                                        11
-                                                      ],
-                                          'code' => sub {
-                                                        BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                        use strict;
-                                                        no feature ':all';
-                                                        use feature ':5.16';
-                                                        my $exp = 'DateTime::Format::RFC3339'->parse_datetime('1977-12-21T03:32:00.555+00:00');
-                                                        my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
-                                                        $exp->set_time_zone('UTC');
-                                                        $got->set_time_zone('UTC');
-                                                        return 'DateTime'->compare($got, $exp) == 0;
-                                                    }
-                                        }, 'Test2::Compare::Custom' ),
-               'numoffset' => bless( {
-                                       '_file' => '(eval 319)',
-                                       'operator' => 'CODE(...)',
-                                       '_lines' => [
-                                                     11
-                                                   ],
-                                       'name' => '<Custom Code>',
-                                       'code' => sub {
-                                                     BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                     use strict;
-                                                     no feature ':all';
-                                                     use feature ':5.16';
-                                                     my $exp = 'DateTime::Format::RFC3339'->parse_datetime('1977-06-28T12:32:00Z');
-                                                     my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
-                                                     $exp->set_time_zone('UTC');
-                                                     $got->set_time_zone('UTC');
-                                                     return 'DateTime'->compare($got, $exp) == 0;
-                                                 }
-                                     }, 'Test2::Compare::Custom' ),
                'bestdayever' => bless( {
+                                         '_lines' => [
+                                                       11
+                                                     ],
+                                         'operator' => 'CODE(...)',
+                                         '_file' => '(eval 317)',
                                          'code' => sub {
                                                        BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                        use strict;
@@ -62,13 +29,46 @@ my $expected1 = {
                                                        $got->set_time_zone('UTC');
                                                        return 'DateTime'->compare($got, $exp) == 0;
                                                    },
-                                         '_lines' => [
-                                                       11
-                                                     ],
-                                         'name' => '<Custom Code>',
-                                         'operator' => 'CODE(...)',
-                                         '_file' => '(eval 317)'
-                                       }, 'Test2::Compare::Custom' )
+                                         'name' => '<Custom Code>'
+                                       }, 'Test2::Compare::Custom' ),
+               'numoffset' => bless( {
+                                       'name' => '<Custom Code>',
+                                       'code' => sub {
+                                                     BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                     use strict;
+                                                     no feature ':all';
+                                                     use feature ':5.16';
+                                                     my $exp = 'DateTime::Format::RFC3339'->parse_datetime('1977-06-28T12:32:00Z');
+                                                     my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
+                                                     $exp->set_time_zone('UTC');
+                                                     $got->set_time_zone('UTC');
+                                                     return 'DateTime'->compare($got, $exp) == 0;
+                                                 },
+                                       '_file' => '(eval 318)',
+                                       '_lines' => [
+                                                     11
+                                                   ],
+                                       'operator' => 'CODE(...)'
+                                     }, 'Test2::Compare::Custom' ),
+               'milliseconds' => bless( {
+                                          'name' => '<Custom Code>',
+                                          '_file' => '(eval 319)',
+                                          'code' => sub {
+                                                        BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                        use strict;
+                                                        no feature ':all';
+                                                        use feature ':5.16';
+                                                        my $exp = 'DateTime::Format::RFC3339'->parse_datetime('1977-12-21T03:32:00.555+00:00');
+                                                        my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
+                                                        $exp->set_time_zone('UTC');
+                                                        $got->set_time_zone('UTC');
+                                                        return 'DateTime'->compare($got, $exp) == 0;
+                                                    },
+                                          'operator' => 'CODE(...)',
+                                          '_lines' => [
+                                                        11
+                                                      ]
+                                        }, 'Test2::Compare::Custom' )
              };
 
 
@@ -81,19 +81,22 @@ is($actual, $expected1, 'datetime - from_toml') or do{
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
+  diag '';
   diag 'ACTUAL:';
   diag Dumper($actual);
 };
 
-is(eval{ from_toml(to_toml($actual)) }, $actual, 'datetime - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'datetime - to_toml') or do{
   diag 'INPUT:';
   diag Dumper($actual);
 
+  diag '';
   diag 'TOML OUTPUT:';
   diag to_toml($actual);
 
+  diag '';
   diag 'REPARSED OUTPUT:';
-  diag Dumper(from_toml(to_toml($actual)));
+  diag Dumper(scalar from_toml(to_toml($actual)));
 };
 
 done_testing;

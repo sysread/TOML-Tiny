@@ -12,8 +12,8 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'newline' => 'crlf',
-               'os' => 'DOS'
+               'os' => 'DOS',
+               'newline' => 'crlf'
              };
 
 
@@ -25,19 +25,22 @@ is($actual, $expected1, 'newline-crlf - from_toml') or do{
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
+  diag '';
   diag 'ACTUAL:';
   diag Dumper($actual);
 };
 
-is(eval{ from_toml(to_toml($actual)) }, $actual, 'newline-crlf - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'newline-crlf - to_toml') or do{
   diag 'INPUT:';
   diag Dumper($actual);
 
+  diag '';
   diag 'TOML OUTPUT:';
   diag to_toml($actual);
 
+  diag '';
   diag 'REPARSED OUTPUT:';
-  diag Dumper(from_toml(to_toml($actual)));
+  diag Dumper(scalar from_toml(to_toml($actual)));
 };
 
 done_testing;

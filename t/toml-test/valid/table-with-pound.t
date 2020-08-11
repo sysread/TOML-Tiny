@@ -14,9 +14,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'key#group' => {
                                 'answer' => bless( {
-                                                     '_lines' => [
-                                                                   6
-                                                                 ],
+                                                     'name' => '<Custom Code>',
                                                      'code' => sub {
                                                                    BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                    use strict;
@@ -25,9 +23,11 @@ my $expected1 = {
                                                                    require Math::BigInt;
                                                                    'Math::BigInt'->new('42')->beq($_);
                                                                },
-                                                     'name' => '<Custom Code>',
                                                      '_file' => '(eval 373)',
-                                                     'operator' => 'CODE(...)'
+                                                     'operator' => 'CODE(...)',
+                                                     '_lines' => [
+                                                                   6
+                                                                 ]
                                                    }, 'Test2::Compare::Custom' )
                               }
              };
@@ -41,19 +41,22 @@ is($actual, $expected1, 'table-with-pound - from_toml') or do{
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
+  diag '';
   diag 'ACTUAL:';
   diag Dumper($actual);
 };
 
-is(eval{ from_toml(to_toml($actual)) }, $actual, 'table-with-pound - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'table-with-pound - to_toml') or do{
   diag 'INPUT:';
   diag Dumper($actual);
 
+  diag '';
   diag 'TOML OUTPUT:';
   diag to_toml($actual);
 
+  diag '';
   diag 'REPARSED OUTPUT:';
-  diag Dumper(from_toml(to_toml($actual)));
+  diag Dumper(scalar from_toml(to_toml($actual)));
 };
 
 done_testing;

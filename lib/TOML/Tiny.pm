@@ -139,20 +139,15 @@ Additional arguments may be passed after the toml source string; see L</new>.
 
 =item Big integers and floats
 
-C<TOML> supports integers and floats larger than what many perls support.
-when C<TOML::Tiny> encounters a value it may not be able to represent as
-a number, it will treat is as a string by default in order to preserve
-the value. Unfortunately, this means that it will be output as a string
-if re-encoded:
-
-  my $parsed = from_toml('foo=9223372036854775807');
-  print to_toml($parsed);  # foo="9223372036854775807"
-
-This behavior can be avoided by supplying inflation behaviors:
+C<TOML> supports integers and floats larger than what many perls support.  when
+C<TOML::Tiny> encounters a value it may not be able to represent as a number,
+it will instead return a L<Math::BigInt> or L<Math::BigFloat>. This behavior
+can be overridden by providing inflation routines:
 
   my $toml = TOML::Tiny->new(
-    inflate_float   => sub{ Math::BigFloat->new(shift) },
-    inflate_integer => sub{ Math::BigInt->new(shift) },
+    inflate_float => sub{
+      return do_something_else_with_floats( $_[0] );
+    };
   );
 
 =back

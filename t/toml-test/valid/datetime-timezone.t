@@ -24,12 +24,12 @@ my $expected1 = {
                                                        $got->set_time_zone('UTC');
                                                        return 'DateTime'->compare($got, $exp) == 0;
                                                    },
-                                         '_file' => '(eval 320)',
-                                         'name' => '<Custom Code>',
                                          'operator' => 'CODE(...)',
                                          '_lines' => [
                                                        11
-                                                     ]
+                                                     ],
+                                         '_file' => '(eval 320)',
+                                         'name' => '<Custom Code>'
                                        }, 'Test2::Compare::Custom' )
              };
 
@@ -46,16 +46,18 @@ is($actual, $expected1, 'datetime-timezone - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'datetime-timezone - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'datetime-timezone - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml($actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml($actual)));
 };
 

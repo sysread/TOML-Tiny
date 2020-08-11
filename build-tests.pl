@@ -73,9 +73,10 @@ sub deannotate{
           when (/integer/) {
             my $src = qq{
               use Test2::Tools::Compare qw(validator);
-              validator(sub{
+              validator('Math::BigInt->new("$data->{value}")->beq(\$_)' => sub{
                 require Math::BigInt;
-                Math::BigInt->new("$data->{value}")->beq(\$_);
+                my \$got = Math::BigInt->new(\$_);
+                Math::BigInt->new("$data->{value}")->beq(\$got);
               });
             };
 
@@ -88,9 +89,10 @@ sub deannotate{
           when (/float/) {
             my $src = qq{
               use Test2::Tools::Compare qw(validator);
-              validator(sub{
+              validator('Math::BigFloat->new("$data->{value}")->beq(\$_)' => sub{
                 require Math::BigFloat;
-                Math::BigFloat->new("$data->{value}")->beq(\$_);
+                my \$got = Math::BigFloat->new(\$_);
+                Math::BigFloat->new("$data->{value}")->beq(\$got);
               });
             };
 
@@ -184,16 +186,18 @@ is(\$actual, \$expected1, '$_ - from_toml') or do{
   diag Dumper(\$actual);
 };
 
-is(eval{ scalar from_toml(to_toml(\$actual)) }, \$actual, '$_ - to_toml') or do{
+is(eval{ scalar from_toml(to_toml(\$actual)) }, \$expected1, '$_ - to_toml') or do{
+  diag "ERROR: \$@" if \$@;
+
   diag 'INPUT:';
   diag Dumper(\$actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml(\$actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml(\$actual)));
 };
 

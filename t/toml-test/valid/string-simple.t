@@ -28,16 +28,18 @@ is($actual, $expected1, 'string-simple - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'string-simple - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'string-simple - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml($actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml($actual)));
 };
 

@@ -12,18 +12,18 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'backspace' => 'This string has a  backspace character.',
-               'notunicode4' => 'This string does not have a unicode \\u escape.',
-               'formfeed' => 'This string has a  form feed character.',
                'notunicode3' => 'This string does not have a unicode \\u0075 escape.',
-               'carriage' => 'This string has a  carriage return character.',
                'tab' => 'This string has a 	 tab character.',
-               'backslash' => 'This string has a \\ backslash character.',
-               'notunicode2' => 'This string does not have a unicode \\u escape.',
                'newline' => 'This string has a 
  new line character.',
+               'backspace' => 'This string has a  backspace character.',
+               'backslash' => 'This string has a \\ backslash character.',
+               'formfeed' => 'This string has a  form feed character.',
                'quote' => 'This string has a " quote character.',
-               'notunicode1' => 'This string does not have a unicode \\u escape.'
+               'carriage' => 'This string has a  carriage return character.',
+               'notunicode2' => 'This string does not have a unicode \\u escape.',
+               'notunicode1' => 'This string does not have a unicode \\u escape.',
+               'notunicode4' => 'This string does not have a unicode \\u escape.'
              };
 
 
@@ -49,16 +49,18 @@ is($actual, $expected1, 'string-escapes - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'string-escapes - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'string-escapes - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml($actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml($actual)));
 };
 

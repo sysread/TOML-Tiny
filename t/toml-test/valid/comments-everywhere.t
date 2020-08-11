@@ -15,8 +15,10 @@ my $expected1 = {
                'group' => {
                             'more' => [
                                         bless( {
+                                                 'name' => 'Math::BigInt->new("42")->beq($_)',
+                                                 '_file' => '(eval 315)',
                                                  '_lines' => [
-                                                               6
+                                                               7
                                                              ],
                                                  'operator' => 'CODE(...)',
                                                  'code' => sub {
@@ -25,43 +27,44 @@ my $expected1 = {
                                                                no feature ':all';
                                                                use feature ':5.16';
                                                                require Math::BigInt;
-                                                               'Math::BigInt'->new('42')->beq($_);
-                                                           },
-                                                 '_file' => '(eval 315)',
-                                                 'name' => '<Custom Code>'
+                                                               my $got = 'Math::BigInt'->new($_);
+                                                               'Math::BigInt'->new('42')->beq($got);
+                                                           }
                                                }, 'Test2::Compare::Custom' ),
                                         bless( {
-                                                 'name' => '<Custom Code>',
                                                  'code' => sub {
                                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                use strict;
                                                                no feature ':all';
                                                                use feature ':5.16';
                                                                require Math::BigInt;
-                                                               'Math::BigInt'->new('42')->beq($_);
+                                                               my $got = 'Math::BigInt'->new($_);
+                                                               'Math::BigInt'->new('42')->beq($got);
                                                            },
-                                                 '_file' => '(eval 316)',
                                                  'operator' => 'CODE(...)',
                                                  '_lines' => [
-                                                               6
-                                                             ]
+                                                               7
+                                                             ],
+                                                 '_file' => '(eval 316)',
+                                                 'name' => 'Math::BigInt->new("42")->beq($_)'
                                                }, 'Test2::Compare::Custom' )
                                       ],
                             'answer' => bless( {
-                                                 'operator' => 'CODE(...)',
-                                                 '_lines' => [
-                                                               6
-                                                             ],
                                                  'code' => sub {
                                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                use strict;
                                                                no feature ':all';
                                                                use feature ':5.16';
                                                                require Math::BigInt;
-                                                               'Math::BigInt'->new('42')->beq($_);
+                                                               my $got = 'Math::BigInt'->new($_);
+                                                               'Math::BigInt'->new('42')->beq($got);
                                                            },
+                                                 'operator' => 'CODE(...)',
+                                                 '_lines' => [
+                                                               7
+                                                             ],
                                                  '_file' => '(eval 314)',
-                                                 'name' => '<Custom Code>'
+                                                 'name' => 'Math::BigInt->new("42")->beq($_)'
                                                }, 'Test2::Compare::Custom' )
                           }
              };
@@ -102,16 +105,18 @@ is($actual, $expected1, 'comments-everywhere - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'comments-everywhere - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'comments-everywhere - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml($actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml($actual)));
 };
 

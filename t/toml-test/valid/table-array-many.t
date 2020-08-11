@@ -18,12 +18,12 @@ my $expected1 = {
                                'last_name' => 'Springsteen'
                              },
                              {
-                               'last_name' => 'Clapton',
-                               'first_name' => 'Eric'
+                               'first_name' => 'Eric',
+                               'last_name' => 'Clapton'
                              },
                              {
-                               'last_name' => 'Seger',
-                               'first_name' => 'Bob'
+                               'first_name' => 'Bob',
+                               'last_name' => 'Seger'
                              }
                            ]
              };
@@ -51,16 +51,18 @@ is($actual, $expected1, 'table-array-many - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'table-array-many - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'table-array-many - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml($actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml($actual)));
 };
 

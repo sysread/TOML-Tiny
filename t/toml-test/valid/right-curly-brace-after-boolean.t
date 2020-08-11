@@ -14,8 +14,8 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'black' => {
                             'version' => '>=18.9b0',
-                            'python' => '>3.6',
-                            'allow_prereleases' => 1
+                            'allow_prereleases' => 1,
+                            'python' => '>3.6'
                           }
              };
 
@@ -32,16 +32,18 @@ is($actual, $expected1, 'right-curly-brace-after-boolean - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'right-curly-brace-after-boolean - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'right-curly-brace-after-boolean - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml($actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml($actual)));
 };
 

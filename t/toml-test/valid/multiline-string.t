@@ -12,13 +12,13 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'multiline_empty_one' => '',
                'multiline_empty_four' => '',
-               'multiline_empty_three' => '',
-               'equivalent_two' => 'The quick brown fox jumps over the lazy dog.',
-               'multiline_empty_two' => '',
+               'equivalent_three' => 'The quick brown fox jumps over the lazy dog.',
                'equivalent_one' => 'The quick brown fox jumps over the lazy dog.',
-               'equivalent_three' => 'The quick brown fox jumps over the lazy dog.'
+               'multiline_empty_one' => '',
+               'multiline_empty_two' => '',
+               'equivalent_two' => 'The quick brown fox jumps over the lazy dog.',
+               'multiline_empty_three' => ''
              };
 
 
@@ -56,16 +56,18 @@ is($actual, $expected1, 'multiline-string - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $actual, 'multiline-string - to_toml') or do{
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'multiline-string - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'TOML OUTPUT:';
+  diag 'GENERATED TOML:';
   diag to_toml($actual);
 
   diag '';
-  diag 'REPARSED OUTPUT:';
+  diag 'REPARSED FROM GENERATED TOML:';
   diag Dumper(scalar from_toml(to_toml($actual)));
 };
 

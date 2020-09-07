@@ -7,7 +7,6 @@ use v5.18;
 
 use B qw(svref_2object SVf_IOK SVf_NOK);
 use Data::Dumper;
-use DateTime::Format::RFC3339;
 use TOML::Tiny::Grammar;
 use TOML::Tiny::Util qw(is_strict_array);
 
@@ -122,6 +121,8 @@ sub to_toml {
       # to +00:00 for floating time zones. To support local datetimes in
       # output, format the datetime as RFC3339 and strip the timezone
       # when encountering a floating time zone.
+      require DateTime::Format::RFC3339;
+
       my $dt = DateTime::Format::RFC3339->new->format_datetime($data);
 
       if ($data->time_zone_short_name eq 'floating') {

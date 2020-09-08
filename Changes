@@ -1,4 +1,5 @@
 {{$NEXT}}
+-Remove dependency on DateTime::Format::RFC3339
 
 0.09 2020-08-11
 -Fix warning when calling `to_toml(from_toml(...))`

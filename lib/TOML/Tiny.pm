@@ -232,10 +232,10 @@ e.g., C<"1985-04-12T23:20:50.52Z">
 
 =item L<DateTime>
 
-L<DateTime>s are formatted as L<DateTime::Format::RFC3339>, as expected by
-C<TOML>. However, C<TOML> supports the concept of a "local" time zone, which
-strays from C<RFC3339> by allowing a datetime without a time zone offset. This
-is represented in perl by a C<DateTime> with a floating time zone.
+L<DateTime>s are formatted as C<RFC3339>, as expected by C<TOML>. However,
+C<TOML> supports the concept of a "local" time zone, which strays from
+C<RFC3339> by allowing a datetime without a time zone offset. This is
+represented in perl by a C<DateTime> with a B<floating time zone>.
 
 =back
 

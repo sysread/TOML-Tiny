@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.10 2020-09-08
 -Remove dependency on DateTime::Format::RFC3339
 
 0.09 2020-08-11

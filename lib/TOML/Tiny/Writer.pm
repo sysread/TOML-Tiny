@@ -7,7 +7,6 @@ use v5.18;
 
 use B qw(svref_2object SVf_IOK SVf_NOK);
 use Data::Dumper;
-use DateTime::Format::RFC3339;
 use TOML::Tiny::Grammar;
 use TOML::Tiny::Util qw(is_strict_array);
 

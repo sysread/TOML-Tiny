@@ -12,4 +12,5 @@ on test => sub{
   requires 'TOML::Parser'              => '0';
   requires 'Test2::V0'                 => '0';
   requires 'Test::Pod'                 => '0';
+  requires 'DateTime::Format::RFC3339' => '0';
 };

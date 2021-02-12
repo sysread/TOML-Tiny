@@ -64,14 +64,6 @@ sub parse {
 
 1;
 
-=begin html
-
-<a href="https://github.com/sysread/TOML-Tiny/actions?query=workflow%3Arun-tests">
-  <img src="https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg" alt="Build status" />
-</a>
-
-=end html
-
 =head1 SYNOPSIS
 
   use TOML::Tiny qw(from_toml to_toml);

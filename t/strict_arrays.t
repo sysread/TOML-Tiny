@@ -12,7 +12,7 @@ subtest 'string containing int recognized as type=integer' => sub{
 array = ["u", "u2"]
   };
 
-  lives{ $tt->decode($toml) };
+  ok lives{ $tt->decode($toml) }, 'parse succeeds';
 };
 
 done_testing;

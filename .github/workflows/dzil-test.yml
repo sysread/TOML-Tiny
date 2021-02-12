@@ -42,4 +42,4 @@ jobs:
       - name: Install Dependencies
         run: cpm install -g --no-test --show-build-log-on-failure --cpanfile cpanfile
       - name: Run tests
-        run: prove -lmv t
+        run: prove -lmfr t

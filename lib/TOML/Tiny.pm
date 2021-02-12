@@ -92,7 +92,9 @@ sub parse {
 
 =begin html
 
-<img src="https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg" alt="Build status" />
+<a href="https://github.com/sysread/TOML-Tiny/actions?query=workflow%3Arun-tests">
+  <img src="https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg" alt="Build status" />
+</a>
 
 =end html
 

@@ -90,7 +90,11 @@ sub parse {
 
 =head1 DESCRIPTION
 
-L<Status|https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg>
+=begin html
+
+<img src="https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg" alt="Build status" />
+
+=end html
 
 C<TOML::Tiny> implements a pure-perl parser and generator for the
 L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v0.5

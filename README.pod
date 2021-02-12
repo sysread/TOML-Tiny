@@ -35,7 +35,7 @@ version 0.11
 
 =head1 DESCRIPTION
 
-L<Status|https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg>
+=for html <img src="https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg" alt="Build status" />
 
 C<TOML::Tiny> implements a pure-perl parser and generator for the
 L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v0.5

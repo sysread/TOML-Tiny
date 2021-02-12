@@ -91,9 +91,9 @@ sub parse {
 =head1 DESCRIPTION
 
 C<TOML::Tiny> implements a pure-perl parser and generator for the
-L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v5
+L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v0.5
 (with a few caveats; see L</strict_arrays>) with support for more recent
-changes in pursuit of v6.
+changes in pursuit of v1.0.
 
 C<TOML::Tiny> strives to maintain an interface compatible to the L<TOML> and
 L<TOML::Parser> modules, and could even be used to override C<$TOML::Parser>:
@@ -320,8 +320,8 @@ routine.
 
 =item strict_arrays
 
-C<TOML v5> specified homogenous arrays. This has since been removed and will no
-longer be part of the standard as of C<v6> (as of the time of writing; the
+C<TOML v0.5> specified homogenous arrays. This has since been removed and will no
+longer be part of the standard as of C<v1.0> (as of the time of writing; the
 author of C<TOML> has gone back and forth on the issue, so no guarantees).
 
 By default, C<TOML::Tiny> is flexible and supports heterogenous arrays. If you
@@ -354,8 +354,8 @@ particularly in adding support for newer C<TOML> features and strictness.
 
 L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
 tighten things up. C<TOML::Tiny> defaults to (somehwat) stricter parsing, with
-the exception of permitting heterogenous arrays (illegal in v4 and v5, but
-permissible in the upcoming v6); optional enforcement of homogenous arrays is
+the exception of permitting heterogenous arrays (illegal in v4 and v0.5, but
+permissible in the upcoming v1.0); optional enforcement of homogenous arrays is
 supported with C<strict_arrays>.
 
 C<TOML::Tiny> supports a number of options which do not exist in L<TOML>:

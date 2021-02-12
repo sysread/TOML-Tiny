@@ -35,10 +35,6 @@ version 0.11
 
 =head1 DESCRIPTION
 
-=for html <a href="https://github.com/sysread/TOML-Tiny/actions?query=workflow%3Arun-tests">
-  <img src="https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg" alt="Build status" />
-</a>
-
 C<TOML::Tiny> implements a pure-perl parser and generator for the
 L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v0.5
 (with a few caveats; see L</strict_arrays>) with support for more recent
@@ -52,6 +48,10 @@ L<TOML::Parser> modules, and could even be used to override C<$TOML::Parser>:
 
   local $TOML::Parser = TOML::Tiny->new(...);
   say to_toml(...);
+
+=for html <a href="https://github.com/sysread/TOML-Tiny/actions?query=workflow%3Arun-tests">
+  <img src="https://github.com/sysread/TOML-Tiny/workflows/run-tests/badge.svg" alt="Build status" />
+</a>
 
 =head1 EXPORTS
 

@@ -62,7 +62,7 @@ sub next_token {
     my $newline = !!($prev eq 'EOL' || $prev eq 'table' || $prev eq 'array_table');
 
     for ($self->{source}) {
-      /\G$WS+/gc;               # ignore whitespace
+      /\G$WS+/gc;                # ignore whitespace
       /\G$Comment$/mgc && next;  # ignore comments
 
       last when /\G$/gc;

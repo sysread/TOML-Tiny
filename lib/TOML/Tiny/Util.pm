@@ -32,10 +32,10 @@ sub is_strict_array {
 
       when ('') {
         for ($value) {
-          $type = 'bool'     when /$Boolean/;
-          $type = 'float'    when /$Float/;
-          $type = 'integer'  when /$Integer/;
-          $type = 'datetime' when /$DateTime/;
+          $type = 'bool'     when /^$Boolean/;
+          $type = 'float'    when /^$Float/;
+          $type = 'integer'  when /^$Integer/;
+          $type = 'datetime' when /^$DateTime/;
           default{ $type = 'string' };
         }
       }

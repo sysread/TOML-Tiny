@@ -95,9 +95,9 @@ sub to_toml {
     }
 
     when ('SCALAR') {
-      if ($$_ eq '1') {
+      if ($$data eq '1') {
         return 'true';
-      } elsif ($$_ eq '0') {
+      } elsif ($$data eq '0') {
         return 'false';
       } else {
         push @buff_assign, to_toml($$_, $param);

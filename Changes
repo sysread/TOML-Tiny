@@ -1,4 +1,5 @@
 {{$NEXT}}
+-Fix bug causing to_toml to incorrectly dereference \1 and \0 (thanks oschwald)
 
 0.11 2021-02-12
 -Fix bug in strict_arrays where string containing integer is recognized as an

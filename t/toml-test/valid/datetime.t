@@ -2,6 +2,8 @@
 use utf8;
 use Test2::V0;
 use Data::Dumper;
+use Test2::Require::Module 'DateTime';
+use Test2::Require::Module 'DateTime::Format::RFC3339';
 use DateTime;
 use DateTime::Format::RFC3339;
 use Math::BigInt;

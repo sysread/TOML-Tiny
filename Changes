@@ -1,4 +1,5 @@
 {{$NEXT}}
+-Mark test dependencies as optional, skipping tests that could not be run (thanks jjatria)
 
 0.13 2021-07-26
 -Fix a spurious warning being raised on trailing spaces in hexadecimal numbers (thanks jjatria)

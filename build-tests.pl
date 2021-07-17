@@ -54,6 +54,8 @@ sub deannotate{
             my $src = qq{
               use Test2::Tools::Compare qw(validator);
               validator(sub{
+                use Test2::Require::Module 'DateTime';
+                use Test2::Require::Module 'DateTime::Format::RFC3339';
                 use DateTime;
                 use DateTime::Format::RFC3339;
                 my \$exp = DateTime::Format::RFC3339->parse_datetime("$data->{value}");
@@ -160,12 +162,22 @@ sub build_pospath_test_files{
 
     open my $fh, '>', "$dest/$_.t" or die $!;
 
+    my $optional_deps = '';
+    if ( $data =~ /DateTime/ ) {
+        $optional_deps = <<'DEPS';
+
+use Test2::Require::Module 'DateTime';
+use Test2::Require::Module 'DateTime::Format::RFC3339';
+use DateTime;
+use DateTime::Format::RFC3339;
+DEPS
+        chomp $optional_deps;
+    }
+
     print $fh qq{# File automatically generated from BurntSushi/toml-test
 use utf8;
 use Test2::V0;
-use Data::Dumper;
-use DateTime;
-use DateTime::Format::RFC3339;
+use Data::Dumper;$optional_deps
 use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;

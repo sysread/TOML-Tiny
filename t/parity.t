@@ -7,6 +7,7 @@
 use Test2::V0;
 use Data::Dumper;
 use TOML::Tiny::Parser;
+use Test2::Require::Module 'TOML::Parser';
 
 my $toml = do{ local $/; <DATA> };
 
@@ -29,6 +30,7 @@ subtest 'TOML::Parser' => sub{
   };
 
   subtest 'inflate_datetime' => sub{
+    Test2::Require::Module->import('DateTime::Format::RFC3339');
     require DateTime::Format::RFC3339;
     my $inflate = sub{ DateTime::Format::RFC3339->parse_datetime(shift) };
     my $exp = TOML::Parser->new(inflate_datetime => $inflate)->parse($toml);

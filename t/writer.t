@@ -3,8 +3,7 @@ use warnings;
 
 use Test2::V0;
 use TOML::Tiny;
-use DateTime::Format::RFC3339;
-use DateTime::Format::ISO8601;
+require Test2::Require::Module;
 
 my $src = do{ local $/; <DATA> };
 
@@ -36,6 +35,9 @@ subtest strict_arrays => sub{
 # Adapted from DateTime::Format::RFC3339.
 #-------------------------------------------------------------------------------
 subtest 'rfc3339 datetimes' => sub{
+  Test2::Require::Module->import('DateTime');
+  require DateTime;
+
   my $dt;
 
   $dt = DateTime->new(year => 2002, month => 7, day => 1, hour => 13, minute => 50, second => 5, time_zone => 'UTC');

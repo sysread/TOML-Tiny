@@ -108,7 +108,7 @@ our $DateTime = qr/(?> $Date (?> [T ] $Time )?) | $Time/x;
 #-----------------------------------------------------------------------------
 our $DecFirstChar = qr/[1-9]/;
 our $DecChar      = qr/[0-9]/;
-our $HexChar      = qr/[0-9 a-f A-F]/;
+our $HexChar      = qr/[0-9a-fA-F]/;
 our $OctChar      = qr/[0-7]/;
 our $BinChar      = qr/[01]/;
 

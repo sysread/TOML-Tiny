@@ -2,8 +2,6 @@
 use utf8;
 use Test2::V0;
 use Data::Dumper;
-use DateTime;
-use DateTime::Format::RFC3339;
 use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
@@ -12,14 +10,14 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
-               'os' => 'unix',
-               'newline' => 'lf'
+               'newline' => 'lf',
+               'os' => 'unix'
              };
 
 
-my $actual = from_toml(q{os = "unix"
+my $actual = from_toml(q|os = "unix"
 newline = "lf"
-});
+|);
 
 is($actual, $expected1, 'newline-lf - from_toml') or do{
   diag 'EXPECTED:';

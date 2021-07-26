@@ -2,8 +2,6 @@
 use utf8;
 use Test2::V0;
 use Data::Dumper;
-use DateTime;
-use DateTime::Format::RFC3339;
 use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
@@ -17,9 +15,9 @@ my $expected1 = {
              };
 
 
-my $actual = from_toml(q{os = "DOS"
+my $actual = from_toml(q|os = "DOS"
 newline = "crlf"
-});
+|);
 
 is($actual, $expected1, 'newline-crlf - from_toml') or do{
   diag 'EXPECTED:';

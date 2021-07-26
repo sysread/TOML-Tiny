@@ -421,4 +421,6 @@ A big thank you to those who have contributed code or bug reports:
 
 =item L<oschwald|https://github.com/oschwald>
 
+=item L<jjatria|https://metacpan.org/author/JJATRIA>
+
 =back

@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 a = """\\UFFFFFFFF"""
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/basic-multiline-out-of-range-unicode-escape-1';
 
 done_testing;

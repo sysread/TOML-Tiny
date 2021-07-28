@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 naughty = "\\xAg"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/bad-byte-escape';
 
 done_testing;

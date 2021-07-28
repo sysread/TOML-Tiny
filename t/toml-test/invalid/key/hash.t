@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 a# = 1
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/hash';
 
 done_testing;

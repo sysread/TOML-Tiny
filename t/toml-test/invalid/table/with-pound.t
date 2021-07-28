@@ -11,7 +11,7 @@ ok dies(sub{
 [key#group]
 answer = 42
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/with-pound';
 
 done_testing;

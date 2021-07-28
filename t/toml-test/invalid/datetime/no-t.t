@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 no-t = 1987-07-0517:45:00Z
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on datetime/no-t';
 
 done_testing;

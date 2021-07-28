@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 capital-bin = 0B0
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/capital-bin';
 
 done_testing;

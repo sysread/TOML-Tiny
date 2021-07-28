@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 no_concat = "first" "second"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/bad-concat';
 
 done_testing;

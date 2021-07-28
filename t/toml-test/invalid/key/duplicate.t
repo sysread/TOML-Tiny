@@ -12,7 +12,7 @@ ok dies(sub{
 name = "Tom"
 name = "Pradyun"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/duplicate';
 
 done_testing;

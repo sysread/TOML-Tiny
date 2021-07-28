@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 exp-trailing-us = 1e_23_
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/exp-trailing-us';
 
 done_testing;

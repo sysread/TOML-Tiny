@@ -11,7 +11,7 @@ ok dies(sub{
 [[]]
 name = "Born to Run"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/array-empty';
 
 done_testing;

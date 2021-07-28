@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 us-after-bin = 0b_1
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/us-after-bin';
 
 done_testing;

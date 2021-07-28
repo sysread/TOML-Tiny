@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 nan_underscore = na_n
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/nan_underscore';
 
 done_testing;

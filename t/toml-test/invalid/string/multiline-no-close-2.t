@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 x="""
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/multiline-no-close-2';
 
 done_testing;

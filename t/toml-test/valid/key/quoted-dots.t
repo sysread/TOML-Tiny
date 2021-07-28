@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'plain' => bless( {
-                                   '_file' => '(eval 507)',
+                                   '_file' => '(eval 509)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -46,7 +46,7 @@ my $expected1 = {
                                                       'operator' => 'CODE(...)'
                                                     }, 'Test2::Compare::Custom' ),
                                   'with.dot' => bless( {
-                                                         '_file' => '(eval 505)',
+                                                         '_file' => '(eval 507)',
                                                          '_lines' => [
                                                                        7
                                                                      ],
@@ -66,7 +66,7 @@ my $expected1 = {
                'table' => {
                             'withdot' => {
                                            'key.with.dots' => bless( {
-                                                                       '_file' => '(eval 508)',
+                                                                       '_file' => '(eval 504)',
                                                                        '_lines' => [
                                                                                      7
                                                                                    ],
@@ -83,7 +83,7 @@ my $expected1 = {
                                                                        'operator' => 'CODE(...)'
                                                                      }, 'Test2::Compare::Custom' ),
                                            'plain' => bless( {
-                                                               '_file' => '(eval 509)',
+                                                               '_file' => '(eval 505)',
                                                                '_lines' => [
                                                                              7
                                                                            ],
@@ -102,7 +102,7 @@ my $expected1 = {
                                          }
                           },
                'with.dot' => bless( {
-                                      '_file' => '(eval 504)',
+                                      '_file' => '(eval 508)',
                                       '_lines' => [
                                                     7
                                                   ],

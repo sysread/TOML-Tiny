@@ -11,7 +11,7 @@ ok dies(sub{
 ["where will it end]
 name = value
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/quoted-no-close';
 
 done_testing;

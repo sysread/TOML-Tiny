@@ -13,7 +13,7 @@ ok dies(sub{
 simple = { a = 1 
 }
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on inline-table/linebreak-1';
 
 done_testing;

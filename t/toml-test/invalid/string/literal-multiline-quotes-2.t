@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 a = '''15 apostrophes: ''''''''''''''''''
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/literal-multiline-quotes-2';
 
 done_testing;

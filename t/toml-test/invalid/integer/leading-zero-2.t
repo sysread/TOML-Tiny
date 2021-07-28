@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 leading-zero-2 = 00
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/leading-zero-2';
 
 done_testing;

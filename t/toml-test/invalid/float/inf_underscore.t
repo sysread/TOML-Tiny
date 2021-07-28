@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 inf_underscore = in_f
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/inf_underscore';
 
 done_testing;

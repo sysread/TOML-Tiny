@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 leading-us = _1.2
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/leading-us';
 
 done_testing;

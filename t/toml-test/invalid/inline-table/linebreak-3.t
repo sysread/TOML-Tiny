@@ -11,7 +11,7 @@ ok dies(sub{
 t = {a=1
 ,b=2}
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on inline-table/linebreak-3';
 
 done_testing;

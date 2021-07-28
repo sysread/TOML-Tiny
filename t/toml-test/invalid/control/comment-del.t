@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 comment-del = "0x7f" # 
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on control/comment-del';
 
 done_testing;

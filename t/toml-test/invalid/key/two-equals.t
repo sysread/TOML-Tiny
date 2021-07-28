@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 key= = 1
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/two-equals';
 
 done_testing;

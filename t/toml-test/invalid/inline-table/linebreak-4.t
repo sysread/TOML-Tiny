@@ -13,7 +13,7 @@ json_like = {
           last = "Preston-Werner"
 }
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on inline-table/linebreak-4';
 
 done_testing;

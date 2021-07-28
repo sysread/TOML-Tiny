@@ -14,7 +14,7 @@ array = [
   "Entry 2",
 ]
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on array/text-in-array';
 
 done_testing;

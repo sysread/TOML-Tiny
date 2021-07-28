@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 first = "Tom" last = "Preston-Werner" # INVALID
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/after-value';
 
 done_testing;

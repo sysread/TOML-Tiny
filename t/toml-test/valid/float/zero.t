@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'f1' => bless( {
-                                '_file' => '(eval 411)',
+                                '_file' => '(eval 410)',
                                 '_lines' => [
                                               7
                                             ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'f2' => bless( {
-                                '_file' => '(eval 416)',
+                                '_file' => '(eval 412)',
                                 '_lines' => [
                                               7
                                             ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'f3' => bless( {
-                                '_file' => '(eval 413)',
+                                '_file' => '(eval 411)',
                                 '_lines' => [
                                               7
                                             ],
@@ -96,7 +96,7 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'f6' => bless( {
-                                '_file' => '(eval 410)',
+                                '_file' => '(eval 416)',
                                 '_lines' => [
                                               7
                                             ],
@@ -113,7 +113,7 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'f7' => bless( {
-                                '_file' => '(eval 412)',
+                                '_file' => '(eval 413)',
                                 '_lines' => [
                                               7
                                             ],

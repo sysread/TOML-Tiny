@@ -13,7 +13,7 @@ use TOML::Tiny::Util qw(is_strict_array);
 my @KEYS;
 
 sub to_toml {
-  my $data = shift;
+  my $data  = shift;
   my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
   my @buff_assign;
   my @buff_tables;
@@ -86,9 +86,9 @@ sub to_toml {
     }
 
     when ('ARRAY') {
-      if (@$data && $param->{strict_arrays}) {
+      if (@$data && $param->{strict}) {
         my ($ok, $err) = is_strict_array($data);
-        die "toml: found heterogenous array, but strict_arrays is set ($err)\n" unless $ok;
+        die "toml: found heterogenous array, but strict is set ($err)\n" unless $ok;
       }
 
       push @buff_tables, '[' . join(', ', map{ to_toml($_, $param) } @$data) . ']';

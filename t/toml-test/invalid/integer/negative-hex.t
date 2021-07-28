@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 negative-hex = -0xff
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/negative-hex';
 
 done_testing;

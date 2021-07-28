@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 string-del = "null"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on control/string-del';
 
 done_testing;

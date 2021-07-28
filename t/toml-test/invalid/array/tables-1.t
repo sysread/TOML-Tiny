@@ -13,7 +13,7 @@ fruit = []
 
 [[fruit]] # Not allowed
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on array/tables-1';
 
 done_testing;

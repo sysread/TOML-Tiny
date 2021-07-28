@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 leading-zero-plus = +03.14
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/leading-zero-plus';
 
 done_testing;

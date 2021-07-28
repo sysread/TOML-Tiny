@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 [invalid key]
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/whitespace';
 
 done_testing;

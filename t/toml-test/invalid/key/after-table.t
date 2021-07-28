@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 [error] this = "should not be here"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/after-table';
 
 done_testing;

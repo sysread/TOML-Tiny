@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 wrong = [ 1 2 3 ]
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on array/missing-separator';
 
 done_testing;

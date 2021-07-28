@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 # Ã
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on encoding/bad-utf8-in-comment';
 
 done_testing;

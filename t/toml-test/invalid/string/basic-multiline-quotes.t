@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 str5 = """Here are three quotation marks: """."""
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/basic-multiline-quotes';
 
 done_testing;

@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 [[agencies]] owner = "S Cjelli"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/after-array';
 
 done_testing;

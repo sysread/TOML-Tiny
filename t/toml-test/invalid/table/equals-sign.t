@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 [name=bad]
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/equals-sign';
 
 done_testing;

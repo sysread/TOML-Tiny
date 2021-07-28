@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 name = value
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/missing-quotes';
 
 done_testing;

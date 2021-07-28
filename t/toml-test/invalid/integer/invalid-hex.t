@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 invalid-hex = 0xaafz
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/invalid-hex';
 
 done_testing;

@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 partial"quoted" = 5
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/partial-quoted';
 
 done_testing;

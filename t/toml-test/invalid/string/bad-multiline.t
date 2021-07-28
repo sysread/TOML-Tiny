@@ -11,7 +11,7 @@ ok dies(sub{
 multi = "first line
 second line"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/bad-multiline';
 
 done_testing;

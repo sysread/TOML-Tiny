@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 with-milli = 1987-07-5T17:45:00.12Z
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on datetime/no-leads-with-milli';
 
 done_testing;

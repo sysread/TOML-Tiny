@@ -11,7 +11,7 @@ ok dies(sub{
 [a[b]
 zyx = 42
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/nested-brackets-open';
 
 done_testing;

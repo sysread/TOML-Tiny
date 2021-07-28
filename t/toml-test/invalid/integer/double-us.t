@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 double-us = 1__23
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/double-us';
 
 done_testing;

@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 no-ending-quote = "One time, at band camp
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/no-close';
 
 done_testing;

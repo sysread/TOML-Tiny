@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 bare!key = 123
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/bare-invalid-character';
 
 done_testing;

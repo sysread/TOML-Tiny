@@ -13,7 +13,7 @@ a.b = 1
 # Tries to access it as table: error
 a.b.c = 2
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/dotted-redefine-table';
 
 done_testing;

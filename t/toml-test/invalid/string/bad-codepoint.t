@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 invalid-codepoint = "This string contains a non scalar unicode codepoint \\uD801"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/bad-codepoint';
 
 done_testing;

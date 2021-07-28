@@ -11,7 +11,7 @@ ok dies(sub{
 # The following line contains an invalid UTF-8 sequence.
 bad = "Ã"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on encoding/bad-utf8-in-string';
 
 done_testing;

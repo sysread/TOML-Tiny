@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 [abc = 1
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/open-bracket';
 
 done_testing;

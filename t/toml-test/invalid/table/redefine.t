@@ -15,7 +15,7 @@ b = 1
 [a.b]
 c = 2
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/redefine';
 
 done_testing;

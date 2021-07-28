@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 inf-incomplete-1 = in
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/inf-incomplete-1';
 
 done_testing;

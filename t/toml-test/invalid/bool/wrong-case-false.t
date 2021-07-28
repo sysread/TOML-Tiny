@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 b = FALSE
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on bool/wrong-case-false';
 
 done_testing;

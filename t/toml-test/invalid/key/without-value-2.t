@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 key = 
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/without-value-2';
 
 done_testing;

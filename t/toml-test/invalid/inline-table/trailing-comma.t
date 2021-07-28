@@ -12,7 +12,7 @@ ok dies(sub{
 # last key/value pair in an inline table
 abc = { abc = 123, }
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on inline-table/trailing-comma';
 
 done_testing;

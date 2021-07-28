@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 us-before-point = 1_.2
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/us-before-point';
 
 done_testing;

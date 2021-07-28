@@ -23,6 +23,11 @@ sub new {
   return $self;
 }
 
+sub last_token {
+  my $self = shift;
+  return $self->{last_token};
+}
+
 sub next_token {
   my $self = shift;
 
@@ -124,12 +129,19 @@ sub next_token {
       state $tokenizers = {};
       my $tokenize = $tokenizers->{$type} //= $self->can("tokenize_$type") || 0;
 
-      $token = $self->{last_token} = {
+      $token = {
         line  => $self->{line},
         pos   => $self->{pos},
         type  => $type,
         value => $tokenize ? $tokenize->($self, $value) : $value,
+        prev  => $self->{last_token},
       };
+
+      # Unset the previous token's 'prev' key to prevent keeping the entire
+      # chain of previously parsed tokens alive for the whole process.
+      undef $self->{last_token}{prev};
+
+      $self->{last_token} = $token;
     }
 
     $self->update_position;

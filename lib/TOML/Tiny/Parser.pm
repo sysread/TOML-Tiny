@@ -31,7 +31,7 @@ sub new {
     inflate_float    => $param{inflate_float},
     inflate_datetime => $param{inflate_datetime} || sub{ shift },
     inflate_boolean  => $param{inflate_boolean}  || sub{ shift eq 'true' ? $TRUE : $FALSE },
-    strict_arrays    => $param{strict_arrays},
+    strict           => $param{strict},
   }, $class;
 }
 
@@ -295,7 +295,7 @@ sub parse_inline_array {
     }
   }
 
-  if (@array > 1 && $self->{strict_arrays}) {
+  if (@array > 1 && $self->{strict}) {
     my ($ok, $err) = is_strict_array(\@array);
     $self->parse_error(undef, $err)
       unless $ok;
@@ -310,8 +310,21 @@ sub parse_inline_table {
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->{type}) {
-      next TOKEN when /comma/;
-      last TOKEN when /inline_table_close/;
+      # Officially, trailing commas are not permitted in inline tables. Because
+      # TOML is just so awesome.
+      when ('inline_table_close') {
+        if ($self->{strict}) {
+          my $prev = $token->{prev};
+
+          $self->parse_error($token, "inline table cannot end with a trailing comma")
+            if $prev
+            && $prev->{type} eq 'comma';
+        }
+
+        last TOKEN;
+      }
+
+      next TOKEN when 'comma';
 
       when ('key') {
         $self->expect_type($self->next_token, 'assign');

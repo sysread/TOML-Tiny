@@ -12,7 +12,7 @@ a = """
   foo \\ \\n
   bar"""
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/multiline-escape-space';
 
 done_testing;

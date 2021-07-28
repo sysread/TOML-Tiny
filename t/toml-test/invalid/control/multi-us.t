@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 multi-us = """null"""
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on control/multi-us';
 
 done_testing;

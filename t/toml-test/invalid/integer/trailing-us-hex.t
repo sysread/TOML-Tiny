@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 trailing-us-hex = 0x1_
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/trailing-us-hex';
 
 done_testing;

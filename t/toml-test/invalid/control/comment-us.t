@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 comment-us = "ctrl-_" # 
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on control/comment-us';
 
 done_testing;

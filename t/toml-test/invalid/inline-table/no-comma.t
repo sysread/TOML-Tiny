@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 t = {x = 3 y = 4}
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on inline-table/no-comma';
 
 done_testing;

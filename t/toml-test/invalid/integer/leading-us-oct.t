@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 leading-us-oct = _0o1
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/leading-us-oct';
 
 done_testing;

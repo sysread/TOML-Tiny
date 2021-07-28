@@ -105,7 +105,7 @@ my $expected1 = {
                'section' => {
                               '8' => 'eight',
                               'eleven' => bless( {
-                                                   '_file' => '(eval 365)',
+                                                   '_file' => '(eval 362)',
                                                    '_lines' => [
                                                                  7
                                                                ],
@@ -122,7 +122,7 @@ my $expected1 = {
                                                    'operator' => 'CODE(...)'
                                                  }, 'Test2::Compare::Custom' ),
                               'five' => bless( {
-                                                 '_file' => '(eval 363)',
+                                                 '_file' => '(eval 365)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -143,7 +143,7 @@ my $expected1 = {
 #also not comment',
                               'one' => '11',
                               'six' => bless( {
-                                                '_file' => '(eval 362)',
+                                                '_file' => '(eval 364)',
                                                 '_lines' => [
                                                               7
                                                             ],
@@ -160,7 +160,7 @@ my $expected1 = {
                                                 'operator' => 'CODE(...)'
                                               }, 'Test2::Compare::Custom' ),
                               'ten' => bless( {
-                                                '_file' => '(eval 364)',
+                                                '_file' => '(eval 363)',
                                                 '_lines' => [
                                                               7
                                                             ],

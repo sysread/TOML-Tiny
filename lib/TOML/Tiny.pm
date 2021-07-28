@@ -21,8 +21,18 @@ our @EXPORT = qw(
 #-------------------------------------------------------------------------------
 sub from_toml {
   my $source = shift;
+  my %param  = @_;
+
+  # strict was previously strict_arrays; accept both for backward
+  # compatibility.
+  if (exists $param{strict_arrays}) {
+    $param{strict} = $param{strict_arrays};
+    delete $param{strict_arrays};
+  }
+
   my $parser = TOML::Tiny::Parser->new(@_);
-  my $toml = eval{ $parser->parse($source) };
+  my $toml   = eval{ $parser->parse($source) };
+
   if (wantarray) {
     return ($toml, $@);
   } else {
@@ -32,7 +42,16 @@ sub from_toml {
 }
 
 sub to_toml {
-  goto \&TOML::Tiny::Writer::to_toml;
+  my ($data, %param) = @_;
+
+  # strict was previously strict_arrays; accept both for backward
+  # compatibility.
+  if (exists $param{strict_arrays}) {
+    $param{strict} = $param{strict_arrays};
+    delete $param{strict_arrays};
+  }
+
+  TOML::Tiny::Writer::to_toml($data, %param);
 }
 
 #-------------------------------------------------------------------------------
@@ -50,9 +69,7 @@ sub decode {
 
 sub encode {
   my ($self, $data) = @_;
-  TOML::Tiny::Writer::to_toml($data,
-    strict_arrays => $self->{strict_arrays},
-  );
+  TOML::Tiny::Writer::to_toml($data, strict => $self->{strict});
 }
 
 #-------------------------------------------------------------------------------
@@ -102,8 +119,8 @@ sub parse {
 
 C<TOML::Tiny> implements a pure-perl parser and generator for the
 L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v0.5
-(with a few caveats; see L</strict_arrays>) with support for more recent
-changes in pursuit of v1.0.
+(with a few caveats; see L</strict>) with support for more recent changes in
+pursuit of v1.0.
 
 C<TOML::Tiny> strives to maintain an interface compatible to the L<TOML> and
 L<TOML::Parser> modules, and could even be used to override C<$TOML::Parser>:
@@ -136,7 +153,7 @@ errors will result in returning two values, C<undef> and an error message.
 
   my ($result, $error) = from_toml($toml_string);
 
-Homogenous array strictures are enabled by passing C<strict_arrays>:
+Homogenous array strictures are enabled by passing C<strict>:
 
   # Croaks
   my $result = from_toml(q{mixed=[1, 2, "three"]})
@@ -171,10 +188,10 @@ Encodes a hash ref as a C<TOML>-formatted string.
   # [foo]
   # bar="bat"
 
-Homogenous array strictures are enabled by passing C<strict_arrays>:
+Homogenous array strictures are enabled by passing C<strict => 1>:
 
   # Croaks
-  my $toml = to_toml({mixed => [1, 2, "three"]}, strict_arrays => 1);
+  my $toml = to_toml({mixed => [1, 2, "three"]}, strict => 1);
 
 =head3 mapping perl to TOML types
 
@@ -328,7 +345,7 @@ routine.
     };
   );
 
-=item strict_arrays
+=item strict
 
 C<TOML v0.5> specified homogenous arrays. This has since been removed and will no
 longer be part of the standard as of C<v1.0> (as of the time of writing; the
@@ -336,8 +353,14 @@ author of C<TOML> has gone back and forth on the issue, so no guarantees).
 
 By default, C<TOML::Tiny> is flexible and supports heterogenous arrays. If you
 wish to require strictly typed arrays (for C<TOML>'s definition of "type",
-anyway), C<strict_arrays> will produce an error when encountering arrays with
+anyway), C<strict> will produce an error when encountering arrays with
 heterogenous types.
+
+C<strict> mode also imposes some other miscellaneous strictures on C<TOML>
+input, such as disallowing trailing commas in inline tables.
+
+B<Note:> C<strict> was previously called C<strict_arrays>. Both are accepted
+for backward compatibility.
 
 =back
 
@@ -349,7 +372,7 @@ Decodes C<TOML> and returns a hash ref. Dies on parse error.
 =head2 encode
 
 Encodes a perl hash ref as a C<TOML>-formatted string. Dies when encountering
-an array of mixed types if C<strict_arrays> was set.
+an array of mixed types if C<strict> was set.
 
 =head2 parse
 
@@ -366,10 +389,10 @@ L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
 tighten things up. C<TOML::Tiny> defaults to (somehwat) stricter parsing, with
 the exception of permitting heterogenous arrays (illegal in v4 and v0.5, but
 permissible in the upcoming v1.0); optional enforcement of homogenous arrays is
-supported with C<strict_arrays>.
+supported with C<strict>.
 
 C<TOML::Tiny> supports a number of options which do not exist in L<TOML>:
-L</inflate_integer>, L</inflate_float>, and L</strict_arrays>.
+L</inflate_integer>, L</inflate_float>, and L</strict>.
 
 C<TOML::Tiny> ignores invalid surrogate pairs within basic and multiline
 strings (L<TOML> may attempt to decode an invalid pair). Additionally, only

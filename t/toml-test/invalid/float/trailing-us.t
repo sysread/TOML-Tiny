@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 trailing-us = 1.2_
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/trailing-us';
 
 done_testing;

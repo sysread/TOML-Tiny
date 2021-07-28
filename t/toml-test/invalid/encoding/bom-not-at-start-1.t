@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 bom-not-at-start ÿý
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on encoding/bom-not-at-start-1';
 
 done_testing;

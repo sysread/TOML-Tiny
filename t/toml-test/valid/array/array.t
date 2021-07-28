@@ -16,7 +16,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'comments' => [
                                bless( {
-                                        '_file' => '(eval 321)',
+                                        '_file' => '(eval 116)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                                bless( {
-                                        '_file' => '(eval 322)',
+                                        '_file' => '(eval 117)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -52,7 +52,7 @@ my $expected1 = {
                              ],
                'dates' => [
                             bless( {
-                                     '_file' => '(eval 45)',
+                                     '_file' => '(eval 118)',
                                      '_lines' => [
                                                    13
                                                  ],
@@ -71,7 +71,7 @@ my $expected1 = {
                                      'operator' => 'CODE(...)'
                                    }, 'Test2::Compare::Custom' ),
                             bless( {
-                                     '_file' => '(eval 316)',
+                                     '_file' => '(eval 324)',
                                      '_lines' => [
                                                    13
                                                  ],
@@ -90,7 +90,7 @@ my $expected1 = {
                                      'operator' => 'CODE(...)'
                                    }, 'Test2::Compare::Custom' ),
                             bless( {
-                                     '_file' => '(eval 317)',
+                                     '_file' => '(eval 325)',
                                      '_lines' => [
                                                    13
                                                  ],
@@ -111,7 +111,7 @@ my $expected1 = {
                           ],
                'floats' => [
                              bless( {
-                                      '_file' => '(eval 323)',
+                                      '_file' => '(eval 45)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -128,7 +128,7 @@ my $expected1 = {
                                       'operator' => 'CODE(...)'
                                     }, 'Test2::Compare::Custom' ),
                              bless( {
-                                      '_file' => '(eval 324)',
+                                      '_file' => '(eval 111)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -145,7 +145,7 @@ my $expected1 = {
                                       'operator' => 'CODE(...)'
                                     }, 'Test2::Compare::Custom' ),
                              bless( {
-                                      '_file' => '(eval 325)',
+                                      '_file' => '(eval 112)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -164,7 +164,7 @@ my $expected1 = {
                            ],
                'ints' => [
                            bless( {
-                                    '_file' => '(eval 318)',
+                                    '_file' => '(eval 113)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -181,7 +181,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                            bless( {
-                                    '_file' => '(eval 319)',
+                                    '_file' => '(eval 114)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -198,7 +198,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                            bless( {
-                                    '_file' => '(eval 320)',
+                                    '_file' => '(eval 115)',
                                     '_lines' => [
                                                   7
                                                 ],

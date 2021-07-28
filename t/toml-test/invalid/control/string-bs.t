@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 string-bs = "backspace"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on control/string-bs';
 
 done_testing;

@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 bad-ending-quote = "double and single'
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/wrong-close';
 
 done_testing;

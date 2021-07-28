@@ -19,7 +19,7 @@ ok dies(sub{
   [fruit.variety]
     name = "granny smith"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on array/tables-2';
 
 done_testing;

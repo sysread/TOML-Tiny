@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 d = 2006-01-30T
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on datetime/trailing-t';
 
 done_testing;

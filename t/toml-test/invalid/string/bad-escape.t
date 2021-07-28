@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 invalid-escape = "This string has a bad \\a escape character."
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/bad-escape';
 
 done_testing;

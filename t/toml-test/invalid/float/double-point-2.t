@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 double-point-2 = 0.1.2
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on float/double-point-2';
 
 done_testing;

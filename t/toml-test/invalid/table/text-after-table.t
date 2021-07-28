@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 [error] this shouldn't be here
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/text-after-table';
 
 done_testing;

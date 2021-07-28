@@ -11,7 +11,7 @@ ok dies(sub{
 invalid = """
     this will fail
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/multiline-no-close';
 
 done_testing;

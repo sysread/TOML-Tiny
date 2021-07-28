@@ -11,7 +11,7 @@ ok dies(sub{
 dupe = false
 dupe = true
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/duplicate-keys';
 
 done_testing;

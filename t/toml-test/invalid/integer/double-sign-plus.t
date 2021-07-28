@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 double-sign-plus = ++99
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/double-sign-plus';
 
 done_testing;

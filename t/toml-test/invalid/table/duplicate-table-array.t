@@ -11,7 +11,7 @@ ok dies(sub{
 [tbl]
 [[tbl]]
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on table/duplicate-table-array';
 
 done_testing;

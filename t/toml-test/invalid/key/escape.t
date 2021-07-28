@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 \\u00c0 = "latin capital letter A with grave"
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/escape';
 
 done_testing;

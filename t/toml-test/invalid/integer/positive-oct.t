@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 positive-oct = +0o99
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on integer/positive-oct';
 
 done_testing;

@@ -11,7 +11,7 @@ ok dies(sub{
 barekey
    = 123
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on key/newline';
 
 done_testing;

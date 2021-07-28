@@ -10,7 +10,7 @@ ok dies(sub{
   from_toml(q|
 string = "Is there life after strings?" No.
 
-  |, strict_arrays => 1);
+  |, strict => 1);
 }), 'strict_mode dies on string/text-after-string';
 
 done_testing;

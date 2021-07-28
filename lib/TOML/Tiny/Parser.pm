@@ -145,7 +145,6 @@ sub scan_to_key {
   return $node;
 }
 
-
 sub parse_table {
   my $self  = shift;
   my $token = shift // $self->next_token // return; # may be undef on first token in empty document
@@ -154,7 +153,7 @@ sub parse_table {
   $self->scan_to_key;
 
   my @keys = $self->get_keys;
-  my $key = join '.', @keys;
+  my $key = join '.', map{ qq{"$_"} } @keys;
   if (exists $self->{tables}{$key}) {
     # Tables cannot be redefined, *except* when doing so within a goddamn table
     # array. Gawd I hate TOML.

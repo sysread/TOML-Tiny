@@ -2,6 +2,7 @@ requires 'perl'         => '>= 5.018';
 requires 'Carp'         => '0';
 requires 'Data::Dumper' => '0';
 requires 'Exporter'     => '0';
+requires 'Encode'       => '0';
 requires 'Math::BigInt' => '>= 1.999718';
 
 recommends 'Types::Serialiser' => 0;

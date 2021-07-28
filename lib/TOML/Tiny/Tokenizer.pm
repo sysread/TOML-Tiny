@@ -8,12 +8,14 @@ use charnames qw(:full);
 use v5.18;
 
 use TOML::Tiny::Grammar;
+use Encode qw(decode FB_CROAK);
 
 sub new {
   my ($class, %param) = @_;
+  decode('UTF-8', "$param{source}", FB_CROAK);
 
   my $self = bless{
-    source        => $param{source},
+    source        => decode('UTF-8', "$param{source}", FB_CROAK),
     last_position => length $param{source},
     position      => 0,
     line          => 1,

@@ -270,7 +270,7 @@ sub parse_value {
     return $self->{inflate_boolean}->($token->{value}) when 'bool';
     return $self->{inflate_datetime}->($token->{value}) when 'datetime';
     return $self->parse_inline_table when 'inline_table';
-    return $self->parse_inline_array when 'inline_array';
+    return $self->parse_array when 'inline_array';
 
     default{
       $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
@@ -278,18 +278,30 @@ sub parse_value {
   }
 }
 
-sub parse_inline_array {
+sub parse_array {
   my $self = shift;
+
   my @array;
+  my $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
 
   TOKEN: while (my $token = $self->next_token) {
+use DDP; p $token;
+    if ($expect && $token->{type} !~ /$expect/) {
+      $self->parse_error($token, "expected $expect, but found $token->{type}");
+    }
+
     for ($token->{type}) {
-      next TOKEN when 'comma';
+      when ('comma') {
+        $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
+        next TOKEN;
+      }
+
       next TOKEN when 'EOL';
       last TOKEN when 'inline_array_close';
 
       default{
         push @array, $self->parse_value($token);
+        $expect = 'comma|EOL|inline_array_close';
       }
     }
   }

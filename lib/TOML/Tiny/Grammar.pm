@@ -42,11 +42,18 @@ our @EXPORT = qw(
   $SpecialFloat
 );
 
+#-------------------------------------------------------------------------------
+# Primitives
+#-------------------------------------------------------------------------------
 our $WS      = qr/[\x20\x09]/;     # space, tab
 our $CRLF    = qr/\x0D?\x0A/;      # cr? lf
 our $Comment = qr/\x23.*/;         # #comment
 our $EOL     = qr/$Comment?$CRLF/; # crlf or comment + crlf
+our $Boolean = qr/\b(?:true)|(?:false)\b/;
 
+#-------------------------------------------------------------------------------
+# Strings
+#-------------------------------------------------------------------------------
 our $Escape = qr{
   \x5C                       # leading \
   (?>
@@ -86,13 +93,14 @@ our $MultiLineString = qr{
 
 our $String = qr/$MultiLineString | $BasicString | $MultiLineStringLiteral | $StringLiteral/x;
 
+#-------------------------------------------------------------------------------
+# Keys
+#-------------------------------------------------------------------------------
 our $BareKey   = qr/[-_a-zA-Z0-9]+/;
 our $QuotedKey = qr/$BasicString|$StringLiteral/;
 our $SimpleKey = qr/$BareKey|$QuotedKey/;
 our $DottedKey = qr/$SimpleKey(?:\.$SimpleKey)+/;
 our $Key       = qr/$BareKey|$QuotedKey|$DottedKey/;
-
-our $Boolean   = qr/\b(?:true)|(?:false)\b/;
 
 #-----------------------------------------------------------------------------
 # Dates (RFC 3339)

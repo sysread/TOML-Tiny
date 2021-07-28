@@ -8,6 +8,7 @@ use v5.18;
 
 use Carp;
 use Data::Dumper;
+use Encode qw(decode FB_CROAK);
 use TOML::Tiny::Util qw(is_strict_array);
 
 require Math::BigFloat;
@@ -41,6 +42,10 @@ sub next_token {
 
 sub parse {
   my ($self, $toml) = @_;
+
+  if ($self->{strict}) {
+    $toml = decode('UTF-8', "$toml", FB_CROAK);
+  }
 
   $self->{tokenizer} = TOML::Tiny::Tokenizer->new(source => $toml);
   $self->{keys}      = [];

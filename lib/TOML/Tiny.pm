@@ -20,8 +20,7 @@ our @EXPORT = qw(
 # TOML module compatibility
 #-------------------------------------------------------------------------------
 sub from_toml {
-  my $source = shift;
-  my %param  = @_;
+  my ($source, %param) = @_;
 
   # strict was previously strict_arrays; accept both for backward
   # compatibility.
@@ -30,7 +29,7 @@ sub from_toml {
     delete $param{strict_arrays};
   }
 
-  my $parser = TOML::Tiny::Parser->new(@_);
+  my $parser = TOML::Tiny::Parser->new(%param);
   my $toml   = eval{ $parser->parse($source) };
 
   if (wantarray) {

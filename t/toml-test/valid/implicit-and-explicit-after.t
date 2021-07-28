@@ -2,8 +2,6 @@
 use utf8;
 use Test2::V0;
 use Data::Dumper;
-use DateTime;
-use DateTime::Format::RFC3339;
 use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
@@ -16,12 +14,12 @@ my $expected1 = {
                         'b' => {
                                  'c' => {
                                           'answer' => bless( {
-                                                               'operator' => 'CODE(...)',
+                                                               '_file' => '(eval 417)',
                                                                '_lines' => [
                                                                              7
                                                                            ],
                                                                'code' => sub {
-                                                                             BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                                             BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
                                                                              use strict;
                                                                              no feature ':all';
                                                                              use feature ':5.16';
@@ -30,17 +28,17 @@ my $expected1 = {
                                                                              'Math::BigInt'->new('42')->beq($got);
                                                                          },
                                                                'name' => 'Math::BigInt->new("42")->beq($_)',
-                                                               '_file' => '(eval 343)'
+                                                               'operator' => 'CODE(...)'
                                                              }, 'Test2::Compare::Custom' )
                                         }
                                },
                         'better' => bless( {
-                                             'operator' => 'CODE(...)',
+                                             '_file' => '(eval 418)',
                                              '_lines' => [
                                                            7
                                                          ],
                                              'code' => sub {
-                                                           BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                           BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
                                                            use strict;
                                                            no feature ':all';
                                                            use feature ':5.16';
@@ -49,18 +47,18 @@ my $expected1 = {
                                                            'Math::BigInt'->new('43')->beq($got);
                                                        },
                                              'name' => 'Math::BigInt->new("43")->beq($_)',
-                                             '_file' => '(eval 342)'
+                                             'operator' => 'CODE(...)'
                                            }, 'Test2::Compare::Custom' )
                       }
              };
 
 
-my $actual = from_toml(q{[a.b.c]
+my $actual = from_toml(q|[a.b.c]
 answer = 42
 
 [a]
 better = 43
-});
+|);
 
 is($actual, $expected1, 'implicit-and-explicit-after - from_toml') or do{
   diag 'EXPECTED:';

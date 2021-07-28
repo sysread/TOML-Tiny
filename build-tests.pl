@@ -10,6 +10,8 @@ use v5.18;
 
 use Data::Dumper;
 use JSON::PP;
+use File::Find;
+use File::Spec;
 
 # We want to read unicde as characters from toml-test source files. That makes
 # things simpler for us when we parse them and generate perl source in the
@@ -30,8 +32,9 @@ sub deturd_json{
   my $annotated = $json->decode(slurp(shift));
   my $cleanish = deannotate($annotated);
 
-  local $Data::Dumper::Varname = 'expected';
-  local $Data::Dumper::Deparse = 1;
+  local $Data::Dumper::Varname  = 'expected';
+  local $Data::Dumper::Deparse  = 1;
+  local $Data::Dumper::Sortkeys = 1;
   return Dumper($cleanish);
 }
 
@@ -54,6 +57,8 @@ sub deannotate{
             my $src = qq{
               use Test2::Tools::Compare qw(validator);
               validator(sub{
+                use Test2::Require::Module 'DateTime';
+                use Test2::Require::Module 'DateTime::Format::RFC3339';
                 use DateTime;
                 use DateTime::Format::RFC3339;
                 my \$exp = DateTime::Format::RFC3339->parse_datetime("$data->{value}");
@@ -121,6 +126,26 @@ sub deannotate{
   }
 }
 
+sub find_tests{
+  my $src = shift;
+  my %tests;
+  find {
+    no_chdir => 1,
+    wanted => sub {
+      return unless /\.toml$/;
+
+      my $abs = File::Spec->rel2abs( $_ );
+      my $rel = File::Spec->abs2rel( $abs, $src );
+
+      my $toml = $rel;
+      my $test = substr $rel, 0, -5;
+
+      $tests{$test} = $toml;
+    },
+  } => $src;
+  return %tests;
+}
+
 sub build_pospath_test_files{
   my $src  = shift;
   my $dest = shift;
@@ -130,42 +155,39 @@ sub build_pospath_test_files{
 
   print "Generating positive path tests from $src\n";
 
-  unless (-d $dest) {
-    system('mkdir', '-p', $dest) == 0 || die $?;
-  }
-
-  my %TOML;
-  my %JSON;
-
-  opendir my $dh, $src or die $!;
-
-  while (my $file = readdir $dh) {
-    my $path = "$src/$file";
-    my ($test, $ext) = $file =~ /^(.*)\.([^\.]+)$/;
-
-    for ($ext) {
-      next unless defined;
-      $TOML{$test} = $path when /toml/;
-      $JSON{$test} = $path when /json/;
-    }
-  }
-
-  closedir $dh;
+  my %TOML = find_tests( $src );
 
   for (sort keys %TOML) {
-    my $data = deturd_json($JSON{$_});
+    my $json = substr( $TOML{$_}, 0, -4 ) . 'json';
+    my $data = deturd_json("$src/$json");
+    my $test = "$dest/$_.t";
 
-    my $toml = slurp($TOML{$_});
+    my $toml = slurp("$src/$TOML{$_}");
     $toml =~ s/\\/\\\\/g;
 
-    open my $fh, '>', "$dest/$_.t" or die $!;
+    my ( undef, $path ) = File::Spec->splitpath( $test );
+    unless (-f $test) {
+      system('mkdir', '-p', $path) == 0 || die $?;
+    }
+
+    open my $fh, '>', $test or die $!;
+
+    my $optional_deps = '';
+    if ( $data =~ /DateTime/ ) {
+        $optional_deps = <<'DEPS';
+
+use Test2::Require::Module 'DateTime';
+use Test2::Require::Module 'DateTime::Format::RFC3339';
+use DateTime;
+use DateTime::Format::RFC3339;
+DEPS
+        chomp $optional_deps;
+    }
 
     print $fh qq{# File automatically generated from BurntSushi/toml-test
 use utf8;
 use Test2::V0;
-use Data::Dumper;
-use DateTime;
-use DateTime::Format::RFC3339;
+use Data::Dumper;$optional_deps
 use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
@@ -175,7 +197,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $data
 
-my \$actual = from_toml(q{$toml});
+my \$actual = from_toml(q|$toml|);
 
 is(\$actual, \$expected1, '$_ - from_toml') or do{
   diag 'EXPECTED:';
@@ -216,30 +238,19 @@ sub build_negpath_test_files{
 
   print "Generating negative path tests from $src\n";
 
-  unless (-d $dest) {
-    system('mkdir', '-p', $dest) == 0 || die $?;
-  }
-
-  my %TOML;
-
-  opendir my $dh, $src or die $!;
-
-  while (my $file = readdir $dh) {
-    my $path = "$src/$file";
-    my ($test, $ext) = $file =~ /^(.*)\.([^\.]+)$/;
-
-    if ($ext && $ext eq 'toml') {
-      $TOML{$test} = $path;
-    }
-  }
-
-  closedir $dh;
+  my %TOML = find_tests( $src );
 
   for (sort keys %TOML) {
-    my $toml = slurp($TOML{$_});
+    my $toml = slurp("$src/$TOML{$_}");
     $toml =~ s/\\/\\\\/g;
 
-    open my $fh, '>', "$dest/$_.t" or die $!;
+    my $test = "$dest/$_.t";
+    my ( undef, $path ) = File::Spec->splitpath( $test );
+    unless (-f $test) {
+      system('mkdir', '-p', $path) == 0 || die $?;
+    }
+
+    open my $fh, '>', $test or die $!;
 
     print $fh qq{# File automatically generated from BurntSushi/toml-test
 use utf8;
@@ -250,9 +261,9 @@ binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
 ok dies(sub{
-  from_toml(q{
+  from_toml(q|
 $toml
-  }, strict_arrays => 1);
+  |, strict_arrays => 1);
 }), 'strict_mode dies on $_';
 
 done_testing;};

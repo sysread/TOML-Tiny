@@ -1,0 +1,63 @@
+# File automatically generated from BurntSushi/toml-test
+use utf8;
+use Test2::V0;
+use Data::Dumper;
+use Math::BigInt;
+use Math::BigFloat;
+use TOML::Tiny;
+
+binmode STDIN,  ':encoding(UTF-8)';
+binmode STDOUT, ':encoding(UTF-8)';
+
+my $expected1 = {
+               '
+' => 'newline',
+               '"' => 'just a quote',
+               '"quoted"' => {
+                               'quote' => 1
+                             },
+               'a.b' => {
+                          "\x{c0}" => {}
+                        },
+               'backsp' => {},
+               "\x{c0}" => 'latin capital letter A with grave'
+             };
+
+
+my $actual = from_toml(q|"\\n" = "newline"
+"\\u00c0" = "latin capital letter A with grave"
+"\\"" = "just a quote"
+
+["backsp\\b\\b"]
+
+["\\"quoted\\""]
+quote = true
+
+["a.b"."\\u00c0"]
+|);
+
+is($actual, $expected1, 'key/escapes - from_toml') or do{
+  diag 'EXPECTED:';
+  diag Dumper($expected1);
+
+  diag '';
+  diag 'ACTUAL:';
+  diag Dumper($actual);
+};
+
+is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'key/escapes - to_toml') or do{
+  diag "ERROR: $@" if $@;
+
+  diag 'INPUT:';
+  diag Dumper($actual);
+
+  diag '';
+  diag 'GENERATED TOML:';
+  diag to_toml($actual);
+
+  diag '';
+  diag 'REPARSED FROM GENERATED TOML:';
+  diag Dumper(scalar from_toml(to_toml($actual)));
+};
+
+done_testing;

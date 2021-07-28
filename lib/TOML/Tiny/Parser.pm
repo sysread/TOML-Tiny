@@ -89,9 +89,9 @@ $src
 
 sub expect_type {
   my ($self, $token, $expected) = @_;
-  my $actual = $token->{type};
+  my $actual = $token ? $token->{type} : 'EOF';
   $self->parse_error($token, "expected $expected, but found $actual")
-    unless $actual eq $expected;
+    unless $actual =~ /$expected/;
 }
 
 
@@ -280,19 +280,14 @@ sub parse_value {
 
 sub parse_array {
   my $self = shift;
-
   my @array;
   my $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
 
   TOKEN: while (1) {
     my $token = $self->next_token;
-    my $type  = $token ? $token->{type} : 'EOF';
+    $self->expect_type($token, $expect);
 
-    if (!$token || $type !~ /$expect/) {
-      $self->parse_error($token, "expected $expect, but found $type");
-    }
-
-    for ($type) {
+    for ($token->{type}) {
       when ('comma') {
         $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
         next TOKEN;
@@ -318,32 +313,32 @@ sub parse_array {
 }
 
 sub parse_inline_table {
-  my $self  = shift;
-  my $table = {};
+  my $self   = shift;
+  my $table  = {};
+  my $expect = 'EOL|inline_table_close|key';
 
-  TOKEN: while (my $token = $self->next_token) {
+  TOKEN: while (1) {
+    my $token = $self->next_token;
+    $self->expect_type($token, $expect);
+
     for ($token->{type}) {
-      # Officially, trailing commas are not permitted in inline tables. Because
-      # TOML is just so awesome.
-      when ('inline_table_close') {
-        if ($self->{strict}) {
-          my $prev = $token->{prev};
+      when ('comma') {
+        $expect = $self->{strict}
+          ? 'EOL|key'
+          : 'EOL|key|inline_table_close';
 
-          $self->parse_error($token, "inline table cannot end with a trailing comma")
-            if $prev
-            && $prev->{type} eq 'comma';
-        }
-
-        last TOKEN;
+        next TOKEN;
       }
-
-      next TOKEN when 'comma';
 
       when ('key') {
         $self->expect_type($self->next_token, 'assign');
         my $key = $token->{value}[0];
         $table->{ $key } = $self->parse_value;
+        $expect = 'comma|inline_table_close';
+        next TOKEN;
       }
+
+      last TOKEN when 'inline_table_close';
 
       default{
         $self->parse_error($token, "inline table expected key-value pair, but found $_");

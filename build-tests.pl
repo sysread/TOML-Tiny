@@ -10,6 +10,7 @@ use v5.18;
 
 use Data::Dumper;
 use JSON::PP;
+use File::Copy;
 use File::Find;
 use File::Spec;
 
@@ -241,8 +242,7 @@ sub build_negpath_test_files{
   my %TOML = find_tests( $src );
 
   for (sort keys %TOML) {
-    my $toml = slurp("$src/$TOML{$_}");
-    $toml =~ s/\\/\\\\/g;
+    copy("$src/$TOML{$_}", "$dest/$TOML{$_}");
 
     my $test = "$dest/$_.t";
     my ( undef, $path ) = File::Spec->splitpath( $test );
@@ -253,18 +253,14 @@ sub build_negpath_test_files{
     open my $fh, '>', $test or die $!;
 
     print $fh qq{# File automatically generated from BurntSushi/toml-test
-use utf8;
 use Test2::V0;
 use TOML::Tiny;
 
-binmode STDIN,  ':encoding(UTF-8)';
-binmode STDOUT, ':encoding(UTF-8)';
+open my \$fh, '<', "$dest/$TOML{$_}" or die \$!;
+my \$toml = do{ local \$/; <\$fh>; };
+close \$fh;
 
-ok dies(sub{
-  from_toml(q|
-$toml
-  |, strict => 1);
-}), 'strict_mode dies on $_';
+ok dies(sub{ from_toml(\$toml, strict => 1) }), 'strict_mode dies on $_';
 
 done_testing;};
 

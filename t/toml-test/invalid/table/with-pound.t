@@ -1,17 +1,11 @@
 # File automatically generated from BurntSushi/toml-test
-use utf8;
 use Test2::V0;
 use TOML::Tiny;
 
-binmode STDIN,  ':encoding(UTF-8)';
-binmode STDOUT, ':encoding(UTF-8)';
+open my $fh, '<', "./t/toml-test/invalid/table/with-pound.toml" or die $!;
+my $toml = do{ local $/; <$fh>; };
+close $fh;
 
-ok dies(sub{
-  from_toml(q|
-[key#group]
-answer = 42
-
-  |, strict => 1);
-}), 'strict_mode dies on table/with-pound';
+ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on table/with-pound';
 
 done_testing;

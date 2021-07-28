@@ -13,7 +13,7 @@ my $expected1 = {
                'strings-and-ints' => [
                                        'hi',
                                        bless( {
-                                                '_file' => '(eval 351)',
+                                                '_file' => '(eval 354)',
                                                 '_lines' => [
                                                               7
                                                             ],

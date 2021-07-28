@@ -15,7 +15,7 @@ my $expected1 = {
                '123' => 'num',
                '2018_10' => {
                               '001' => bless( {
-                                                '_file' => '(eval 482)',
+                                                '_file' => '(eval 484)',
                                                 '_lines' => [
                                                               7
                                                             ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                               }, 'Test2::Compare::Custom' )
                             },
                '34-11' => bless( {
-                                   '_file' => '(eval 481)',
+                                   '_file' => '(eval 485)',
                                    '_lines' => [
                                                  7
                                                ],

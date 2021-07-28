@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                '1' => bless( {
-                               '_file' => '(eval 502)',
+                               '_file' => '(eval 505)',
                                '_lines' => [
                                              7
                                            ],

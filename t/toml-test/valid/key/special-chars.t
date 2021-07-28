@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                '~!@$^&*()_+-`1234567890[]|/?><.,;:\'' => bless( {
-                                                                  '_file' => '(eval 511)',
+                                                                  '_file' => '(eval 514)',
                                                                   '_lines' => [
                                                                                 7
                                                                               ],

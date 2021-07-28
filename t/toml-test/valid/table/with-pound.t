@@ -12,7 +12,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'key#group' => {
                                 'answer' => bless( {
-                                                     '_file' => '(eval 529)',
+                                                     '_file' => '(eval 532)',
                                                      '_lines' => [
                                                                    7
                                                                  ],

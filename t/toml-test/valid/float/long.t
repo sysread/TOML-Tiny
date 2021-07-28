@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'longpi' => bless( {
-                                    '_file' => '(eval 405)',
+                                    '_file' => '(eval 408)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                'neglongpi' => bless( {
-                                       '_file' => '(eval 406)',
+                                       '_file' => '(eval 409)',
                                        '_lines' => [
                                                      7
                                                    ],

@@ -14,7 +14,7 @@ my $expected1 = {
                         'b' => {
                                  'c' => {
                                           'answer' => bless( {
-                                                               '_file' => '(eval 530)',
+                                                               '_file' => '(eval 533)',
                                                                '_lines' => [
                                                                              7
                                                                            ],

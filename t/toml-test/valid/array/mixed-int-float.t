@@ -12,7 +12,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'ints-and-floats' => [
                                       bless( {
-                                               '_file' => '(eval 349)',
+                                               '_file' => '(eval 352)',
                                                '_lines' => [
                                                              7
                                                            ],
@@ -29,7 +29,7 @@ my $expected1 = {
                                                'operator' => 'CODE(...)'
                                              }, 'Test2::Compare::Custom' ),
                                       bless( {
-                                               '_file' => '(eval 350)',
+                                               '_file' => '(eval 353)',
                                                '_lines' => [
                                                              7
                                                            ],

@@ -1,16 +1,11 @@
 # File automatically generated from BurntSushi/toml-test
-use utf8;
 use Test2::V0;
 use TOML::Tiny;
 
-binmode STDIN,  ':encoding(UTF-8)';
-binmode STDOUT, ':encoding(UTF-8)';
+open my $fh, '<', "./t/toml-test/invalid/key/partial-quoted.toml" or die $!;
+my $toml = do{ local $/; <$fh>; };
+close $fh;
 
-ok dies(sub{
-  from_toml(q|
-partial"quoted" = 5
-
-  |, strict => 1);
-}), 'strict_mode dies on key/partial-quoted';
+ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on key/partial-quoted';
 
 done_testing;

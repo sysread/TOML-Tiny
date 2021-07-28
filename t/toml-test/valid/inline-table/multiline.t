@@ -12,7 +12,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'tbl_multiline' => {
                                     'a' => bless( {
-                                                    '_file' => '(eval 445)',
+                                                    '_file' => '(eval 448)',
                                                     '_lines' => [
                                                                   7
                                                                 ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                     'c' => 'and yet
 another line',
                                     'd' => bless( {
-                                                    '_file' => '(eval 444)',
+                                                    '_file' => '(eval 447)',
                                                     '_lines' => [
                                                                   7
                                                                 ],

@@ -1,16 +1,11 @@
 # File automatically generated from BurntSushi/toml-test
-use utf8;
 use Test2::V0;
 use TOML::Tiny;
 
-binmode STDIN,  ':encoding(UTF-8)';
-binmode STDOUT, ':encoding(UTF-8)';
+open my $fh, '<', "./t/toml-test/invalid/string/bad-codepoint.toml" or die $!;
+my $toml = do{ local $/; <$fh>; };
+close $fh;
 
-ok dies(sub{
-  from_toml(q|
-invalid-codepoint = "This string contains a non scalar unicode codepoint \\uD801"
-
-  |, strict => 1);
-}), 'strict_mode dies on string/bad-codepoint';
+ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on string/bad-codepoint';
 
 done_testing;

@@ -276,10 +276,13 @@ my $usage = "usage: build-tests \$toml-test-repo-path \$toml-tiny-repo-path\n";
 my $toml_test_path = shift @ARGV || die $usage;
 my $toml_tiny_path = shift @ARGV || die $usage;
 
--d $toml_test_path          || die "invalid path to BurntSush/toml-test: $toml_test_path\n";
--d "$toml_test_path/tests"  || die "invalid path to BurntSush/toml-test: $toml_test_path\n";
+-d $toml_test_path          || die "invalid path to BurntSushi/toml-test: $toml_test_path\n";
+-d "$toml_test_path/tests"  || die "invalid path to BurntSushi/toml-test: $toml_test_path\n";
 -d $toml_tiny_path          || die "invalid path to TOML::Tiny repo: $toml_tiny_path\n";
 -d "$toml_tiny_path/t"      || die "invalid path to TOML::Tiny repo: $toml_tiny_path\n";
+
+print "Checking out master branch of BurntSushi/toml-test and pulling the latest commits\n";
+system("cd $toml_test_path && git checkout master && git pull") == 0 || die $!;
 
 build_pospath_test_files($toml_test_path, $toml_tiny_path);
 build_negpath_test_files($toml_test_path, $toml_tiny_path);

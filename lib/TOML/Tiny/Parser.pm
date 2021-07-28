@@ -284,13 +284,15 @@ sub parse_array {
   my @array;
   my $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
 
-  TOKEN: while (my $token = $self->next_token) {
-use DDP; p $token;
-    if ($expect && $token->{type} !~ /$expect/) {
-      $self->parse_error($token, "expected $expect, but found $token->{type}");
+  TOKEN: while (1) {
+    my $token = $self->next_token;
+    my $type  = $token ? $token->{type} : 'EOF';
+
+    if (!$token || $type !~ /$expect/) {
+      $self->parse_error($token, "expected $expect, but found $type");
     }
 
-    for ($token->{type}) {
+    for ($type) {
       when ('comma') {
         $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
         next TOKEN;

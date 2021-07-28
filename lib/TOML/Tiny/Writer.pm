@@ -130,9 +130,8 @@ sub to_toml {
       # note: this must come before any regex can flip this flag off
       return $data if svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK);
       return $data if $data =~ /$DateTime/;
-      return 'inf' if $data == 'inf';
-      return '-inf' if $data == -'inf';
-      return 'nan' if $data != $data;
+      return lc($data) if $data =~ /$SpecialFloat/;
+
       return to_toml_string($data);
     }
 

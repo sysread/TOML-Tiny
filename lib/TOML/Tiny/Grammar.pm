@@ -123,7 +123,7 @@ our $Integer      = qr/$Hex | $Oct | $Bin | $Dec/x;
 # Float
 #-----------------------------------------------------------------------------
 our $Exponent     = qr/[eE] $Dec/x;
-our $SpecialFloat = qr/[-+]? (?: (?:inf) | (?:nan) )/x;
+our $SpecialFloat = qr/[-+]? (?: (?:inf) | (?:nan) | (?:NaN) )/x;
 our $Fraction     = qr/\. $DecChar (?> _? $DecChar)*/x;
 
 our $Float = qr{

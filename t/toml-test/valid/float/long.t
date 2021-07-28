@@ -11,12 +11,12 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'longpi' => bless( {
-                                    '_file' => '(eval 405)',
+                                    '_file' => '(eval 406)',
                                     '_lines' => [
                                                   7
                                                 ],
                                     'code' => sub {
-                                                  BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                  BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                   use strict;
                                                   no feature ':all';
                                                   use feature ':5.16';
@@ -28,12 +28,12 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                'neglongpi' => bless( {
-                                       '_file' => '(eval 406)',
+                                       '_file' => '(eval 405)',
                                        '_lines' => [
                                                      7
                                                    ],
                                        'code' => sub {
-                                                     BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                     BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                      use strict;
                                                      no feature ':all';
                                                      use feature ':5.16';

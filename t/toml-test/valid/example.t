@@ -15,12 +15,12 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'best-day-ever' => bless( {
-                                           '_file' => '(eval 383)',
+                                           '_file' => '(eval 386)',
                                            '_lines' => [
                                                          13
                                                        ],
                                            'code' => sub {
-                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                          use strict;
                                                          no feature ':all';
                                                          use feature ':5.16';
@@ -37,12 +37,12 @@ my $expected1 = {
                                 'boring' => 0,
                                 'perfection' => [
                                                   bless( {
-                                                           '_file' => '(eval 384)',
+                                                           '_file' => '(eval 383)',
                                                            '_lines' => [
                                                                          7
                                                                        ],
                                                            'code' => sub {
-                                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                          use strict;
                                                                          no feature ':all';
                                                                          use feature ':5.16';
@@ -54,12 +54,12 @@ my $expected1 = {
                                                            'operator' => 'CODE(...)'
                                                          }, 'Test2::Compare::Custom' ),
                                                   bless( {
-                                                           '_file' => '(eval 385)',
+                                                           '_file' => '(eval 384)',
                                                            '_lines' => [
                                                                          7
                                                                        ],
                                                            'code' => sub {
-                                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                          use strict;
                                                                          no feature ':all';
                                                                          use feature ':5.16';
@@ -71,12 +71,12 @@ my $expected1 = {
                                                            'operator' => 'CODE(...)'
                                                          }, 'Test2::Compare::Custom' ),
                                                   bless( {
-                                                           '_file' => '(eval 386)',
+                                                           '_file' => '(eval 385)',
                                                            '_lines' => [
                                                                          7
                                                                        ],
                                                            'code' => sub {
-                                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                                         BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                          use strict;
                                                                          no feature ':all';
                                                                          use feature ':5.16';

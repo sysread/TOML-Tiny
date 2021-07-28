@@ -15,12 +15,12 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'nzdt' => bless( {
-                                  '_file' => '(eval 379)',
+                                  '_file' => '(eval 380)',
                                   '_lines' => [
                                                 13
                                               ],
                                   'code' => sub {
-                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                 use strict;
                                                 no feature ':all';
                                                 use feature ':5.16';
@@ -34,12 +34,12 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'nzst' => bless( {
-                                  '_file' => '(eval 381)',
+                                  '_file' => '(eval 382)',
                                   '_lines' => [
                                                 13
                                               ],
                                   'code' => sub {
-                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                 use strict;
                                                 no feature ':all';
                                                 use feature ':5.16';
@@ -53,12 +53,12 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'pdt' => bless( {
-                                 '_file' => '(eval 382)',
+                                 '_file' => '(eval 379)',
                                  '_lines' => [
                                                13
                                              ],
                                  'code' => sub {
-                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                use strict;
                                                no feature ':all';
                                                use feature ':5.16';
@@ -72,12 +72,12 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'utc' => bless( {
-                                 '_file' => '(eval 380)',
+                                 '_file' => '(eval 381)',
                                  '_lines' => [
                                                13
                                              ],
                                  'code' => sub {
-                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                use strict;
                                                no feature ':all';
                                                use feature ':5.16';

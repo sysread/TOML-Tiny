@@ -11,12 +11,12 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'a2' => bless( {
-                                '_file' => '(eval 469)',
+                                '_file' => '(eval 470)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -28,12 +28,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'a3' => bless( {
-                                '_file' => '(eval 477)',
+                                '_file' => '(eval 478)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -45,12 +45,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'b1' => bless( {
-                                '_file' => '(eval 473)',
+                                '_file' => '(eval 476)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -62,12 +62,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'b2' => bless( {
-                                '_file' => '(eval 480)',
+                                '_file' => '(eval 479)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -79,12 +79,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'b3' => bless( {
-                                '_file' => '(eval 472)',
+                                '_file' => '(eval 473)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -101,7 +101,7 @@ my $expected1 = {
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -113,12 +113,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'd2' => bless( {
-                                '_file' => '(eval 479)',
+                                '_file' => '(eval 469)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -130,12 +130,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'd3' => bless( {
-                                '_file' => '(eval 471)',
+                                '_file' => '(eval 477)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -147,12 +147,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'h1' => bless( {
-                                '_file' => '(eval 476)',
+                                '_file' => '(eval 472)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -164,12 +164,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'h2' => bless( {
-                                '_file' => '(eval 478)',
+                                '_file' => '(eval 471)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -181,12 +181,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'h3' => bless( {
-                                '_file' => '(eval 470)',
+                                '_file' => '(eval 475)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';
@@ -198,12 +198,12 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'o1' => bless( {
-                                '_file' => '(eval 475)',
+                                '_file' => '(eval 480)',
                                 '_lines' => [
                                               7
                                             ],
                                 'code' => sub {
-                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x40"}
+                                              BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                               use strict;
                                               no feature ':all';
                                               use feature ':5.16';

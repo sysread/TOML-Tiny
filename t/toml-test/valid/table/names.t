@@ -32,6 +32,11 @@ my $expected1 = {
                         "\x{29e}" => {
                                        'l' => {}
                                      }
+                      },
+               'x' => {
+                        '1' => {
+                                 '2' => {}
+                               }
                       }
              };
 
@@ -43,6 +48,8 @@ my $actual = from_toml(q|[a.b.c]
 [ d.e.f ]
 [ g . h . i ]
 [ j . "ʞ" . 'l' ]
+
+[x.1.2]
 |);
 
 is($actual, $expected1, 'table/names - from_toml') or do{

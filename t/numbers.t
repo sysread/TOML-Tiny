@@ -121,6 +121,9 @@ subtest 'floats' => sub{
 subtest 'round trip preserves numerical values' => sub{
   is to_toml(from_toml('port=1234')), 'port=1234', 'integers';
   is to_toml(from_toml('pi=3.14')), 'pi=3.14', 'floats';
+  is to_toml(from_toml('nan=nan')), 'nan=nan', 'nan';
+  is to_toml(from_toml('pos=inf')), 'pos=inf', 'inf';
+  is to_toml(from_toml('neg=-inf')), 'neg=-inf', '-inf';
 };
 
 done_testing;

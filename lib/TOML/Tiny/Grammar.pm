@@ -45,11 +45,12 @@ our @EXPORT = qw(
 #-------------------------------------------------------------------------------
 # Primitives
 #-------------------------------------------------------------------------------
-our $WS      = qr/[\x20\x09]/;     # space, tab
-our $CRLF    = qr/\x0D?\x0A/;      # cr? lf
-our $Comment = qr/\x23.*/;         # #comment
-our $EOL     = qr/$Comment?$CRLF/; # crlf or comment + crlf
-our $Boolean = qr/\b(?:true)|(?:false)\b/;
+our $WS          = qr/[\x20\x09]/;          # space, tab
+our $CRLF        = qr/\x0D?\x0A/;           # cr? lf
+our $CommentChar = qr/(?>[^[:cntrl:]]|\t)/; # non-control chars other than tab
+our $Comment     = qr/\x23$CommentChar*/;   # #comment
+our $EOL         = qr/$Comment?$CRLF/;      # crlf or comment + crlf
+our $Boolean     = qr/\b(?:true)|(?:false)\b/;
 
 #-------------------------------------------------------------------------------
 # Strings
@@ -63,32 +64,45 @@ our $Escape = qr{
   )
 }x;
 
-our $StringLiteral = qr/'[^']*'/; # single quoted string (no escaped chars allowed)
+# single quoted string (no escaped chars are treated as such)
+our $StringLiteral = qr{
+  '
+  (?>
+      [^'[:cntrl:]]          # non-control character
+    | \t                     # ...except for tab
+  )*
+  '
+}x;
 
 our $MultiLineStringLiteral = qr{
-  '''                     # opening triple-quote
-  (?> [^'] | '{1,2} )*?
-  '''                     # closing triple-quote
+  '''                        # opening triple-quote
+  (?>
+      [^'[:cntrl:]]          # non-control character, non-single tick
+    | \t                     # ...except for tab
+    | '{1,2}                 # 1-2 single ticks
+  )*?
+  '''                        # closing triple-quote
 }x;
 
 our $BasicString = qr{
-    "                       # opening quote
-    (?>                     # escape sequences or any char except " or \
-        [^"\\]
-      | $Escape
+    "                        # opening quote
+    (?>                      # escape sequences or any char except " or \
+        [^"\\[:cntrl:]]      # non-control character, non-double tick
+      | \t                   # ...except for tab
+      | $Escape              # or an escape
     )*
-    "                       # closing quote
+    "                        # closing quote
 }x;
 
 our $MultiLineString = qr{
-  """                       # opening triple-quote
+  """                        # opening triple-quote
   (?>
-      [^"\\]
-    | "{1,2}                # 1-2 quotation marks
-    | $Escape               # escape
-    | (?: \\ $CRLF)         # backslash-terminated line
+      [^"\\[:cntrl:]]        # non-control character, non-double tick
+    | \t                     # ...except for tab
+    | $Escape                # or an escape
+    | "{1,2}                 # 1-2 quotation marks
   )*?
-  """                       # closing triple-quote
+  """                        # closing triple-quote
 }x;
 
 our $String = qr/$MultiLineString | $BasicString | $MultiLineStringLiteral | $StringLiteral/x;

@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'negpi' => bless( {
-                                   '_file' => '(eval 399)',
+                                   '_file' => '(eval 400)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'pi' => bless( {
-                                '_file' => '(eval 400)',
+                                '_file' => '(eval 401)',
                                 '_lines' => [
                                               7
                                             ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'pospi' => bless( {
-                                   '_file' => '(eval 401)',
+                                   '_file' => '(eval 398)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'zero-intpart' => bless( {
-                                          '_file' => '(eval 398)',
+                                          '_file' => '(eval 399)',
                                           '_lines' => [
                                                         7
                                                       ],

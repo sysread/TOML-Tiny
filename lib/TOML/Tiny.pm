@@ -165,7 +165,7 @@ Additional arguments may be passed after the toml source string; see L</new>.
 
 =item Big integers and floats
 
-C<TOML> supports integers and floats larger than what many perls support.  when
+C<TOML> supports integers and floats larger than what many perls support. When
 C<TOML::Tiny> encounters a value it may not be able to represent as a number,
 it will instead return a L<Math::BigInt> or L<Math::BigFloat>. This behavior
 can be overridden by providing inflation routines:

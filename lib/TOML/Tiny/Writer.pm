@@ -121,14 +121,24 @@ sub to_toml {
     }
 
     when ('Math::BigFloat') {
-      return $data->bstr;
+      if ($data->is_inf || $data->is_nan) {
+        return lc $data->bstr;
+      } else {
+        return $data->bstr;
+      }
     }
 
     when ('') {
       # Thanks to ikegami on Stack Overflow for the trick!
       # https://stackoverflow.com/questions/12686335/how-to-tell-apart-numeric-scalars-and-string-scalars-in-perl/12693984#12693984
       # note: this must come before any regex can flip this flag off
-      return $data if svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK);
+      if (svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK)) {
+        return 'inf'  if Math::BigFloat->new($data)->is_inf;
+        return '-inf' if Math::BigFloat->new($data)->is_inf('-');
+        return 'nan'  if Math::BigFloat->new($data)->is_nan;
+        return $data;
+      }
+      #return $data if svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK);
       return $data if $data =~ /$DateTime/;
       return lc($data) if $data =~ /$SpecialFloat/;
 

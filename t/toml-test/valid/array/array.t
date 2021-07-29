@@ -16,7 +16,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'comments' => [
                                bless( {
-                                        '_file' => '(eval 48)',
+                                        '_file' => '(eval 116)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                                bless( {
-                                        '_file' => '(eval 114)',
+                                        '_file' => '(eval 117)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -164,7 +164,7 @@ my $expected1 = {
                            ],
                'ints' => [
                            bless( {
-                                    '_file' => '(eval 115)',
+                                    '_file' => '(eval 48)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -181,7 +181,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                            bless( {
-                                    '_file' => '(eval 116)',
+                                    '_file' => '(eval 114)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -198,7 +198,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                            bless( {
-                                    '_file' => '(eval 117)',
+                                    '_file' => '(eval 115)',
                                     '_lines' => [
                                                   7
                                                 ],

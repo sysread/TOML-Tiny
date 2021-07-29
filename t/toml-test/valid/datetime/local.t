@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'local' => bless( {
-                                   '_file' => '(eval 377)',
+                                   '_file' => '(eval 376)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -34,7 +34,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'milli' => bless( {
-                                   '_file' => '(eval 375)',
+                                   '_file' => '(eval 377)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'space' => bless( {
-                                   '_file' => '(eval 376)',
+                                   '_file' => '(eval 375)',
                                    '_lines' => [
                                                  13
                                                ],

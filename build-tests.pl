@@ -93,14 +93,45 @@ sub deannotate{
           }
 
           when (/float/) {
-            my $src = qq{
-              use Test2::Tools::Compare qw(validator);
-              validator('Math::BigFloat->new("$data->{value}")->beq(\$_)' => sub{
-                require Math::BigFloat;
-                my \$got = Math::BigFloat->new(\$_);
-                Math::BigFloat->new("$data->{value}")->beq(\$got);
-              });
-            };
+            my $src;
+
+            if ($data->{value} eq 'nan') {
+              $src = qq{
+                use Test2::Tools::Compare qw(validator);
+                validator('Math::BigFloat->new(\$_)->is_nan' => sub{
+                  require Math::BigFloat;
+                  Math::BigFloat->new(\$_)->is_nan;
+                });
+              };
+            }
+            elsif ($data->{value} eq 'inf') {
+              $src = qq{
+                use Test2::Tools::Compare qw(validator);
+                validator('Math::BigFloat->new(\$_)->is_inf' => sub{
+                  require Math::BigFloat;
+                  Math::BigFloat->new(\$_)->is_inf;
+                });
+              };
+            }
+            elsif ($data->{value} eq '-inf') {
+              $src = qq{
+                use Test2::Tools::Compare qw(validator);
+                validator('Math::BigFloat->new(\$_)->is_inf' => sub{
+                  require Math::BigFloat;
+                  Math::BigFloat->new(\$_)->is_inf;
+                });
+              };
+            }
+            else {
+              $src = qq{
+                use Test2::Tools::Compare qw(validator);
+                validator('Math::BigFloat->new("$data->{value}")->beq(\$_)' => sub{
+                  require Math::BigFloat;
+                  my \$got = Math::BigFloat->new(\$_);
+                  Math::BigFloat->new("$data->{value}")->beq(\$got);
+                });
+              };
+            }
 
             my $result = eval $src;
             $@ && die $@;

@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/string/multiline-no-close-2.toml" or di
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on string/multiline-no-close-2';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on string/multiline-no-close-2';
 
 done_testing;

@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/array/text-after-array-entries.toml" or
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on array/text-after-array-entries';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on array/text-after-array-entries';
 
 done_testing;

@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/control/rawstring-lf.toml" or die $!;
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on control/rawstring-lf';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on control/rawstring-lf';
 
 done_testing;

@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/inline-table/trailing-comma.toml" or di
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on inline-table/trailing-comma';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on inline-table/trailing-comma';
 
 done_testing;

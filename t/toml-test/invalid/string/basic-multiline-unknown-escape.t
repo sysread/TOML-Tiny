@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/string/basic-multiline-unknown-escape.t
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on string/basic-multiline-unknown-escape';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on string/basic-multiline-unknown-escape';
 
 done_testing;

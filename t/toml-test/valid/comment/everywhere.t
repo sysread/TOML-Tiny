@@ -16,7 +16,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'group' => {
                             'answer' => bless( {
-                                                 '_file' => '(eval 362)',
+                                                 '_file' => '(eval 364)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                                  'operator' => 'CODE(...)'
                                                }, 'Test2::Compare::Custom' ),
                             'd' => bless( {
-                                            '_file' => '(eval 361)',
+                                            '_file' => '(eval 363)',
                                             '_lines' => [
                                                           13
                                                         ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                           }, 'Test2::Compare::Custom' ),
                             'more' => [
                                         bless( {
-                                                 '_file' => '(eval 363)',
+                                                 '_file' => '(eval 361)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -70,7 +70,7 @@ my $expected1 = {
                                                  'operator' => 'CODE(...)'
                                                }, 'Test2::Compare::Custom' ),
                                         bless( {
-                                                 '_file' => '(eval 364)',
+                                                 '_file' => '(eval 362)',
                                                  '_lines' => [
                                                                7
                                                              ],

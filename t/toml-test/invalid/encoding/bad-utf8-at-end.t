@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/encoding/bad-utf8-at-end.toml" or die $
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on encoding/bad-utf8-at-end';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on encoding/bad-utf8-at-end';
 
 done_testing;

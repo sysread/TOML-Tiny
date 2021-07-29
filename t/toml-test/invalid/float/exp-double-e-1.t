@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/float/exp-double-e-1.toml" or die $!;
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on float/exp-double-e-1';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on float/exp-double-e-1';
 
 done_testing;

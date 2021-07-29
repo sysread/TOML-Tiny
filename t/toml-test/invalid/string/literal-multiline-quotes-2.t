@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/string/literal-multiline-quotes-2.toml"
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on string/literal-multiline-quotes-2';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on string/literal-multiline-quotes-2';
 
 done_testing;

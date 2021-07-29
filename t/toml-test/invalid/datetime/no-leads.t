@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/datetime/no-leads.toml" or die $!;
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on datetime/no-leads';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on datetime/no-leads';
 
 done_testing;

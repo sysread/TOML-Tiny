@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/integer/text-after-integer.toml" or die
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on integer/text-after-integer';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on integer/text-after-integer';
 
 done_testing;

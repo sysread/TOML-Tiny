@@ -6,6 +6,6 @@ open my $fh, '<', "./t/toml-test/invalid/string/basic-multiline-out-of-range-uni
 my $toml = do{ local $/; <$fh>; };
 close $fh;
 
-ok dies(sub{ from_toml($toml, strict => 1) }), 'strict_mode dies on string/basic-multiline-out-of-range-unicode-escape-2';
+ok dies(sub{ scalar from_toml($toml, strict => 1) }), 'strict_mode dies on string/basic-multiline-out-of-range-unicode-escape-2';
 
 done_testing;

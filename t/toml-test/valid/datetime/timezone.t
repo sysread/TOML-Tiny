@@ -34,7 +34,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'nzst' => bless( {
-                                  '_file' => '(eval 384)',
+                                  '_file' => '(eval 382)',
                                   '_lines' => [
                                                 13
                                               ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'pdt' => bless( {
-                                 '_file' => '(eval 382)',
+                                 '_file' => '(eval 384)',
                                  '_lines' => [
                                                13
                                              ],

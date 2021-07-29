@@ -19,7 +19,7 @@ my $expected1 = {
                                       [
                                         {
                                           'one' => bless( {
-                                                            '_file' => '(eval 454)',
+                                                            '_file' => '(eval 453)',
                                                             '_lines' => [
                                                                           7
                                                                         ],
@@ -84,7 +84,7 @@ my $expected1 = {
                                   {
                                     'tbl' => {
                                                'one' => bless( {
-                                                                 '_file' => '(eval 453)',
+                                                                 '_file' => '(eval 451)',
                                                                  '_lines' => [
                                                                                7
                                                                              ],
@@ -132,7 +132,7 @@ my $expected1 = {
                'tbl_tbl_val' => {
                                   'tbl_1' => {
                                                'one' => bless( {
-                                                                 '_file' => '(eval 451)',
+                                                                 '_file' => '(eval 454)',
                                                                  '_lines' => [
                                                                                7
                                                                              ],

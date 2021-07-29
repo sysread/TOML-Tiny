@@ -165,6 +165,7 @@ sub build_pospath_test_files{
 
     my $toml = slurp("$src/$TOML{$_}");
     $toml =~ s/\\/\\\\/g;
+    $toml =~ s/\|/\\|/g;
 
     my ( undef, $path ) = File::Spec->splitpath( $test );
     unless (-f $test) {

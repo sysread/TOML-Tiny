@@ -30,7 +30,7 @@ my $expected1 = {
              };
 
 
-my $actual = from_toml(q|"~!@$^&*()_+-`1234567890[]|/?><.,;:'" = 1
+my $actual = from_toml(q|"~!@$^&*()_+-`1234567890[]\|/?><.,;:'" = 1
 |);
 
 is($actual, $expected1, 'key/special-chars - from_toml') or do{

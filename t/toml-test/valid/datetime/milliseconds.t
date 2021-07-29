@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'utc1' => bless( {
-                                  '_file' => '(eval 381)',
+                                  '_file' => '(eval 380)',
                                   '_lines' => [
                                                 13
                                               ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'wita1' => bless( {
-                                   '_file' => '(eval 378)',
+                                   '_file' => '(eval 381)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -72,7 +72,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'wita2' => bless( {
-                                   '_file' => '(eval 380)',
+                                   '_file' => '(eval 378)',
                                    '_lines' => [
                                                  13
                                                ],

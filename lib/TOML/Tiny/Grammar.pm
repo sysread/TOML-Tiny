@@ -65,52 +65,27 @@ our $Escape = qr{
   )
 }x;
 
-# single quoted string (no escaped chars are treated as such)
-our $StringLiteral = qr{
-  '
-  (?>
-      [^'[:cntrl:]]          # non-control character
-    | \t                     # ...except for tab
-  )*
-  '
-}x;
+our $LiteralChar            = qr{ [ \x09 \x20-\x26 \x28-\x7E ] | $NonASCII }x;
+our $StringLiteral          = qr{ ' (?: $LiteralChar )* ' }x;
 
-our $MLLChar    = qr{ [ \x09 \x20-\x26 \x28-\x7E ] | $NonASCII }x; 
-our $MLLContent = qr{ $MLLChar | $CRLF }x;
-our $MLLQuotes  = qr{ '{1,2} }x;
-our $MLLBody    = qr{ $MLLContent* (?: $MLLQuotes | $MLLContent{0,1} )*?  $MLLQuotes?  }x;
-our $MultiLineStringLiteral = qr{
-  '''
-  (?:
-    $CRLF?
-    $MLLBody
-  )
-  '''
-}x;
+our $MLLChar                = qr{ [ \x09 \x20-\x26 \x28-\x7E ] | $NonASCII }x;
+our $MLLContent             = qr{ $MLLChar | $CRLF }x;
+our $MLLQuotes              = qr{ '{1,2} }x;
+our $MLLBody                = qr{ $MLLContent* (?: $MLLQuotes | $MLLContent{0,1} )*?  $MLLQuotes?  }x;
+our $MultiLineStringLiteral = qr{ ''' (?: $CRLF? $MLLBody ) ''' }x;
 
-our $BasicString = qr{
-    "                        # opening quote
-    (?>                      # escape sequences or any char except " or \
-        [^"\\[:cntrl:]]      # non-control character, non-double tick
-      | \t                   # ...except for tab
-      | $Escape              # or an escape
-    )*
-    "                        # closing quote
-}x;
+our $BasicChar              = qr{ $WS | [ \x21 \x23-\x5B \x5D-\x7E ] | $NonASCII | $Escape }x;
+our $BasicString            = qr{ " (?: $BasicChar )* " }x;
 
-our $MultiLineString = qr{
-  """                        # opening triple-quote
-  (?:
-      [^"\\[:cntrl:]]        # non-control character, non-double tick
-    | \t                     # ...except for tab
-    | $Escape                # or an escape
-    | "{1,2}                 # 1-2 quotation marks
-  )*?
-  """                        # closing triple-quote
-  (?!")                      # ...not followed by a quote
-}x;
+our $MLBEscapedNL           = qr{ \x5c $WS* $CRLF (?: $WS | $CRLF)* }x;
+our $MLBUnescaped           = qr{ $WS | [ \x21 \x23-\x5B \x5D-\x7E ] | $NonASCII }x;
+our $MLBQuotes              = qr{ "{1,2} }x;
+our $MLBChar                = qr{ $MLBUnescaped | $Escape }x;
+our $MLBContent             = qr{ $MLBChar | $CRLF | $MLBEscapedNL }x;
+our $MLBasicBody            = qr{ $MLBContent* (?: $MLBQuotes | $MLBContent{0,1} )*? $MLBQuotes? }x;
+our $MultiLineString        = qr{ """ $CRLF? $MLBasicBody """ }x;
 
-our $String = qr/$MultiLineString | $BasicString | $MultiLineStringLiteral | $StringLiteral/x;
+our $String                 = qr/$MultiLineString | $BasicString | $MultiLineStringLiteral | $StringLiteral/x;
 
 #-------------------------------------------------------------------------------
 # Keys

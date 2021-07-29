@@ -15,7 +15,7 @@ my $expected1 = {
                'empty_in_array' => [
                                      {
                                        'not_empty' => bless( {
-                                                               '_file' => '(eval 425)',
+                                                               '_file' => '(eval 426)',
                                                                '_lines' => [
                                                                              7
                                                                            ],
@@ -38,7 +38,7 @@ my $expected1 = {
                                       {},
                                       {
                                         'not_empty' => bless( {
-                                                                '_file' => '(eval 426)',
+                                                                '_file' => '(eval 425)',
                                                                 '_lines' => [
                                                                               7
                                                                             ],
@@ -88,7 +88,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'inline-table/empty - to_toml - no errors');
+ok(!$error, 'inline-table/empty - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'inline-table/empty - to_toml') or do{
   diag "ERROR: $error" if $error;

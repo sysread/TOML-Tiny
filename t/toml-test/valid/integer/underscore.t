@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'kilo' => bless( {
-                                  '_file' => '(eval 471)',
+                                  '_file' => '(eval 470)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'x' => bless( {
-                               '_file' => '(eval 470)',
+                               '_file' => '(eval 471)',
                                '_lines' => [
                                              7
                                            ],
@@ -64,7 +64,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'integer/underscore - to_toml - no errors');
+ok(!$error, 'integer/underscore - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'integer/underscore - to_toml') or do{
   diag "ERROR: $error" if $error;

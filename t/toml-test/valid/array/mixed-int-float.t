@@ -65,7 +65,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'array/mixed-int-float - to_toml - no errors');
+ok(!$error, 'array/mixed-int-float - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'array/mixed-int-float - to_toml') or do{
   diag "ERROR: $error" if $error;

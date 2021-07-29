@@ -22,7 +22,7 @@ my $expected1 = {
                                           ],
                                           [
                                             bless( {
-                                                     '_file' => '(eval 525)',
+                                                     '_file' => '(eval 524)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -39,7 +39,7 @@ my $expected1 = {
                                                      'operator' => 'CODE(...)'
                                                    }, 'Test2::Compare::Custom' ),
                                             bless( {
-                                                     '_file' => '(eval 526)',
+                                                     '_file' => '(eval 525)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -138,7 +138,7 @@ my $expected1 = {
                              },
                'owner' => {
                             'dob' => bless( {
-                                              '_file' => '(eval 524)',
+                                              '_file' => '(eval 526)',
                                               '_lines' => [
                                                             13
                                                           ],
@@ -210,7 +210,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'spec-example-1-compact - to_toml - no errors');
+ok(!$error, 'spec-example-1-compact - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'spec-example-1-compact - to_toml') or do{
   diag "ERROR: $error" if $error;

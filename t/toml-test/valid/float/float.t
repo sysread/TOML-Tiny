@@ -28,7 +28,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'pi' => bless( {
-                                '_file' => '(eval 401)',
+                                '_file' => '(eval 400)',
                                 '_lines' => [
                                               7
                                             ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                 'operator' => 'CODE(...)'
                               }, 'Test2::Compare::Custom' ),
                'pospi' => bless( {
-                                   '_file' => '(eval 398)',
+                                   '_file' => '(eval 401)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'zero-intpart' => bless( {
-                                          '_file' => '(eval 400)',
+                                          '_file' => '(eval 398)',
                                           '_lines' => [
                                                         7
                                                       ],
@@ -100,7 +100,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'float/float - to_toml - no errors');
+ok(!$error, 'float/float - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'float/float - to_toml') or do{
   diag "ERROR: $error" if $error;

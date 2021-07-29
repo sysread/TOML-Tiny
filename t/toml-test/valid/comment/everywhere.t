@@ -16,7 +16,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'group' => {
                             'answer' => bless( {
-                                                 '_file' => '(eval 364)',
+                                                 '_file' => '(eval 362)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                           }, 'Test2::Compare::Custom' ),
                             'more' => [
                                         bless( {
-                                                 '_file' => '(eval 362)',
+                                                 '_file' => '(eval 363)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -70,7 +70,7 @@ my $expected1 = {
                                                  'operator' => 'CODE(...)'
                                                }, 'Test2::Compare::Custom' ),
                                         bless( {
-                                                 '_file' => '(eval 363)',
+                                                 '_file' => '(eval 364)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -133,7 +133,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'comment/everywhere - to_toml - no errors');
+ok(!$error, 'comment/everywhere - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'comment/everywhere - to_toml') or do{
   diag "ERROR: $error" if $error;

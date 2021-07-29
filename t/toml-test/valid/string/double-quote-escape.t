@@ -30,7 +30,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'string/double-quote-escape - to_toml - no errors');
+ok(!$error, 'string/double-quote-escape - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'string/double-quote-escape - to_toml') or do{
   diag "ERROR: $error" if $error;

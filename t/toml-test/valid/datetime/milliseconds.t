@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'utc1' => bless( {
-                                  '_file' => '(eval 378)',
+                                  '_file' => '(eval 381)',
                                   '_lines' => [
                                                 13
                                               ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'wita1' => bless( {
-                                   '_file' => '(eval 380)',
+                                   '_file' => '(eval 378)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -72,7 +72,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'wita2' => bless( {
-                                   '_file' => '(eval 381)',
+                                   '_file' => '(eval 380)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -112,7 +112,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'datetime/milliseconds - to_toml - no errors');
+ok(!$error, 'datetime/milliseconds - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'datetime/milliseconds - to_toml') or do{
   diag "ERROR: $error" if $error;

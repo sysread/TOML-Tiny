@@ -14,7 +14,7 @@ my $expected1 = {
                         'b' => {
                                  'c' => {
                                           'answer' => bless( {
-                                                               '_file' => '(eval 422)',
+                                                               '_file' => '(eval 423)',
                                                                '_lines' => [
                                                                              7
                                                                            ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                         }
                                },
                         'better' => bless( {
-                                             '_file' => '(eval 423)',
+                                             '_file' => '(eval 422)',
                                              '_lines' => [
                                                            7
                                                          ],
@@ -73,7 +73,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'implicit-and-explicit-before - to_toml - no errors');
+ok(!$error, 'implicit-and-explicit-before - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'implicit-and-explicit-before - to_toml') or do{
   diag "ERROR: $error" if $error;

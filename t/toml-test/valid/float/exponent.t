@@ -28,7 +28,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'minustenth' => bless( {
-                                        '_file' => '(eval 392)',
+                                        '_file' => '(eval 393)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                'neg' => bless( {
-                                 '_file' => '(eval 394)',
+                                 '_file' => '(eval 396)',
                                  '_lines' => [
                                                7
                                              ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'pointlower' => bless( {
-                                        '_file' => '(eval 395)',
+                                        '_file' => '(eval 390)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -79,7 +79,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                'pointupper' => bless( {
-                                        '_file' => '(eval 390)',
+                                        '_file' => '(eval 394)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -113,7 +113,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'upper' => bless( {
-                                   '_file' => '(eval 396)',
+                                   '_file' => '(eval 395)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -130,7 +130,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'zero' => bless( {
-                                  '_file' => '(eval 393)',
+                                  '_file' => '(eval 392)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -172,7 +172,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'float/exponent - to_toml - no errors');
+ok(!$error, 'float/exponent - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'float/exponent - to_toml') or do{
   diag "ERROR: $error" if $error;

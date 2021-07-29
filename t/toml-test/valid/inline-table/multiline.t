@@ -12,7 +12,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'tbl_multiline' => {
                                     'a' => bless( {
-                                                    '_file' => '(eval 447)',
+                                                    '_file' => '(eval 448)',
                                                     '_lines' => [
                                                                   7
                                                                 ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                     'c' => 'and yet
 another line',
                                     'd' => bless( {
-                                                    '_file' => '(eval 448)',
+                                                    '_file' => '(eval 447)',
                                                     '_lines' => [
                                                                   7
                                                                 ],
@@ -72,7 +72,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'inline-table/multiline - to_toml - no errors');
+ok(!$error, 'inline-table/multiline - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'inline-table/multiline - to_toml') or do{
   diag "ERROR: $error" if $error;

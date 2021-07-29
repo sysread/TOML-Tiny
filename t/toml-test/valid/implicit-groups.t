@@ -53,7 +53,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'implicit-groups - to_toml - no errors');
+ok(!$error, 'implicit-groups - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'implicit-groups - to_toml') or do{
   diag "ERROR: $error" if $error;

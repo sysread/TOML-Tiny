@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'lower' => bless( {
-                                   '_file' => '(eval 373)',
+                                   '_file' => '(eval 374)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -34,7 +34,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'space' => bless( {
-                                   '_file' => '(eval 374)',
+                                   '_file' => '(eval 373)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -72,7 +72,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'datetime/datetime - to_toml - no errors');
+ok(!$error, 'datetime/datetime - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'datetime/datetime - to_toml') or do{
   diag "ERROR: $error" if $error;

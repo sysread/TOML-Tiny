@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'plain' => bless( {
-                                   '_file' => '(eval 509)',
+                                   '_file' => '(eval 507)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -29,7 +29,7 @@ my $expected1 = {
                                  }, 'Test2::Compare::Custom' ),
                'plain_table' => {
                                   'plain' => bless( {
-                                                      '_file' => '(eval 510)',
+                                                      '_file' => '(eval 511)',
                                                       '_lines' => [
                                                                     7
                                                                   ],
@@ -46,7 +46,7 @@ my $expected1 = {
                                                       'operator' => 'CODE(...)'
                                                     }, 'Test2::Compare::Custom' ),
                                   'with.dot' => bless( {
-                                                         '_file' => '(eval 511)',
+                                                         '_file' => '(eval 512)',
                                                          '_lines' => [
                                                                        7
                                                                      ],
@@ -66,7 +66,7 @@ my $expected1 = {
                'table' => {
                             'withdot' => {
                                            'key.with.dots' => bless( {
-                                                                       '_file' => '(eval 507)',
+                                                                       '_file' => '(eval 509)',
                                                                        '_lines' => [
                                                                                      7
                                                                                    ],
@@ -102,7 +102,7 @@ my $expected1 = {
                                          }
                           },
                'with.dot' => bless( {
-                                      '_file' => '(eval 512)',
+                                      '_file' => '(eval 510)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -146,7 +146,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'key/quoted-dots - to_toml - no errors');
+ok(!$error, 'key/quoted-dots - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'key/quoted-dots - to_toml') or do{
   diag "ERROR: $error" if $error;

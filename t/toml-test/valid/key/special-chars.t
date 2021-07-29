@@ -46,7 +46,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'key/special-chars - to_toml - no errors');
+ok(!$error, 'key/special-chars - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'key/special-chars - to_toml') or do{
   diag "ERROR: $error" if $error;

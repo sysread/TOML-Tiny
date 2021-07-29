@@ -53,7 +53,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'table/array-many - to_toml - no errors');
+ok(!$error, 'table/array-many - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'table/array-many - to_toml') or do{
   diag "ERROR: $error" if $error;

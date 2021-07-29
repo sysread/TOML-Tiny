@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'longpi' => bless( {
-                                    '_file' => '(eval 408)',
+                                    '_file' => '(eval 409)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                'neglongpi' => bless( {
-                                       '_file' => '(eval 409)',
+                                       '_file' => '(eval 408)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -64,7 +64,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'float/long - to_toml - no errors');
+ok(!$error, 'float/long - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'float/long - to_toml') or do{
   diag "ERROR: $error" if $error;

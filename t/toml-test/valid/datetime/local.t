@@ -34,7 +34,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'milli' => bless( {
-                                   '_file' => '(eval 375)',
+                                   '_file' => '(eval 376)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'space' => bless( {
-                                   '_file' => '(eval 376)',
+                                   '_file' => '(eval 375)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -92,7 +92,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'datetime/local - to_toml - no errors');
+ok(!$error, 'datetime/local - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'datetime/local - to_toml') or do{
   diag "ERROR: $error" if $error;

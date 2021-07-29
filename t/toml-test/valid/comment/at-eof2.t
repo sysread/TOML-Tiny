@@ -31,7 +31,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'comment/at-eof2 - to_toml - no errors');
+ok(!$error, 'comment/at-eof2 - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'comment/at-eof2 - to_toml') or do{
   diag "ERROR: $error" if $error;

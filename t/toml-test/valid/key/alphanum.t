@@ -15,7 +15,7 @@ my $expected1 = {
                '123' => 'num',
                '2018_10' => {
                               '001' => bless( {
-                                                '_file' => '(eval 485)',
+                                                '_file' => '(eval 484)',
                                                 '_lines' => [
                                                               7
                                                             ],
@@ -33,7 +33,7 @@ my $expected1 = {
                                               }, 'Test2::Compare::Custom' )
                             },
                '34-11' => bless( {
-                                   '_file' => '(eval 484)',
+                                   '_file' => '(eval 485)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -88,7 +88,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'key/alphanum - to_toml - no errors');
+ok(!$error, 'key/alphanum - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'key/alphanum - to_toml') or do{
   diag "ERROR: $error" if $error;

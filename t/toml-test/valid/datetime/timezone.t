@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'nzdt' => bless( {
-                                  '_file' => '(eval 383)',
+                                  '_file' => '(eval 385)',
                                   '_lines' => [
                                                 13
                                               ],
@@ -34,7 +34,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'nzst' => bless( {
-                                  '_file' => '(eval 382)',
+                                  '_file' => '(eval 384)',
                                   '_lines' => [
                                                 13
                                               ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'pdt' => bless( {
-                                 '_file' => '(eval 385)',
+                                 '_file' => '(eval 382)',
                                  '_lines' => [
                                                13
                                              ],
@@ -72,7 +72,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'utc' => bless( {
-                                 '_file' => '(eval 384)',
+                                 '_file' => '(eval 383)',
                                  '_lines' => [
                                                13
                                              ],
@@ -112,7 +112,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'datetime/timezone - to_toml - no errors');
+ok(!$error, 'datetime/timezone - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'datetime/timezone - to_toml') or do{
   diag "ERROR: $error" if $error;

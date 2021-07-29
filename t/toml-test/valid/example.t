@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'best-day-ever' => bless( {
-                                           '_file' => '(eval 386)',
+                                           '_file' => '(eval 389)',
                                            '_lines' => [
                                                          13
                                                        ],
@@ -37,7 +37,7 @@ my $expected1 = {
                                 'boring' => 0,
                                 'perfection' => [
                                                   bless( {
-                                                           '_file' => '(eval 387)',
+                                                           '_file' => '(eval 386)',
                                                            '_lines' => [
                                                                          7
                                                                        ],
@@ -54,7 +54,7 @@ my $expected1 = {
                                                            'operator' => 'CODE(...)'
                                                          }, 'Test2::Compare::Custom' ),
                                                   bless( {
-                                                           '_file' => '(eval 388)',
+                                                           '_file' => '(eval 387)',
                                                            '_lines' => [
                                                                          7
                                                                        ],
@@ -71,7 +71,7 @@ my $expected1 = {
                                                            'operator' => 'CODE(...)'
                                                          }, 'Test2::Compare::Custom' ),
                                                   bless( {
-                                                           '_file' => '(eval 389)',
+                                                           '_file' => '(eval 388)',
                                                            '_lines' => [
                                                                          7
                                                                        ],
@@ -112,7 +112,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'example - to_toml - no errors');
+ok(!$error, 'example - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'example - to_toml') or do{
   diag "ERROR: $error" if $error;

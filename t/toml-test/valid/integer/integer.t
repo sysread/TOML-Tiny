@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'answer' => bless( {
-                                    '_file' => '(eval 458)',
+                                    '_file' => '(eval 455)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                'neganswer' => bless( {
-                                       '_file' => '(eval 456)',
+                                       '_file' => '(eval 457)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                        'operator' => 'CODE(...)'
                                      }, 'Test2::Compare::Custom' ),
                'posanswer' => bless( {
-                                       '_file' => '(eval 455)',
+                                       '_file' => '(eval 456)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                        'operator' => 'CODE(...)'
                                      }, 'Test2::Compare::Custom' ),
                'zero' => bless( {
-                                  '_file' => '(eval 457)',
+                                  '_file' => '(eval 458)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -100,7 +100,8 @@ my $regenerated = to_toml $actual;
 my $reparsed    = eval{ scalar from_toml $regenerated };
 my $error       = $@;
 
-is($error, U, 'integer/integer - to_toml - no errors');
+ok(!$error, 'integer/integer - to_toml - no errors')
+  or diag $error;
 
 is($reparsed, $expected1, 'integer/integer - to_toml') or do{
   diag "ERROR: $error" if $error;

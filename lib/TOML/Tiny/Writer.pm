@@ -171,7 +171,8 @@ sub to_toml_string {
 
   my ($arg) = @_;
   $arg =~ s/(["\\\b\f\n\r\t])/$escape->{$1}/g;
-  $arg =~ s/([\x00-\x08\x0b\x0e-\x1f])/'\\u00' . unpack('H2', $1)/eg;
+  #$arg =~ s/([\x00-\x08 \x0b \x0e-\x1f])/'\\u00' . unpack('H2', $1)/xeg;
+  $arg =~ s/([\p{General_Category=Control}])/'\\u00' . unpack('H2', $1)/xeg;
 
   return '"' . $arg . '"';
 }

@@ -51,6 +51,7 @@ our $CommentChar = qr/(?>[^[:cntrl:]]|\t)/; # non-control chars other than tab
 our $Comment     = qr/\x23$CommentChar*/;   # #comment
 our $EOL         = qr/$Comment?$CRLF/;      # crlf or comment + crlf
 our $Boolean     = qr/\b(?:true)|(?:false)\b/;
+our $NonASCII    = qr/[\x80-\x{D7FF}\x{E000}-\x{10FFFF}]/;
 
 #-------------------------------------------------------------------------------
 # Strings
@@ -74,14 +75,17 @@ our $StringLiteral = qr{
   '
 }x;
 
+our $MLLChar    = qr{ [ \x09 \x20-\x26 \x28-\x7E ] | $NonASCII }x; 
+our $MLLContent = qr{ $MLLChar | $CRLF }x;
+our $MLLQuotes  = qr{ '{1,2} }x;
+our $MLLBody    = qr{ $MLLContent* (?: $MLLQuotes | $MLLContent{0,1} )*?  $MLLQuotes?  }x;
 our $MultiLineStringLiteral = qr{
-  '''                        # opening triple-quote
-  (?>
-      [^'[:cntrl:]]          # non-control character, non-single tick
-    | \t                     # ...except for tab
-    | '{1,2}                 # 1-2 single ticks
-  )*?
-  '''                        # closing triple-quote
+  '''
+  (?:
+    $CRLF?
+    $MLLBody
+  )
+  '''
 }x;
 
 our $BasicString = qr{
@@ -96,13 +100,14 @@ our $BasicString = qr{
 
 our $MultiLineString = qr{
   """                        # opening triple-quote
-  (?>
+  (?:
       [^"\\[:cntrl:]]        # non-control character, non-double tick
     | \t                     # ...except for tab
     | $Escape                # or an escape
     | "{1,2}                 # 1-2 quotation marks
   )*?
   """                        # closing triple-quote
+  (?!")                      # ...not followed by a quote
 }x;
 
 our $String = qr/$MultiLineString | $BasicString | $MultiLineStringLiteral | $StringLiteral/x;

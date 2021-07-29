@@ -144,9 +144,16 @@ our $Integer      = qr/$Hex | $Oct | $Bin | $Dec/x;
 #-----------------------------------------------------------------------------
 # Float
 #-----------------------------------------------------------------------------
-our $Exponent     = qr/[eE] $Dec/x;
 our $SpecialFloat = qr/[-+]? (?: (?:inf) | (?:nan) | (?:NaN) )/x;
 our $Fraction     = qr/\. $DecChar (?> _? $DecChar)*/x;
+
+our $Exponent = qr{
+  [eE]
+  (?>
+      $Zero+  # dec matches only one zero, but toml exponents apparently accept e00
+    | $Dec
+  )
+}x;
 
 our $Float = qr{
     (?> $Dec (?> (?> $Fraction $Exponent?) | $Exponent ) )

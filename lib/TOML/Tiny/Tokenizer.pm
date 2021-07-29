@@ -89,14 +89,14 @@ sub next_token {
         }
       }
 
-      when (/\G ( [\[\]{}=,] | true | false )/xgc) {
-        $value = $1;
-        $type = $simple->{$value};
-      }
-
       when (/$key_set/gc) {
         $type = 'key';
         $value = $1;
+      }
+
+      when (/\G ( [\[\]{}=,] | true | false )/xgc) {
+        $value = $1;
+        $type = $simple->{$value};
       }
 
       when (/\G($String)/gc) {

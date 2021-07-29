@@ -52,7 +52,7 @@ my $expected1 = {
                           },
                'simple' => {
                              'a' => bless( {
-                                             '_file' => '(eval 429)',
+                                             '_file' => '(eval 431)',
                                              '_lines' => [
                                                            7
                                                          ],
@@ -71,7 +71,7 @@ my $expected1 = {
                            },
                'str-key' => {
                               'a' => bless( {
-                                              '_file' => '(eval 430)',
+                                              '_file' => '(eval 432)',
                                               '_lines' => [
                                                             7
                                                           ],
@@ -91,7 +91,7 @@ my $expected1 = {
                'table-array' => [
                                   {
                                     'a' => bless( {
-                                                    '_file' => '(eval 431)',
+                                                    '_file' => '(eval 429)',
                                                     '_lines' => [
                                                                   7
                                                                 ],
@@ -110,7 +110,7 @@ my $expected1 = {
                                   },
                                   {
                                     'b' => bless( {
-                                                    '_file' => '(eval 432)',
+                                                    '_file' => '(eval 430)',
                                                     '_lines' => [
                                                                   7
                                                                 ],
@@ -147,19 +147,25 @@ is($actual, $expected1, 'inline-table/inline-table - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'inline-table/inline-table - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'inline-table/inline-table - to_toml - no errors');
+
+is($reparsed, $expected1, 'inline-table/inline-table - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

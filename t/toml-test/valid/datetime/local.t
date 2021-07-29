@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'local' => bless( {
-                                   '_file' => '(eval 376)',
+                                   '_file' => '(eval 377)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -34,7 +34,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'milli' => bless( {
-                                   '_file' => '(eval 377)',
+                                   '_file' => '(eval 375)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'space' => bless( {
-                                   '_file' => '(eval 375)',
+                                   '_file' => '(eval 376)',
                                    '_lines' => [
                                                  13
                                                ],
@@ -88,19 +88,25 @@ is($actual, $expected1, 'datetime/local - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'datetime/local - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'datetime/local - to_toml - no errors');
+
+is($reparsed, $expected1, 'datetime/local - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

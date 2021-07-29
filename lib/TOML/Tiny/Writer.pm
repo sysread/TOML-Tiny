@@ -170,7 +170,7 @@ sub to_toml_string {
   };
 
   my ($arg) = @_;
-  $arg =~ s/([\x22\x5c\n\r\t\f\b])/$escape->{$1}/g;
+  $arg =~ s/(["\\\b\f\n\r\t])/$escape->{$1}/g;
   $arg =~ s/([\x00-\x08\x0b\x0e-\x1f])/'\\u00' . unpack('H2', $1)/eg;
 
   return '"' . $arg . '"';

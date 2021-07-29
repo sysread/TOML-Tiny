@@ -19,7 +19,7 @@ my $expected1 = {
                                       [
                                         {
                                           'one' => bless( {
-                                                            '_file' => '(eval 454)',
+                                                            '_file' => '(eval 449)',
                                                             '_lines' => [
                                                                           7
                                                                         ],
@@ -42,7 +42,7 @@ my $expected1 = {
                                    [
                                      {
                                        'one' => bless( {
-                                                         '_file' => '(eval 451)',
+                                                         '_file' => '(eval 452)',
                                                          '_lines' => [
                                                                        7
                                                                      ],
@@ -61,7 +61,7 @@ my $expected1 = {
                                      },
                                      {
                                        'two' => bless( {
-                                                         '_file' => '(eval 452)',
+                                                         '_file' => '(eval 453)',
                                                          '_lines' => [
                                                                        7
                                                                      ],
@@ -84,7 +84,7 @@ my $expected1 = {
                                   {
                                     'tbl' => {
                                                'one' => bless( {
-                                                                 '_file' => '(eval 449)',
+                                                                 '_file' => '(eval 450)',
                                                                  '_lines' => [
                                                                                7
                                                                              ],
@@ -107,7 +107,7 @@ my $expected1 = {
                                   'arr_tbl' => [
                                                  {
                                                    'one' => bless( {
-                                                                     '_file' => '(eval 450)',
+                                                                     '_file' => '(eval 451)',
                                                                      '_lines' => [
                                                                                    7
                                                                                  ],
@@ -132,7 +132,7 @@ my $expected1 = {
                'tbl_tbl_val' => {
                                   'tbl_1' => {
                                                'one' => bless( {
-                                                                 '_file' => '(eval 453)',
+                                                                 '_file' => '(eval 454)',
                                                                  '_lines' => [
                                                                                7
                                                                              ],
@@ -174,19 +174,25 @@ is($actual, $expected1, 'inline-table/nest - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'inline-table/nest - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'inline-table/nest - to_toml - no errors');
+
+is($reparsed, $expected1, 'inline-table/nest - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

@@ -33,7 +33,7 @@ my $expected1 = {
                                                  'operator' => 'CODE(...)'
                                                }, 'Test2::Compare::Custom' ),
                             'd' => bless( {
-                                            '_file' => '(eval 363)',
+                                            '_file' => '(eval 361)',
                                             '_lines' => [
                                                           13
                                                         ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                           }, 'Test2::Compare::Custom' ),
                             'more' => [
                                         bless( {
-                                                 '_file' => '(eval 361)',
+                                                 '_file' => '(eval 362)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -70,7 +70,7 @@ my $expected1 = {
                                                  'operator' => 'CODE(...)'
                                                }, 'Test2::Compare::Custom' ),
                                         bless( {
-                                                 '_file' => '(eval 362)',
+                                                 '_file' => '(eval 363)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -129,19 +129,25 @@ is($actual, $expected1, 'comment/everywhere - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'comment/everywhere - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'comment/everywhere - to_toml - no errors');
+
+is($reparsed, $expected1, 'comment/everywhere - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

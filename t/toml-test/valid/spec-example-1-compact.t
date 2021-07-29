@@ -22,7 +22,7 @@ my $expected1 = {
                                           ],
                                           [
                                             bless( {
-                                                     '_file' => '(eval 529)',
+                                                     '_file' => '(eval 525)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -39,7 +39,7 @@ my $expected1 = {
                                                      'operator' => 'CODE(...)'
                                                    }, 'Test2::Compare::Custom' ),
                                             bless( {
-                                                     '_file' => '(eval 530)',
+                                                     '_file' => '(eval 526)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -64,7 +64,7 @@ my $expected1 = {
                             },
                'database' => {
                                'connection_max' => bless( {
-                                                            '_file' => '(eval 528)',
+                                                            '_file' => '(eval 530)',
                                                             '_lines' => [
                                                                           7
                                                                         ],
@@ -83,41 +83,41 @@ my $expected1 = {
                                'enabled' => 1,
                                'ports' => [
                                             bless( {
-                                                     '_file' => '(eval 525)',
-                                                     '_lines' => [
-                                                                   7
-                                                                 ],
-                                                     'code' => sub {
-                                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                                   use strict;
-                                                                   no feature ':all';
-                                                                   use feature ':5.16';
-                                                                   require Math::BigInt;
-                                                                   my $got = 'Math::BigInt'->new($_);
-                                                                   'Math::BigInt'->new('8001')->beq($got);
-                                                               },
-                                                     'name' => 'Math::BigInt->new("8001")->beq($_)',
-                                                     'operator' => 'CODE(...)'
-                                                   }, 'Test2::Compare::Custom' ),
-                                            bless( {
-                                                     '_file' => '(eval 526)',
-                                                     '_lines' => [
-                                                                   7
-                                                                 ],
-                                                     'code' => sub {
-                                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                                   use strict;
-                                                                   no feature ':all';
-                                                                   use feature ':5.16';
-                                                                   require Math::BigInt;
-                                                                   my $got = 'Math::BigInt'->new($_);
-                                                                   'Math::BigInt'->new('8001')->beq($got);
-                                                               },
-                                                     'name' => 'Math::BigInt->new("8001")->beq($_)',
-                                                     'operator' => 'CODE(...)'
-                                                   }, 'Test2::Compare::Custom' ),
-                                            bless( {
                                                      '_file' => '(eval 527)',
+                                                     '_lines' => [
+                                                                   7
+                                                                 ],
+                                                     'code' => sub {
+                                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                                   use strict;
+                                                                   no feature ':all';
+                                                                   use feature ':5.16';
+                                                                   require Math::BigInt;
+                                                                   my $got = 'Math::BigInt'->new($_);
+                                                                   'Math::BigInt'->new('8001')->beq($got);
+                                                               },
+                                                     'name' => 'Math::BigInt->new("8001")->beq($_)',
+                                                     'operator' => 'CODE(...)'
+                                                   }, 'Test2::Compare::Custom' ),
+                                            bless( {
+                                                     '_file' => '(eval 528)',
+                                                     '_lines' => [
+                                                                   7
+                                                                 ],
+                                                     'code' => sub {
+                                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
+                                                                   use strict;
+                                                                   no feature ':all';
+                                                                   use feature ':5.16';
+                                                                   require Math::BigInt;
+                                                                   my $got = 'Math::BigInt'->new($_);
+                                                                   'Math::BigInt'->new('8001')->beq($got);
+                                                               },
+                                                     'name' => 'Math::BigInt->new("8001")->beq($_)',
+                                                     'operator' => 'CODE(...)'
+                                                   }, 'Test2::Compare::Custom' ),
+                                            bless( {
+                                                     '_file' => '(eval 529)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -206,19 +206,25 @@ is($actual, $expected1, 'spec-example-1-compact - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'spec-example-1-compact - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'spec-example-1-compact - to_toml - no errors');
+
+is($reparsed, $expected1, 'spec-example-1-compact - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

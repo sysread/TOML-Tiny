@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'infinity' => bless( {
-                                      '_file' => '(eval 405)',
+                                      '_file' => '(eval 407)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                       'operator' => 'CODE(...)'
                                     }, 'Test2::Compare::Custom' ),
                'infinity_neg' => bless( {
-                                          '_file' => '(eval 402)',
+                                          '_file' => '(eval 403)',
                                           '_lines' => [
                                                         7
                                                       ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                           'operator' => 'CODE(...)'
                                         }, 'Test2::Compare::Custom' ),
                'infinity_plus' => bless( {
-                                           '_file' => '(eval 403)',
+                                           '_file' => '(eval 404)',
                                            '_lines' => [
                                                          7
                                                        ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                            'operator' => 'CODE(...)'
                                          }, 'Test2::Compare::Custom' ),
                'nan' => bless( {
-                                 '_file' => '(eval 404)',
+                                 '_file' => '(eval 405)',
                                  '_lines' => [
                                                7
                                              ],
@@ -79,7 +79,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'nan_neg' => bless( {
-                                     '_file' => '(eval 407)',
+                                     '_file' => '(eval 406)',
                                      '_lines' => [
                                                    7
                                                  ],
@@ -96,7 +96,7 @@ my $expected1 = {
                                      'operator' => 'CODE(...)'
                                    }, 'Test2::Compare::Custom' ),
                'nan_plus' => bless( {
-                                      '_file' => '(eval 406)',
+                                      '_file' => '(eval 402)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -134,19 +134,25 @@ is($actual, $expected1, 'float/inf-and-nan - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'float/inf-and-nan - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'float/inf-and-nan - to_toml - no errors');
+
+is($reparsed, $expected1, 'float/inf-and-nan - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

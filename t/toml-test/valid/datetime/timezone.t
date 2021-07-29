@@ -15,7 +15,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'nzdt' => bless( {
-                                  '_file' => '(eval 385)',
+                                  '_file' => '(eval 383)',
                                   '_lines' => [
                                                 13
                                               ],
@@ -34,7 +34,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'nzst' => bless( {
-                                  '_file' => '(eval 384)',
+                                  '_file' => '(eval 382)',
                                   '_lines' => [
                                                 13
                                               ],
@@ -53,7 +53,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'pdt' => bless( {
-                                 '_file' => '(eval 382)',
+                                 '_file' => '(eval 385)',
                                  '_lines' => [
                                                13
                                              ],
@@ -72,7 +72,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'utc' => bless( {
-                                 '_file' => '(eval 383)',
+                                 '_file' => '(eval 384)',
                                  '_lines' => [
                                                13
                                              ],
@@ -108,19 +108,25 @@ is($actual, $expected1, 'datetime/timezone - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'datetime/timezone - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'datetime/timezone - to_toml - no errors');
+
+is($reparsed, $expected1, 'datetime/timezone - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

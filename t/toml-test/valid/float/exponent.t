@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'lower' => bless( {
-                                   '_file' => '(eval 393)',
+                                   '_file' => '(eval 391)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'minustenth' => bless( {
-                                        '_file' => '(eval 395)',
+                                        '_file' => '(eval 392)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                'neg' => bless( {
-                                 '_file' => '(eval 391)',
+                                 '_file' => '(eval 394)',
                                  '_lines' => [
                                                7
                                              ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'pointlower' => bless( {
-                                        '_file' => '(eval 396)',
+                                        '_file' => '(eval 395)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -96,7 +96,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                'pos' => bless( {
-                                 '_file' => '(eval 392)',
+                                 '_file' => '(eval 397)',
                                  '_lines' => [
                                                7
                                              ],
@@ -113,7 +113,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'upper' => bless( {
-                                   '_file' => '(eval 394)',
+                                   '_file' => '(eval 396)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -130,7 +130,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'zero' => bless( {
-                                  '_file' => '(eval 397)',
+                                  '_file' => '(eval 393)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -168,19 +168,25 @@ is($actual, $expected1, 'float/exponent - from_toml') or do{
   diag Dumper($actual);
 };
 
-is(eval{ scalar from_toml(to_toml($actual)) }, $expected1, 'float/exponent - to_toml') or do{
-  diag "ERROR: $@" if $@;
+my $regenerated = to_toml $actual;
+my $reparsed    = eval{ scalar from_toml $regenerated };
+my $error       = $@;
+
+is($error, U, 'float/exponent - to_toml - no errors');
+
+is($reparsed, $expected1, 'float/exponent - to_toml') or do{
+  diag "ERROR: $error" if $error;
 
   diag 'INPUT:';
   diag Dumper($actual);
 
   diag '';
-  diag 'GENERATED TOML:';
-  diag to_toml($actual);
+  diag 'REGENERATED TOML:';
+  diag Dumper($regenerated);
 
   diag '';
-  diag 'REPARSED FROM GENERATED TOML:';
-  diag Dumper(scalar from_toml(to_toml($actual)));
+  diag 'REPARSED FROM REGENERATED TOML:';
+  diag Dumper($reparsed);
 };
 
 done_testing;

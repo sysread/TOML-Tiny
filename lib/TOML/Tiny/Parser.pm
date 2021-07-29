@@ -365,8 +365,8 @@ sub inflate_float {
   }
 
   return 'NaN'  if $value =~ /^[-+]?nan$/i;
-  return 'Inf'  if $value =~ /^\+?inf$/i;
-  return '-Inf' if $value =~ /^-inf$/i;
+  return 'inf'  if $value =~ /^\+?inf$/i;
+  return '-inf' if $value =~ /^-inf$/i;
 
   # Not a bignum
   if (0 + $value eq $value) {

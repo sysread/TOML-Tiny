@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'infinity' => bless( {
-                                      '_file' => '(eval 405)',
+                                      '_file' => '(eval 179)',
                                       '_lines' => [
                                                     6
                                                   ],
@@ -27,7 +27,7 @@ my $expected1 = {
                                       'operator' => 'CODE(...)'
                                     }, 'Test2::Compare::Custom' ),
                'infinity_neg' => bless( {
-                                          '_file' => '(eval 402)',
+                                          '_file' => '(eval 182)',
                                           '_lines' => [
                                                         6
                                                       ],
@@ -43,7 +43,7 @@ my $expected1 = {
                                           'operator' => 'CODE(...)'
                                         }, 'Test2::Compare::Custom' ),
                'infinity_plus' => bless( {
-                                           '_file' => '(eval 406)',
+                                           '_file' => '(eval 184)',
                                            '_lines' => [
                                                          7
                                                        ],
@@ -60,7 +60,7 @@ my $expected1 = {
                                            'operator' => 'CODE(...)'
                                          }, 'Test2::Compare::Custom' ),
                'nan' => bless( {
-                                 '_file' => '(eval 404)',
+                                 '_file' => '(eval 180)',
                                  '_lines' => [
                                                6
                                              ],
@@ -76,7 +76,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'nan_neg' => bless( {
-                                     '_file' => '(eval 403)',
+                                     '_file' => '(eval 183)',
                                      '_lines' => [
                                                    6
                                                  ],
@@ -92,7 +92,7 @@ my $expected1 = {
                                      'operator' => 'CODE(...)'
                                    }, 'Test2::Compare::Custom' ),
                'nan_plus' => bless( {
-                                      '_file' => '(eval 407)',
+                                      '_file' => '(eval 181)',
                                       '_lines' => [
                                                     6
                                                   ],

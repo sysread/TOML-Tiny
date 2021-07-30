@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'lower' => bless( {
-                                   '_file' => '(eval 393)',
+                                   '_file' => '(eval 168)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'minustenth' => bless( {
-                                        '_file' => '(eval 396)',
+                                        '_file' => '(eval 173)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                'neg' => bless( {
-                                 '_file' => '(eval 394)',
+                                 '_file' => '(eval 171)',
                                  '_lines' => [
                                                7
                                              ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'pointlower' => bless( {
-                                        '_file' => '(eval 392)',
+                                        '_file' => '(eval 174)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -79,7 +79,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                'pointupper' => bless( {
-                                        '_file' => '(eval 395)',
+                                        '_file' => '(eval 169)',
                                         '_lines' => [
                                                       7
                                                     ],
@@ -96,7 +96,7 @@ my $expected1 = {
                                         'operator' => 'CODE(...)'
                                       }, 'Test2::Compare::Custom' ),
                'pos' => bless( {
-                                 '_file' => '(eval 391)',
+                                 '_file' => '(eval 172)',
                                  '_lines' => [
                                                7
                                              ],
@@ -113,7 +113,7 @@ my $expected1 = {
                                  'operator' => 'CODE(...)'
                                }, 'Test2::Compare::Custom' ),
                'upper' => bless( {
-                                   '_file' => '(eval 397)',
+                                   '_file' => '(eval 167)',
                                    '_lines' => [
                                                  7
                                                ],
@@ -130,7 +130,7 @@ my $expected1 = {
                                    'operator' => 'CODE(...)'
                                  }, 'Test2::Compare::Custom' ),
                'zero' => bless( {
-                                  '_file' => '(eval 390)',
+                                  '_file' => '(eval 170)',
                                   '_lines' => [
                                                 7
                                               ],

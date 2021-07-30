@@ -12,7 +12,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 my $expected1 = {
                'false' => 0,
                'inf' => bless( {
-                                 '_file' => '(eval 516)',
+                                 '_file' => '(eval 293)',
                                  '_lines' => [
                                                7
                                              ],
@@ -30,7 +30,7 @@ my $expected1 = {
                                }, 'Test2::Compare::Custom' ),
                'nan' => 'ceci n\'est pas un nombre',
                'true' => bless( {
-                                  '_file' => '(eval 515)',
+                                  '_file' => '(eval 292)',
                                   '_lines' => [
                                                 7
                                               ],

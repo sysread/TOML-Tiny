@@ -13,7 +13,7 @@ my $expected1 = {
                'mixed' => [
                             [
                               bless( {
-                                       '_file' => '(eval 347)',
+                                       '_file' => '(eval 139)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -30,7 +30,7 @@ my $expected1 = {
                                        'operator' => 'CODE(...)'
                                      }, 'Test2::Compare::Custom' ),
                               bless( {
-                                       '_file' => '(eval 348)',
+                                       '_file' => '(eval 140)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -53,7 +53,7 @@ my $expected1 = {
                             ],
                             [
                               bless( {
-                                       '_file' => '(eval 349)',
+                                       '_file' => '(eval 141)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -70,7 +70,7 @@ my $expected1 = {
                                        'operator' => 'CODE(...)'
                                      }, 'Test2::Compare::Custom' ),
                               bless( {
-                                       '_file' => '(eval 350)',
+                                       '_file' => '(eval 142)',
                                        '_lines' => [
                                                      7
                                                    ],

@@ -13,7 +13,7 @@ my $expected1 = {
                'a' => {
                         'a' => {
                                  'b' => bless( {
-                                                 '_file' => '(eval 444)',
+                                                 '_file' => '(eval 211)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -36,7 +36,7 @@ my $expected1 = {
                             'T' => {
                                      'a' => {
                                               'b' => bless( {
-                                                              '_file' => '(eval 437)',
+                                                              '_file' => '(eval 213)',
                                                               '_lines' => [
                                                                             7
                                                                           ],
@@ -57,7 +57,7 @@ my $expected1 = {
                             't' => {
                                      'a' => {
                                               'b' => bless( {
-                                                              '_file' => '(eval 436)',
+                                                              '_file' => '(eval 214)',
                                                               '_lines' => [
                                                                             7
                                                                           ],
@@ -80,7 +80,7 @@ my $expected1 = {
                             'T' => {
                                      'a' => {
                                               'b' => bless( {
-                                                              '_file' => '(eval 439)',
+                                                              '_file' => '(eval 215)',
                                                               '_lines' => [
                                                                             7
                                                                           ],
@@ -101,7 +101,7 @@ my $expected1 = {
                             't' => {
                                      'a' => {
                                               'b' => bless( {
-                                                              '_file' => '(eval 438)',
+                                                              '_file' => '(eval 216)',
                                                               '_lines' => [
                                                                             7
                                                                           ],
@@ -124,7 +124,7 @@ my $expected1 = {
                'b' => {
                         'a' => {
                                  'b' => bless( {
-                                                 '_file' => '(eval 433)',
+                                                 '_file' => '(eval 219)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -145,7 +145,7 @@ my $expected1 = {
                'c' => {
                         'a' => {
                                  'b' => bless( {
-                                                 '_file' => '(eval 440)',
+                                                 '_file' => '(eval 210)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -166,7 +166,7 @@ my $expected1 = {
                'd' => {
                         'a' => {
                                  'b' => bless( {
-                                                 '_file' => '(eval 446)',
+                                                 '_file' => '(eval 218)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -187,7 +187,7 @@ my $expected1 = {
                'e' => {
                         'a' => {
                                  'b' => bless( {
-                                                 '_file' => '(eval 445)',
+                                                 '_file' => '(eval 212)',
                                                  '_lines' => [
                                                                7
                                                              ],
@@ -208,7 +208,7 @@ my $expected1 = {
                'inline' => {
                              'a' => {
                                       'b' => bless( {
-                                                      '_file' => '(eval 441)',
+                                                      '_file' => '(eval 217)',
                                                       '_lines' => [
                                                                     7
                                                                   ],
@@ -235,7 +235,7 @@ my $expected1 = {
                                                                                     'a' => {
                                                                                              'b' => {
                                                                                                       'c' => bless( {
-                                                                                                                      '_file' => '(eval 434)',
+                                                                                                                      '_file' => '(eval 222)',
                                                                                                                       '_lines' => [
                                                                                                                                     7
                                                                                                                                   ],
@@ -252,7 +252,7 @@ my $expected1 = {
                                                                                                                       'operator' => 'CODE(...)'
                                                                                                                     }, 'Test2::Compare::Custom' ),
                                                                                                       'd' => bless( {
-                                                                                                                      '_file' => '(eval 435)',
+                                                                                                                      '_file' => '(eval 223)',
                                                                                                                       '_lines' => [
                                                                                                                                     7
                                                                                                                                   ],
@@ -282,7 +282,7 @@ my $expected1 = {
                                             'c' => {
                                                      'd' => {
                                                               'e' => bless( {
-                                                                              '_file' => '(eval 442)',
+                                                                              '_file' => '(eval 220)',
                                                                               '_lines' => [
                                                                                             7
                                                                                           ],
@@ -308,7 +308,7 @@ my $expected1 = {
                                                      'c' => {
                                                               'd' => {
                                                                        'e' => bless( {
-                                                                                       '_file' => '(eval 443)',
+                                                                                       '_file' => '(eval 221)',
                                                                                        '_lines' => [
                                                                                                      7
                                                                                                    ],

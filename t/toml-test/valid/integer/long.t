@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'int64-max' => bless( {
-                                       '_file' => '(eval 469)',
+                                       '_file' => '(eval 246)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                        'operator' => 'CODE(...)'
                                      }, 'Test2::Compare::Custom' ),
                'int64-max-neg' => bless( {
-                                           '_file' => '(eval 468)',
+                                           '_file' => '(eval 245)',
                                            '_lines' => [
                                                          7
                                                        ],

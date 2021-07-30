@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'bin1' => bless( {
-                                  '_file' => '(eval 461)',
+                                  '_file' => '(eval 238)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'bin2' => bless( {
-                                  '_file' => '(eval 467)',
+                                  '_file' => '(eval 244)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'hex1' => bless( {
-                                  '_file' => '(eval 462)',
+                                  '_file' => '(eval 242)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'hex2' => bless( {
-                                  '_file' => '(eval 466)',
+                                  '_file' => '(eval 241)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -79,7 +79,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'hex3' => bless( {
-                                  '_file' => '(eval 463)',
+                                  '_file' => '(eval 240)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -96,7 +96,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'hex4' => bless( {
-                                  '_file' => '(eval 459)',
+                                  '_file' => '(eval 239)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -113,7 +113,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'oct1' => bless( {
-                                  '_file' => '(eval 464)',
+                                  '_file' => '(eval 243)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -130,7 +130,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'oct2' => bless( {
-                                  '_file' => '(eval 465)',
+                                  '_file' => '(eval 236)',
                                   '_lines' => [
                                                 7
                                               ],
@@ -147,7 +147,7 @@ my $expected1 = {
                                   'operator' => 'CODE(...)'
                                 }, 'Test2::Compare::Custom' ),
                'oct3' => bless( {
-                                  '_file' => '(eval 460)',
+                                  '_file' => '(eval 237)',
                                   '_lines' => [
                                                 7
                                               ],

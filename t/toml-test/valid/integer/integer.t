@@ -11,7 +11,7 @@ binmode STDOUT, ':encoding(UTF-8)';
 
 my $expected1 = {
                'answer' => bless( {
-                                    '_file' => '(eval 456)',
+                                    '_file' => '(eval 233)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -28,7 +28,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                'neganswer' => bless( {
-                                       '_file' => '(eval 455)',
+                                       '_file' => '(eval 232)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -45,7 +45,7 @@ my $expected1 = {
                                        'operator' => 'CODE(...)'
                                      }, 'Test2::Compare::Custom' ),
                'posanswer' => bless( {
-                                       '_file' => '(eval 457)',
+                                       '_file' => '(eval 235)',
                                        '_lines' => [
                                                      7
                                                    ],
@@ -62,7 +62,7 @@ my $expected1 = {
                                        'operator' => 'CODE(...)'
                                      }, 'Test2::Compare::Custom' ),
                'zero' => bless( {
-                                  '_file' => '(eval 458)',
+                                  '_file' => '(eval 234)',
                                   '_lines' => [
                                                 7
                                               ],

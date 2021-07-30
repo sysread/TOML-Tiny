@@ -31,6 +31,7 @@ our @EXPORT = qw(
   $Date
   $Time
   $DateTime
+  $TimeOffset
 
   $Hex
   $Oct
@@ -124,7 +125,7 @@ our $OffsetDateTime = qr{ (?: $FullDate $TimeDelim $FullTime ) }x;
 our $LocalDateTime  = qr{ (?: $FullDate $TimeDelim $PartialTime ) }x;
 our $LocalDate      = qr{ (?: $FullDate ) }x;
 our $LocalTime      = qr{ (?: $PartialTime ) }x;
-our $DateTime       = qr{ (?: $OffsetDateTime | $LocalDateTime | $LocalTime ) }x;
+our $DateTime       = qr{ (?: $OffsetDateTime | $LocalDateTime | $LocalDate | $LocalTime ) }x;
 
 #-----------------------------------------------------------------------------
 # Integer

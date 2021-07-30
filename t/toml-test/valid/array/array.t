@@ -2,10 +2,6 @@
 use utf8;
 use Test2::V0;
 use Data::Dumper;
-use Test2::Require::Module 'DateTime';
-use Test2::Require::Module 'DateTime::Format::RFC3339';
-use DateTime;
-use DateTime::Format::RFC3339;
 use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
@@ -51,67 +47,13 @@ my $expected1 = {
                                       }, 'Test2::Compare::Custom' )
                              ],
                'dates' => [
-                            bless( {
-                                     '_file' => '(eval 118)',
-                                     '_lines' => [
-                                                   13
-                                                 ],
-                                     'code' => sub {
-                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                   use strict;
-                                                   no feature ':all';
-                                                   use feature ':5.16';
-                                                   my $exp = 'DateTime::Format::RFC3339'->parse_datetime('1987-07-05T17:45:00Z');
-                                                   my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
-                                                   $exp->set_time_zone('UTC');
-                                                   $got->set_time_zone('UTC');
-                                                   return 'DateTime'->compare($got, $exp) == 0;
-                                               },
-                                     'name' => '<Custom Code>',
-                                     'operator' => 'CODE(...)'
-                                   }, 'Test2::Compare::Custom' ),
-                            bless( {
-                                     '_file' => '(eval 324)',
-                                     '_lines' => [
-                                                   13
-                                                 ],
-                                     'code' => sub {
-                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                   use strict;
-                                                   no feature ':all';
-                                                   use feature ':5.16';
-                                                   my $exp = 'DateTime::Format::RFC3339'->parse_datetime('1979-05-27T07:32:00Z');
-                                                   my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
-                                                   $exp->set_time_zone('UTC');
-                                                   $got->set_time_zone('UTC');
-                                                   return 'DateTime'->compare($got, $exp) == 0;
-                                               },
-                                     'name' => '<Custom Code>',
-                                     'operator' => 'CODE(...)'
-                                   }, 'Test2::Compare::Custom' ),
-                            bless( {
-                                     '_file' => '(eval 325)',
-                                     '_lines' => [
-                                                   13
-                                                 ],
-                                     'code' => sub {
-                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                   use strict;
-                                                   no feature ':all';
-                                                   use feature ':5.16';
-                                                   my $exp = 'DateTime::Format::RFC3339'->parse_datetime('2006-06-01T11:00:00Z');
-                                                   my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
-                                                   $exp->set_time_zone('UTC');
-                                                   $got->set_time_zone('UTC');
-                                                   return 'DateTime'->compare($got, $exp) == 0;
-                                               },
-                                     'name' => '<Custom Code>',
-                                     'operator' => 'CODE(...)'
-                                   }, 'Test2::Compare::Custom' )
+                            '1987-07-05T17:45:00Z',
+                            '1979-05-27T07:32:00Z',
+                            '2006-06-01T11:00:00Z'
                           ],
                'floats' => [
                              bless( {
-                                      '_file' => '(eval 326)',
+                                      '_file' => '(eval 48)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -128,7 +70,7 @@ my $expected1 = {
                                       'operator' => 'CODE(...)'
                                     }, 'Test2::Compare::Custom' ),
                              bless( {
-                                      '_file' => '(eval 327)',
+                                      '_file' => '(eval 114)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -145,7 +87,7 @@ my $expected1 = {
                                       'operator' => 'CODE(...)'
                                     }, 'Test2::Compare::Custom' ),
                              bless( {
-                                      '_file' => '(eval 328)',
+                                      '_file' => '(eval 115)',
                                       '_lines' => [
                                                     7
                                                   ],
@@ -164,7 +106,7 @@ my $expected1 = {
                            ],
                'ints' => [
                            bless( {
-                                    '_file' => '(eval 48)',
+                                    '_file' => '(eval 118)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -181,7 +123,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                            bless( {
-                                    '_file' => '(eval 114)',
+                                    '_file' => '(eval 119)',
                                     '_lines' => [
                                                   7
                                                 ],
@@ -198,7 +140,7 @@ my $expected1 = {
                                     'operator' => 'CODE(...)'
                                   }, 'Test2::Compare::Custom' ),
                            bless( {
-                                    '_file' => '(eval 115)',
+                                    '_file' => '(eval 120)',
                                     '_lines' => [
                                                   7
                                                 ],

@@ -10,10 +10,10 @@ use Carp;
 use Data::Dumper;
 use Encode qw(decode FB_CROAK);
 use TOML::Tiny::Util qw(is_strict_array);
+use TOML::Tiny::Grammar;
 
 require Math::BigFloat;
 require Math::BigInt;
-require TOML::Tiny::Grammar;
 require TOML::Tiny::Tokenizer;
 
 our $TRUE  = 1;
@@ -163,7 +163,7 @@ sub declare_key {
 
     when ('table') {
       $self->parse_error($token, "duplicate key: $key")
-        if exists $self->{arrays}{$key} 
+        if exists $self->{arrays}{$key}
         || exists $self->{array_tables}{$key};
 
       if (exists $self->{tables}{$key}) {
@@ -336,15 +336,19 @@ sub parse_value {
 # TOML permits a space instead of a T, which RFC3339 does not allow. TOML (at
 # least, according to BurntSushi/toml-tests) allows z instead of Z, which
 # RFC3339 also does not permit. We will be flexible and allow them both, but
-# fix them up.
+# fix them up. TOML also specifies millisecond precision. If fractional seconds
+# are specified. Whatever.
 #-------------------------------------------------------------------------------
 sub parse_datetime {
   my $self  = shift;
   my $token = shift;
   my $value = $token->{value};
 
-  $value =~ tr/ /T/;
+  # Normalize
   $value =~ tr/z/Z/;
+  $value =~ tr/ /T/;
+  $value =~ s/t/T/;
+  $value =~ s/(\.\d+)($TimeOffset)$/sprintf(".%06d%s", $1 * 1000000, $2)/e;
 
   return $self->{inflate_datetime}->($value);
 }

@@ -2,10 +2,6 @@
 use utf8;
 use Test2::V0;
 use Data::Dumper;
-use Test2::Require::Module 'DateTime';
-use Test2::Require::Module 'DateTime::Format::RFC3339';
-use DateTime;
-use DateTime::Format::RFC3339;
 use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
@@ -22,7 +18,7 @@ my $expected1 = {
                                           ],
                                           [
                                             bless( {
-                                                     '_file' => '(eval 529)',
+                                                     '_file' => '(eval 304)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -39,7 +35,7 @@ my $expected1 = {
                                                      'operator' => 'CODE(...)'
                                                    }, 'Test2::Compare::Custom' ),
                                             bless( {
-                                                     '_file' => '(eval 530)',
+                                                     '_file' => '(eval 305)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -64,7 +60,7 @@ my $expected1 = {
                             },
                'database' => {
                                'connection_max' => bless( {
-                                                            '_file' => '(eval 525)',
+                                                            '_file' => '(eval 300)',
                                                             '_lines' => [
                                                                           7
                                                                         ],
@@ -83,7 +79,7 @@ my $expected1 = {
                                'enabled' => 1,
                                'ports' => [
                                             bless( {
-                                                     '_file' => '(eval 526)',
+                                                     '_file' => '(eval 301)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -100,7 +96,7 @@ my $expected1 = {
                                                      'operator' => 'CODE(...)'
                                                    }, 'Test2::Compare::Custom' ),
                                             bless( {
-                                                     '_file' => '(eval 527)',
+                                                     '_file' => '(eval 302)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -117,7 +113,7 @@ my $expected1 = {
                                                      'operator' => 'CODE(...)'
                                                    }, 'Test2::Compare::Custom' ),
                                             bless( {
-                                                     '_file' => '(eval 528)',
+                                                     '_file' => '(eval 303)',
                                                      '_lines' => [
                                                                    7
                                                                  ],
@@ -137,25 +133,7 @@ my $expected1 = {
                                'server' => '192.168.1.1'
                              },
                'owner' => {
-                            'dob' => bless( {
-                                              '_file' => '(eval 524)',
-                                              '_lines' => [
-                                                            13
-                                                          ],
-                                              'code' => sub {
-                                                            BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
-                                                            use strict;
-                                                            no feature ':all';
-                                                            use feature ':5.16';
-                                                            my $exp = 'DateTime::Format::RFC3339'->parse_datetime('1979-05-27T07:32:00-08:00');
-                                                            my $got = 'DateTime::Format::RFC3339'->parse_datetime($_);
-                                                            $exp->set_time_zone('UTC');
-                                                            $got->set_time_zone('UTC');
-                                                            return 'DateTime'->compare($got, $exp) == 0;
-                                                        },
-                                              'name' => '<Custom Code>',
-                                              'operator' => 'CODE(...)'
-                                            }, 'Test2::Compare::Custom' ),
+                            'dob' => '1979-05-27T07:32:00-08:00',
                             'name' => 'Lance Uppercut'
                           },
                'servers' => {

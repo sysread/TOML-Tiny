@@ -100,10 +100,31 @@ our $Key       = qr/$BareKey|$QuotedKey|$DottedKey/;
 # Dates (RFC 3339)
 #   1985-04-12T23:20:50.52Z
 #-----------------------------------------------------------------------------
-our $Date     = qr/\d{4}-\d{2}-\d{2}/;
-our $Offset   = qr/(?: [-+] \d{2}:\d{2} ) | Z/x;
-our $Time     = qr/\d{2}:\d{2}:\d{2} (?: \. \d+)? $Offset?/x;
-our $DateTime = qr/(?> $Date (?> [T ] $Time )?) | $Time/x;
+#our $Date     = qr/\d{4}-\d{2}-\d{2}/;
+#our $Offset   = qr/(?: [-+] \d{2}:\d{2} ) | Z/x;
+#our $Time     = qr/\d{2}:\d{2}:\d{2} (?: \. \d+)? $Offset?/x;
+#our $DateTime = qr/(?> $Date (?> [T ] $Time )?) | $Time/x;
+
+our $DateFullYear   = qr{ \d{4} }x;
+our $DateMonth      = qr{ (?: 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 ) }x;
+our $DateDay        = qr{ (?: 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 ) }x;
+our $TimeDelim      = qr{ (?: [tT] | \x20 ) }x;
+our $TimeHour       = qr{ (?: 00 | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 ) }x;
+our $TimeMinute     = qr{ (?: 00 | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 ) }x;
+our $TimeSecond     = qr{ (?: 00 | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 ) }x; # may be 60 during leap second
+our $TimeSecFrac    = qr{ \. \d+ }x;
+our $TimeNumOffset  = qr{ (?: [-+] $TimeHour : $TimeMinute ) }x;
+our $TimeOffset     = qr{ (?: [zZ] | $TimeNumOffset ) }x;
+
+our $PartialTime    = qr{ (?: $TimeHour : $TimeMinute : $TimeSecond $TimeSecFrac? ) }x;
+our $FullTime       = qr{ (?: $PartialTime $TimeOffset ) }x;
+our $FullDate       = qr{ (?: $DateFullYear - $DateMonth - $DateDay ) }x;
+
+our $OffsetDateTime = qr{ (?: $FullDate $TimeDelim $FullTime ) }x;
+our $LocalDateTime  = qr{ (?: $FullDate $TimeDelim $PartialTime ) }x;
+our $LocalDate      = qr{ (?: $FullDate ) }x;
+our $LocalTime      = qr{ (?: $PartialTime ) }x;
+our $DateTime       = qr{ (?: $OffsetDateTime | $LocalDateTime | $LocalTime ) }x;
 
 #-----------------------------------------------------------------------------
 # Integer

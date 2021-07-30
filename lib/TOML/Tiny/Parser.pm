@@ -322,7 +322,7 @@ sub parse_value {
     return $self->inflate_float($token) when 'float';
     return $self->inflate_integer($token) when 'integer';
     return $self->{inflate_boolean}->($token->{value}) when 'bool';
-    return $self->{inflate_datetime}->($token->{value}) when 'datetime';
+    return $self->parse_datetime($token) when 'datetime';
     return $self->parse_inline_table($token) when 'inline_table';
     return $self->parse_array($token) when 'inline_array';
 
@@ -330,6 +330,23 @@ sub parse_value {
       $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
     }
   }
+}
+
+#-------------------------------------------------------------------------------
+# TOML permits a space instead of a T, which RFC3339 does not allow. TOML (at
+# least, according to BurntSushi/toml-tests) allows z instead of Z, which
+# RFC3339 also does not permit. We will be flexible and allow them both, but
+# fix them up.
+#-------------------------------------------------------------------------------
+sub parse_datetime {
+  my $self  = shift;
+  my $token = shift;
+  my $value = $token->{value};
+
+  $value =~ tr/ /T/;
+  $value =~ tr/z/Z/;
+
+  return $self->{inflate_datetime}->($value);
 }
 
 sub parse_array {

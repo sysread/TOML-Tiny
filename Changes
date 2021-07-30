@@ -23,6 +23,9 @@
 - bugfix: better handling of inf/nan in parsing, writing
 - bugfix: correctly generate empty inline tables within arrays
 - bugfix: make duplicate key enforcement match the toml 1.0 spec
+- bugfix: update datetime support to match toml abnf, w/ workaround for
+  burntsushi tests supporting lowercase z and toml supporting a space instead
+  of T
 
 0.13 2021-07-26
 -Fix a spurious warning being raised on trailing spaces in hexadecimal numbers (thanks jjatria)

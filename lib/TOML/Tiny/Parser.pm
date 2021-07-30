@@ -37,7 +37,9 @@ sub new {
 }
 
 sub next_token {
-  $_[0]->{tokenizer} && $_[0]->{tokenizer}->next_token;
+  my $self = shift;
+  my $token = $self->{tokenizer} && $self->{tokenizer}->next_token;
+  return $token;
 }
 
 sub parse {
@@ -51,6 +53,7 @@ sub parse {
   $self->{keys}      = [];
   $self->{root}      = {};
   $self->{tables}    = {}; # "seen" hash of explicitly defined table names
+  $self->{arrays}    = {}; # "seen" hash of explicitly defined static arrays (e.g. foo=[])
 
   $self->parse_table;
   my $result = $self->{root};
@@ -59,6 +62,7 @@ sub parse {
   delete $self->{keys};
   delete $self->{root};
   delete $self->{tables};
+  delete $self->{arrays};
 
   return $result;
 }
@@ -115,15 +119,66 @@ sub get_keys {
   return map{ @$_ } @{ $self->{keys} };
 }
 
-sub set_keys {
-  my $self  = shift;
-  my $value = shift // $self->parse_value;
-  my @keys  = $self->get_keys;
-  my $key   = pop @keys;
-  my $node  = $self->scan_to_key(\@keys);
-  $self->parse_error(undef, 'duplicate key: '.join('.', @keys, $key))
-    if exists $node->{$key};
-  $node->{$key} = $value;
+sub set_key {
+  my ($self, $token) = @_;
+  my @keys = $self->get_keys;
+  my $key  = pop @keys;
+  my $node = $self->scan_to_key(\@keys);
+
+  if ($key && exists $node->{$key}) {
+    $self->parse_error($token, 'duplicate key: ' . $self->current_key);
+  }
+
+  $node->{$key} = $self->parse_value($token);
+}
+
+sub assert_unique_key {
+  my ($self, $token) = @_;
+  my $key = $self->current_key;
+
+  for ($token->{type}) {
+    when ('array') {
+      if (exists $self->{arrays}{$key}) {
+        $self->parse_error($token, "duplicate key: $key");
+      } else {
+        $self->{arrays}{$key} = 1;
+      }
+    }
+
+    when ('array_table') {
+      my $key = $self->current_key;
+      if (exists $self->{arrays}{$key}) {
+        $self->parse_error($token, "duplicate key: $key");
+      }
+    }
+
+    when ('table') {
+      my $key = $self->current_key;
+
+      if (exists $self->{tables}{$key}) {
+        # Tables cannot be redefined, *except* when doing so within a goddamn
+        # table array. Gawd I hate TOML.
+        my $in_a_stupid_table_array = 0;
+        my $node = $self->{root};
+
+        for my $key ($self->get_keys) {
+          if (exists $node->{$key} && ref($node->{$key}) eq 'ARRAY') {
+            $in_a_stupid_table_array = 1;
+            last;
+          } else {
+            $node = $node->{$key};
+          }
+        }
+
+        unless ($in_a_stupid_table_array) {
+          $self->parse_error($token, "table $key is already defined");
+        }
+      }
+      else {
+        $self->{tables}{$key} = 1;
+      }
+    }
+  }
 }
 
 sub scan_to_key {
@@ -150,34 +205,22 @@ sub scan_to_key {
   return $node;
 }
 
+sub current_key {
+  my $self = shift;
+  my @keys = $self->get_keys;
+  my $key  = join '.', map{ qq{"$_"} } @keys;
+  return $key;
+}
+
 sub parse_table {
   my $self  = shift;
   my $token = shift // $self->next_token // return; # may be undef on first token in empty document
+
   $self->expect_type($token, 'table');
   $self->push_keys($token);
   $self->scan_to_key;
 
-  my @keys = $self->get_keys;
-  my $key = join '.', map{ qq{"$_"} } @keys;
-  if (exists $self->{tables}{$key}) {
-    # Tables cannot be redefined, *except* when doing so within a goddamn table
-    # array. Gawd I hate TOML.
-    my $in_a_stupid_table_array = 0;
-    my $node = $self->{root};
-    for my $key (@keys) {
-      if (exists $node->{$key} && ref($node->{$key}) eq 'ARRAY') {
-        $in_a_stupid_table_array = 1;
-        last;
-      } else {
-        $node = $node->{$key};
-      }
-    }
-
-    $self->parse_error($token, "table $key is already defined")
-      unless $in_a_stupid_table_array;
-  } else {
-    $self->{tables}{$key} = 1;
-  }
+  $self->assert_unique_key($token);
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->{type}) {
@@ -186,7 +229,7 @@ sub parse_table {
       when ('key') {
         $self->expect_type($self->next_token, 'assign');
         $self->push_keys($token);
-        $self->set_keys;
+        $self->set_key($self->next_token);
         $self->pop_keys;
 
         if (my $eol = $self->next_token) {
@@ -216,7 +259,7 @@ sub parse_table {
 }
 
 sub parse_array_table {
-  my $self = shift;
+  my $self  = shift;
   my $token = shift // $self->next_token;
   $self->expect_type($token, 'array_table');
   $self->push_keys($token);
@@ -234,7 +277,7 @@ sub parse_array_table {
       when ('key') {
         $self->expect_type($self->next_token, 'assign');
         $self->push_keys($token);
-        $self->set_keys;
+        $self->set_key($self->next_token);
         $self->pop_keys;
       }
 
@@ -265,8 +308,8 @@ sub parse_key {
 }
 
 sub parse_value {
-  my $self = shift;
-  my $token = shift // $self->next_token;
+  my $self  = shift;
+  my $token = shift;
 
   for ($token->{type}) {
     return $token->{value} when 'string';
@@ -285,6 +328,7 @@ sub parse_value {
 
 sub parse_array {
   my $self = shift;
+
   my @array;
   my $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
 
@@ -338,7 +382,7 @@ sub parse_inline_table {
       when ('key') {
         $self->expect_type($self->next_token, 'assign');
         my $key = $token->{value}[0];
-        $table->{ $key } = $self->parse_value;
+        $table->{ $key } = $self->parse_value($self->next_token);
         $expect = 'comma|inline_table_close';
         next TOKEN;
       }

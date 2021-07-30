@@ -15,83 +15,15 @@ my @KEYS;
 sub to_toml {
   my $data  = shift;
   my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
-  my @buff_assign;
-  my @buff_tables;
+warn "to_toml: " . Dumper($data) . "\n";
 
   for (ref $data) {
     when ('HASH') {
-      # Generate simple key/value pairs for scalar data
-      for my $k (grep{ ref($data->{$_}) !~ /HASH|ARRAY/ } sort keys %$data) {
-        my $key = to_toml_key($k);
-        my $val = to_toml($data->{$k}, $param);
-        push @buff_assign, "$key=$val";
-      }
-
-      # For values which are arrays, generate inline arrays for non-table
-      # values, array-of-tables for table values.
-      ARRAY: for my $k (grep{ ref $data->{$_} eq 'ARRAY' } sort keys %$data) {
-        # Empty table
-        if (!@{$data->{$k}}) {
-          my $key = to_toml_key($k);
-          push @buff_assign, "$key=[]";
-          next ARRAY;
-        }
-
-        my @inline;
-        my @table_array;
-
-        # Sort table and non-table values into separate containers
-        for my $v (@{$data->{$k}}) {
-          if (ref $v eq 'HASH') {
-            push @table_array, $v;
-          } else {
-            push @inline, $v;
-          }
-        }
-
-        # Non-table values become an inline table
-        if (@inline) {
-          my $key = to_toml_key($k);
-          my $val = to_toml(\@inline, $param);
-          push @buff_assign, "$key=$val";
-        }
-
-        # Table values become an array-of-tables
-        if (@table_array) {
-          push @KEYS, $k;
-
-          for (@table_array) {
-            push @buff_tables, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
-            push @buff_tables, to_toml($_);
-          }
-
-          pop @KEYS;
-        }
-      }
-
-      # Sub-tables
-      for my $k (grep{ ref $data->{$_} eq 'HASH' } sort keys %$data) {
-        if (!keys(%{$data->{$k}})) {
-          # Empty table
-          my $key = to_toml_key($k);
-          push @buff_assign, "$key={}";
-        } else {
-          # Generate [table]
-          push @KEYS, $k;
-          push @buff_tables, '', '[' . join('.', map{ to_toml_key($_) } @KEYS) . ']';
-          push @buff_tables, to_toml($data->{$k}, $param);
-          pop @KEYS;
-        }
-      }
+      return to_toml_table($data, $param);
     }
 
     when ('ARRAY') {
-      if (@$data && $param->{strict}) {
-        my ($ok, $err) = is_strict_array($data);
-        die "toml: found heterogenous array, but strict is set ($err)\n" unless $ok;
-      }
-
-      push @buff_tables, '[' . join(', ', map{ to_toml($_, $param) } @$data) . ']';
+      return to_toml_array($data, $param);
     }
 
     when ('SCALAR') {
@@ -100,7 +32,7 @@ sub to_toml {
       } elsif ($$data eq '0') {
         return 'false';
       } else {
-        push @buff_assign, to_toml($$_, $param);
+        return to_toml($$_, $param);
       }
     }
 
@@ -149,8 +81,95 @@ sub to_toml {
       die 'unhandled: '.Dumper($_);
     }
   }
+}
+
+sub to_toml_table {
+  my ($data, $param) = @_;
+  my @buff_assign;
+  my @buff_tables;
+
+  # Generate simple key/value pairs for scalar data
+  for my $k (grep{ ref($data->{$_}) !~ /HASH|ARRAY/ } sort keys %$data) {
+    my $key = to_toml_key($k);
+    my $val = to_toml($data->{$k}, $param);
+    push @buff_assign, "$key=$val";
+  }
+
+  # For values which are arrays, generate inline arrays for non-table
+  # values, array-of-tables for table values.
+  ARRAY: for my $k (grep{ ref $data->{$_} eq 'ARRAY' } sort keys %$data) {
+    # Empty table
+    if (!@{$data->{$k}}) {
+      my $key = to_toml_key($k);
+      push @buff_assign, "$key=[]";
+      next ARRAY;
+    }
+
+    my @inline;
+    my @table_array;
+
+    # Sort table and non-table values into separate containers
+    for my $v (@{$data->{$k}}) {
+      if (ref $v eq 'HASH') {
+        push @table_array, $v;
+      } else {
+        push @inline, $v;
+      }
+    }
+
+    # Non-table values become an inline table
+    if (@inline) {
+      my $key = to_toml_key($k);
+      my $val = to_toml(\@inline, $param);
+      push @buff_assign, "$key=$val";
+    }
+
+    # Table values become an array-of-tables
+    if (@table_array) {
+      push @KEYS, $k;
+
+      for (@table_array) {
+        push @buff_tables, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
+        push @buff_tables, to_toml($_);
+      }
+
+      pop @KEYS;
+    }
+  }
+
+  # Sub-tables
+  for my $k (grep{ ref $data->{$_} eq 'HASH' } sort keys %$data) {
+    if (!keys(%{$data->{$k}})) {
+      # Empty table
+      my $key = to_toml_key($k);
+      push @buff_assign, "$key={}";
+    } else {
+      # Generate [table]
+      push @KEYS, $k;
+      push @buff_tables, '', '[' . join('.', map{ to_toml_key($_) } @KEYS) . ']';
+      push @buff_tables, to_toml($data->{$k}, $param);
+      pop @KEYS;
+    }
+  }
 
   join "\n", @buff_assign, @buff_tables;
+}
+
+sub to_toml_array {
+  my ($data, $param) = @_;
+
+  if (@$data && $param->{strict}) {
+    my ($ok, $err) = is_strict_array($data);
+    die "toml: found heterogenous array, but strict is set ($err)\n" unless $ok;
+  }
+
+  my @buff_items;
+
+  for my $item (@$data) {
+    push @buff_items, to_toml($item, $param);
+  }
+
+  return '[' . join(', ', @buff_items) . ']';
 }
 
 sub to_toml_key {

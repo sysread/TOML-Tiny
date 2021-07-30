@@ -19,6 +19,7 @@
 - bugfix: correctly handle comment-like sequences in multiline strings
 - bugfix: correctly handle keys with names that are toml keywords
 - bugfix: better handling of inf/nan in parsing, writing
+- bugfix: correctly generate empty inline tables within arrays
 
 0.13 2021-07-26
 -Fix a spurious warning being raised on trailing spaces in hexadecimal numbers (thanks jjatria)

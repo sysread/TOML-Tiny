@@ -15,7 +15,6 @@ my @KEYS;
 sub to_toml {
   my $data  = shift;
   my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
-warn "to_toml: " . Dumper($data) . "\n";
 
   for (ref $data) {
     when ('HASH') {
@@ -36,15 +35,15 @@ warn "to_toml: " . Dumper($data) . "\n";
       }
     }
 
-    when (/JSON::PP::Boolean/) {
+    when ('JSON::PP::Boolean') {
       return $$data ? 'true' : 'false';
     }
 
-    when (/Types::Serializer::Boolean/) {
+    when ('Types::Serializer::Boolean') {
       return $data ? 'true' : 'false';
     }
 
-    when (/DateTime/) {
+    when ('DateTime') {
       return strftime_rfc3339($data);
     }
 
@@ -81,6 +80,23 @@ warn "to_toml: " . Dumper($data) . "\n";
       die 'unhandled: '.Dumper($_);
     }
   }
+}
+
+sub to_toml_inline_table {
+  my ($data, $param) = @_;
+  my @buff;
+
+  for my $key (keys %$data) {
+    my $value = $data->{$key};
+
+    if (ref $value eq 'HASH') {
+      push @buff, $key . '=' . to_toml_inline_table($value);
+    } else {
+      push @buff, $key . '=' . to_toml($value);
+    }
+  }
+
+  return '{' . join(', ', @buff) . '}';
 }
 
 sub to_toml_table {
@@ -166,7 +182,11 @@ sub to_toml_array {
   my @buff_items;
 
   for my $item (@$data) {
-    push @buff_items, to_toml($item, $param);
+    if (ref $item eq 'HASH') {
+      push @buff_items, to_toml_inline_table($item, $param);
+    } else {
+      push @buff_items, to_toml($item, $param);
+    }
   }
 
   return '[' . join(', ', @buff_items) . ']';

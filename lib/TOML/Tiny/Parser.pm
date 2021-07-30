@@ -49,11 +49,12 @@ sub parse {
     $toml = decode('UTF-8', "$toml", FB_CROAK);
   }
 
-  $self->{tokenizer} = TOML::Tiny::Tokenizer->new(source => $toml);
-  $self->{keys}      = [];
-  $self->{root}      = {};
-  $self->{tables}    = {}; # "seen" hash of explicitly defined table names
-  $self->{arrays}    = {}; # "seen" hash of explicitly defined static arrays (e.g. foo=[])
+  $self->{tokenizer}    = TOML::Tiny::Tokenizer->new(source => $toml);
+  $self->{keys}         = [];
+  $self->{root}         = {};
+  $self->{tables}       = {}; # "seen" hash of explicitly defined table names (e.g. [foo])
+  $self->{arrays}       = {}; # "seen" hash of explicitly defined static arrays (e.g. foo=[])
+  $self->{array_tables} = {}; # "seen" hash of explicitly defined arrays of tables (e.g. [[foo]])
 
   $self->parse_table;
   my $result = $self->{root};
@@ -63,6 +64,7 @@ sub parse {
   delete $self->{root};
   delete $self->{tables};
   delete $self->{arrays};
+  delete $self->{array_tables};
 
   return $result;
 }
@@ -104,6 +106,13 @@ sub expect_type {
 }
 
 
+sub current_key {
+  my $self = shift;
+  my @keys = $self->get_keys;
+  my $key  = join '.', map{ qq{"$_"} } @keys;
+  return $key;
+}
+
 sub push_keys {
   my ($self, $token) = @_;
   push @{ $self->{keys} }, $token->{value};
@@ -132,28 +141,30 @@ sub set_key {
   $node->{$key} = $self->parse_value($token);
 }
 
-sub assert_unique_key {
+sub declare_key {
   my ($self, $token) = @_;
-  my $key = $self->current_key;
+  my $key = $self->current_key || return;
 
   for ($token->{type}) {
-    when ('array') {
-      if (exists $self->{arrays}{$key}) {
-        $self->parse_error($token, "duplicate key: $key");
-      } else {
-        $self->{arrays}{$key} = 1;
-      }
+    when ('inline_array') {
+      $self->parse_error($token, "duplicate key: $key")
+        if exists $self->{array_tables}{$key};
+
+      $self->{arrays}{$key} = 1;
     }
 
     when ('array_table') {
-      my $key = $self->current_key;
       if (exists $self->{arrays}{$key}) {
         $self->parse_error($token, "duplicate key: $key");
       }
+
+      $self->{array_tables}{$key} = 1;
     }
 
     when ('table') {
-      my $key = $self->current_key;
+      $self->parse_error($token, "duplicate key: $key")
+        if exists $self->{arrays}{$key} 
+        || exists $self->{array_tables}{$key};
 
       if (exists $self->{tables}{$key}) {
         # Tables cannot be redefined, *except* when doing so within a goddamn
@@ -171,7 +182,7 @@ sub assert_unique_key {
         }
 
         unless ($in_a_stupid_table_array) {
-          $self->parse_error($token, "table $key is already defined");
+          $self->parse_error($token, "duplicate key: $key");
         }
       }
       else {
@@ -205,13 +216,6 @@ sub scan_to_key {
   return $node;
 }
 
-sub current_key {
-  my $self = shift;
-  my @keys = $self->get_keys;
-  my $key  = join '.', map{ qq{"$_"} } @keys;
-  return $key;
-}
-
 sub parse_table {
   my $self  = shift;
   my $token = shift // $self->next_token // return; # may be undef on first token in empty document
@@ -220,7 +224,7 @@ sub parse_table {
   $self->push_keys($token);
   $self->scan_to_key;
 
-  $self->assert_unique_key($token);
+  $self->declare_key($token);
 
   TOKEN: while (my $token = $self->next_token) {
     for ($token->{type}) {
@@ -263,6 +267,8 @@ sub parse_array_table {
   my $token = shift // $self->next_token;
   $self->expect_type($token, 'array_table');
   $self->push_keys($token);
+
+  $self->declare_key($token);
 
   my @keys = $self->get_keys;
   my $key  = pop @keys;
@@ -317,8 +323,8 @@ sub parse_value {
     return $self->inflate_integer($token) when 'integer';
     return $self->{inflate_boolean}->($token->{value}) when 'bool';
     return $self->{inflate_datetime}->($token->{value}) when 'datetime';
-    return $self->parse_inline_table when 'inline_table';
-    return $self->parse_array when 'inline_array';
+    return $self->parse_inline_table($token) when 'inline_table';
+    return $self->parse_array($token) when 'inline_array';
 
     default{
       $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
@@ -327,7 +333,10 @@ sub parse_value {
 }
 
 sub parse_array {
-  my $self = shift;
+  my $self  = shift;
+  my $token = shift;
+
+  $self->declare_key($token);
 
   my @array;
   my $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
@@ -362,7 +371,9 @@ sub parse_array {
 }
 
 sub parse_inline_table {
-  my $self   = shift;
+  my $self  = shift;
+  my $token = shift;
+
   my $table  = {};
   my $expect = 'EOL|inline_table_close|key';
 

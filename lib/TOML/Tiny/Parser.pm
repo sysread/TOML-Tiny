@@ -361,12 +361,6 @@ sub parse_array {
     }
   }
 
-  if (@array > 1 && $self->{strict}) {
-    my ($ok, $err) = is_strict_array(\@array);
-    $self->parse_error(undef, $err)
-      unless $ok;
-  }
-
   return \@array;
 }
 

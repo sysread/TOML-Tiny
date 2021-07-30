@@ -111,8 +111,8 @@ sub to_toml_table {
     push @buff_assign, "$key=$val";
   }
 
-  # For values which are arrays, generate inline arrays for non-table
-  # values, array-of-tables for table values.
+  # For arrays, generate an array of tables if all elements of the array are
+  # hashes. For mixed arrays, generate an inline array.
   ARRAY: for my $k (grep{ ref $data->{$_} eq 'ARRAY' } sort keys %$data) {
     # Empty table
     if (!@{$data->{$k}}) {
@@ -121,30 +121,17 @@ sub to_toml_table {
       next ARRAY;
     }
 
-    my @inline;
-    my @table_array;
-
-    # Sort table and non-table values into separate containers
-    for my $v (@{$data->{$k}}) {
-      if (ref $v eq 'HASH') {
-        push @table_array, $v;
-      } else {
-        push @inline, $v;
-      }
-    }
-
-    # Non-table values become an inline table
-    if (@inline) {
+    # Mixed array
+    if (grep{ ref $_ ne 'HASH' } @{$data->{$k}}) {
       my $key = to_toml_key($k);
-      my $val = to_toml(\@inline, $param);
+      my $val = to_toml($data->{$k}, $param);
       push @buff_assign, "$key=$val";
     }
-
-    # Table values become an array-of-tables
-    if (@table_array) {
+    # Array of tables
+    else {
       push @KEYS, $k;
 
-      for (@table_array) {
+      for (@{ $data->{$k} }) {
         push @buff_tables, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
         push @buff_tables, to_toml($_);
       }
@@ -179,17 +166,17 @@ sub to_toml_array {
     die "toml: found heterogenous array, but strict is set ($err)\n" unless $ok;
   }
 
-  my @buff_items;
+  my @items;
 
   for my $item (@$data) {
     if (ref $item eq 'HASH') {
-      push @buff_items, to_toml_inline_table($item, $param);
+      push @items, to_toml_inline_table($item, $param);
     } else {
-      push @buff_items, to_toml($item, $param);
+      push @items, to_toml($item, $param);
     }
   }
 
-  return '[' . join(', ', @buff_items) . ']';
+  return "[\n" . join("\n", map{ "  $_," } @items) . "\n]";
 }
 
 sub to_toml_key {

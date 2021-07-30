@@ -117,9 +117,8 @@ sub parse {
 =end html
 
 C<TOML::Tiny> implements a pure-perl parser and generator for the
-L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v0.5
-(with a few caveats; see L</strict>) with support for more recent changes in
-pursuit of v1.0.
+L<TOML|https://github.com/toml-lang/toml> data format. It conforms to TOML v1.0
+(with a few caveats; see L</strict>).
 
 C<TOML::Tiny> strives to maintain an interface compatible to the L<TOML> and
 L<TOML::Parser> modules, and could even be used to override C<$TOML::Parser>:
@@ -152,11 +151,6 @@ errors will result in returning two values, C<undef> and an error message.
 
   my ($result, $error) = from_toml($toml_string);
 
-Homogenous array strictures are enabled by passing C<strict>:
-
-  # Croaks
-  my $result = from_toml(q{mixed=[1, 2, "three"]})
-
 Additional arguments may be passed after the toml source string; see L</new>.
 
 =head3 GOTCHAS
@@ -186,11 +180,6 @@ Encodes a hash ref as a C<TOML>-formatted string.
 
   # [foo]
   # bar="bat"
-
-Homogenous array strictures are enabled by passing C<strict => 1>:
-
-  # Croaks
-  my $toml = to_toml({mixed => [1, 2, "three"]}, strict => 1);
 
 =head3 mapping perl to TOML types
 
@@ -346,20 +335,12 @@ routine.
 
 =item strict
 
-C<TOML v0.5> specified homogenous arrays. This has since been removed and will no
-longer be part of the standard as of C<v1.0> (as of the time of writing; the
-author of C<TOML> has gone back and forth on the issue, so no guarantees).
-
-By default, C<TOML::Tiny> is flexible and supports heterogenous arrays. If you
-wish to require strictly typed arrays (for C<TOML>'s definition of "type",
-anyway), C<strict> will produce an error when encountering arrays with
-heterogenous types.
-
-C<strict> mode also imposes some other miscellaneous strictures on C<TOML>
-input, such as disallowing trailing commas in inline tables.
+C<strict> imposes some miscellaneous strictures on C<TOML> input, such as
+disallowing trailing commas in inline tables and failing on invalid UTF8 input.
 
 B<Note:> C<strict> was previously called C<strict_arrays>. Both are accepted
-for backward compatibility.
+for backward compatibility, although enforcement of homogenous arrays is no
+longer supported as it has been dropped from the spec.
 
 =back
 
@@ -370,8 +351,7 @@ Decodes C<TOML> and returns a hash ref. Dies on parse error.
 
 =head2 encode
 
-Encodes a perl hash ref as a C<TOML>-formatted string. Dies when encountering
-an array of mixed types if C<strict> was set.
+Encodes a perl hash ref as a C<TOML>-formatted string.
 
 =head2 parse
 
@@ -385,10 +365,8 @@ C<TOML::Tiny> differs in a few significant ways from the L<TOML> module,
 particularly in adding support for newer C<TOML> features and strictness.
 
 L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
-tighten things up. C<TOML::Tiny> defaults to (somehwat) stricter parsing, with
-the exception of permitting heterogenous arrays (illegal in v4 and v0.5, but
-permissible in the upcoming v1.0); optional enforcement of homogenous arrays is
-supported with C<strict>.
+tighten things up. C<TOML::Tiny> defaults to (somehwat) stricter parsing,
+enabling some extra strictures with L</strict>.
 
 C<TOML::Tiny> supports a number of options which do not exist in L<TOML>:
 L</inflate_integer>, L</inflate_float>, and L</strict>.

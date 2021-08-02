@@ -239,7 +239,7 @@ sub unescape_chars {
 
   my $hex = hex substr($_[0], 2);
 
-  if (charnames::viacode($hex)) {
+  if ($hex < 0x10FFFF && charnames::viacode($hex)) {
     return chr $hex;
   }
 

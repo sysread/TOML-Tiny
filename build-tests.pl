@@ -36,6 +36,8 @@ sub deturd_json{
   local $Data::Dumper::Varname  = 'expected';
   local $Data::Dumper::Deparse  = 1;
   local $Data::Dumper::Sortkeys = 1;
+  local $Data::Dumper::Useqq    = 1;
+
   return Dumper($cleanish);
 }
 
@@ -168,13 +170,11 @@ sub build_pospath_test_files{
   my %TOML = find_tests( $src );
 
   for (sort keys %TOML) {
+    copy("$src/$TOML{$_}", "$dest/$TOML{$_}");
+
     my $json = substr( $TOML{$_}, 0, -4 ) . 'json';
     my $data = deturd_json("$src/$json");
     my $test = "$dest/$_.t";
-
-    my $toml = slurp("$src/$TOML{$_}");
-    $toml =~ s/\\/\\\\/g;
-    $toml =~ s/\|/\\|/g;
 
     my ( undef, $path ) = File::Spec->splitpath( $test );
     unless (-f $test) {
@@ -191,14 +191,26 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local \$Data::Dumper::Sortkeys = 1;
+local \$Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my \$fh, '<', "$dest/$TOML{$_}" or die \$!;
+binmode \$fh, ':encoding(UTF-8)';
+my \$toml = do{ local \$/; <\$fh>; };
+close \$fh;
+
 my $data
 
-my \$actual = from_toml(q|$toml|);
+my \$actual = from_toml(\$toml);
 
 is(\$actual, \$expected1, '$_ - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "\$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper(\$expected1);
 
@@ -217,12 +229,13 @@ ok(!\$error, '$_ - to_toml - no errors')
 is(\$reparsed, \$expected1, '$_ - to_toml') or do{
   diag "ERROR: \$error" if \$error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper(\$actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper(\$regenerated);
+  diag \$regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';
@@ -258,10 +271,15 @@ sub build_negpath_test_files{
     open my $fh, '>', $test or die $!;
 
     print $fh qq{# File automatically generated from BurntSushi/toml-test
+use utf8;
 use Test2::V0;
 use TOML::Tiny;
 
+binmode STDIN,  ':encoding(UTF-8)';
+binmode STDOUT, ':encoding(UTF-8)';
+
 open my \$fh, '<', "$dest/$TOML{$_}" or die \$!;
+binmode \$fh, ':raw';
 my \$toml = do{ local \$/; <\$fh>; };
 close \$fh;
 

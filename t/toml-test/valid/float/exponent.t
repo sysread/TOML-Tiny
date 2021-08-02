@@ -6,16 +6,24 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/float/exponent.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'lower' => bless( {
-                                   '_file' => '(eval 168)',
-                                   '_lines' => [
+               "lower" => bless( {
+                                   "_file" => "(eval 173)",
+                                   "_lines" => [
                                                  7
                                                ],
-                                   'code' => sub {
+                                   "code" => sub {
                                                  BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                  use strict;
                                                  no feature ':all';
@@ -24,15 +32,15 @@ my $expected1 = {
                                                  my $got = 'Math::BigFloat'->new($_);
                                                  'Math::BigFloat'->new('300.0')->beq($got);
                                              },
-                                   'name' => 'Math::BigFloat->new("300.0")->beq($_)',
-                                   'operator' => 'CODE(...)'
+                                   "name" => "Math::BigFloat->new(\"300.0\")->beq(\$_)",
+                                   "operator" => "CODE(...)"
                                  }, 'Test2::Compare::Custom' ),
-               'minustenth' => bless( {
-                                        '_file' => '(eval 173)',
-                                        '_lines' => [
+               "minustenth" => bless( {
+                                        "_file" => "(eval 170)",
+                                        "_lines" => [
                                                       7
                                                     ],
-                                        'code' => sub {
+                                        "code" => sub {
                                                       BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                       use strict;
                                                       no feature ':all';
@@ -41,15 +49,15 @@ my $expected1 = {
                                                       my $got = 'Math::BigFloat'->new($_);
                                                       'Math::BigFloat'->new('-0.1')->beq($got);
                                                   },
-                                        'name' => 'Math::BigFloat->new("-0.1")->beq($_)',
-                                        'operator' => 'CODE(...)'
+                                        "name" => "Math::BigFloat->new(\"-0.1\")->beq(\$_)",
+                                        "operator" => "CODE(...)"
                                       }, 'Test2::Compare::Custom' ),
-               'neg' => bless( {
-                                 '_file' => '(eval 171)',
-                                 '_lines' => [
+               "neg" => bless( {
+                                 "_file" => "(eval 167)",
+                                 "_lines" => [
                                                7
                                              ],
-                                 'code' => sub {
+                                 "code" => sub {
                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                use strict;
                                                no feature ':all';
@@ -58,15 +66,15 @@ my $expected1 = {
                                                my $got = 'Math::BigFloat'->new($_);
                                                'Math::BigFloat'->new('0.03')->beq($got);
                                            },
-                                 'name' => 'Math::BigFloat->new("0.03")->beq($_)',
-                                 'operator' => 'CODE(...)'
+                                 "name" => "Math::BigFloat->new(\"0.03\")->beq(\$_)",
+                                 "operator" => "CODE(...)"
                                }, 'Test2::Compare::Custom' ),
-               'pointlower' => bless( {
-                                        '_file' => '(eval 174)',
-                                        '_lines' => [
+               "pointlower" => bless( {
+                                        "_file" => "(eval 172)",
+                                        "_lines" => [
                                                       7
                                                     ],
-                                        'code' => sub {
+                                        "code" => sub {
                                                       BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                       use strict;
                                                       no feature ':all';
@@ -75,15 +83,15 @@ my $expected1 = {
                                                       my $got = 'Math::BigFloat'->new($_);
                                                       'Math::BigFloat'->new('310.0')->beq($got);
                                                   },
-                                        'name' => 'Math::BigFloat->new("310.0")->beq($_)',
-                                        'operator' => 'CODE(...)'
+                                        "name" => "Math::BigFloat->new(\"310.0\")->beq(\$_)",
+                                        "operator" => "CODE(...)"
                                       }, 'Test2::Compare::Custom' ),
-               'pointupper' => bless( {
-                                        '_file' => '(eval 169)',
-                                        '_lines' => [
+               "pointupper" => bless( {
+                                        "_file" => "(eval 169)",
+                                        "_lines" => [
                                                       7
                                                     ],
-                                        'code' => sub {
+                                        "code" => sub {
                                                       BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                       use strict;
                                                       no feature ':all';
@@ -92,15 +100,15 @@ my $expected1 = {
                                                       my $got = 'Math::BigFloat'->new($_);
                                                       'Math::BigFloat'->new('310.0')->beq($got);
                                                   },
-                                        'name' => 'Math::BigFloat->new("310.0")->beq($_)',
-                                        'operator' => 'CODE(...)'
+                                        "name" => "Math::BigFloat->new(\"310.0\")->beq(\$_)",
+                                        "operator" => "CODE(...)"
                                       }, 'Test2::Compare::Custom' ),
-               'pos' => bless( {
-                                 '_file' => '(eval 172)',
-                                 '_lines' => [
+               "pos" => bless( {
+                                 "_file" => "(eval 171)",
+                                 "_lines" => [
                                                7
                                              ],
-                                 'code' => sub {
+                                 "code" => sub {
                                                BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                use strict;
                                                no feature ':all';
@@ -109,15 +117,15 @@ my $expected1 = {
                                                my $got = 'Math::BigFloat'->new($_);
                                                'Math::BigFloat'->new('300.0')->beq($got);
                                            },
-                                 'name' => 'Math::BigFloat->new("300.0")->beq($_)',
-                                 'operator' => 'CODE(...)'
+                                 "name" => "Math::BigFloat->new(\"300.0\")->beq(\$_)",
+                                 "operator" => "CODE(...)"
                                }, 'Test2::Compare::Custom' ),
-               'upper' => bless( {
-                                   '_file' => '(eval 167)',
-                                   '_lines' => [
+               "upper" => bless( {
+                                   "_file" => "(eval 174)",
+                                   "_lines" => [
                                                  7
                                                ],
-                                   'code' => sub {
+                                   "code" => sub {
                                                  BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                  use strict;
                                                  no feature ':all';
@@ -126,15 +134,15 @@ my $expected1 = {
                                                  my $got = 'Math::BigFloat'->new($_);
                                                  'Math::BigFloat'->new('300.0')->beq($got);
                                              },
-                                   'name' => 'Math::BigFloat->new("300.0")->beq($_)',
-                                   'operator' => 'CODE(...)'
+                                   "name" => "Math::BigFloat->new(\"300.0\")->beq(\$_)",
+                                   "operator" => "CODE(...)"
                                  }, 'Test2::Compare::Custom' ),
-               'zero' => bless( {
-                                  '_file' => '(eval 170)',
-                                  '_lines' => [
+               "zero" => bless( {
+                                  "_file" => "(eval 168)",
+                                  "_lines" => [
                                                 7
                                               ],
-                                  'code' => sub {
+                                  "code" => sub {
                                                 BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                 use strict;
                                                 no feature ':all';
@@ -143,23 +151,19 @@ my $expected1 = {
                                                 my $got = 'Math::BigFloat'->new($_);
                                                 'Math::BigFloat'->new('3.0')->beq($got);
                                             },
-                                  'name' => 'Math::BigFloat->new("3.0")->beq($_)',
-                                  'operator' => 'CODE(...)'
+                                  "name" => "Math::BigFloat->new(\"3.0\")->beq(\$_)",
+                                  "operator" => "CODE(...)"
                                 }, 'Test2::Compare::Custom' )
              };
 
 
-my $actual = from_toml(q|lower = 3e2
-upper = 3E2
-neg = 3e-2
-pos = 3E+2
-zero = 3e0
-pointlower = 3.1e2
-pointupper = 3.1E2
-minustenth = -1E-1
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'float/exponent - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -178,12 +182,13 @@ ok(!$error, 'float/exponent - to_toml - no errors')
 is($reparsed, $expected1, 'float/exponent - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

@@ -6,16 +6,24 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/integer/integer.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'answer' => bless( {
-                                    '_file' => '(eval 233)',
-                                    '_lines' => [
+               "answer" => bless( {
+                                    "_file" => "(eval 234)",
+                                    "_lines" => [
                                                   7
                                                 ],
-                                    'code' => sub {
+                                    "code" => sub {
                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                   use strict;
                                                   no feature ':all';
@@ -24,15 +32,15 @@ my $expected1 = {
                                                   my $got = 'Math::BigInt'->new($_);
                                                   'Math::BigInt'->new('42')->beq($got);
                                               },
-                                    'name' => 'Math::BigInt->new("42")->beq($_)',
-                                    'operator' => 'CODE(...)'
+                                    "name" => "Math::BigInt->new(\"42\")->beq(\$_)",
+                                    "operator" => "CODE(...)"
                                   }, 'Test2::Compare::Custom' ),
-               'neganswer' => bless( {
-                                       '_file' => '(eval 232)',
-                                       '_lines' => [
+               "neganswer" => bless( {
+                                       "_file" => "(eval 233)",
+                                       "_lines" => [
                                                      7
                                                    ],
-                                       'code' => sub {
+                                       "code" => sub {
                                                      BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                      use strict;
                                                      no feature ':all';
@@ -41,15 +49,15 @@ my $expected1 = {
                                                      my $got = 'Math::BigInt'->new($_);
                                                      'Math::BigInt'->new('-42')->beq($got);
                                                  },
-                                       'name' => 'Math::BigInt->new("-42")->beq($_)',
-                                       'operator' => 'CODE(...)'
+                                       "name" => "Math::BigInt->new(\"-42\")->beq(\$_)",
+                                       "operator" => "CODE(...)"
                                      }, 'Test2::Compare::Custom' ),
-               'posanswer' => bless( {
-                                       '_file' => '(eval 235)',
-                                       '_lines' => [
+               "posanswer" => bless( {
+                                       "_file" => "(eval 235)",
+                                       "_lines" => [
                                                      7
                                                    ],
-                                       'code' => sub {
+                                       "code" => sub {
                                                      BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                      use strict;
                                                      no feature ':all';
@@ -58,15 +66,15 @@ my $expected1 = {
                                                      my $got = 'Math::BigInt'->new($_);
                                                      'Math::BigInt'->new('42')->beq($got);
                                                  },
-                                       'name' => 'Math::BigInt->new("42")->beq($_)',
-                                       'operator' => 'CODE(...)'
+                                       "name" => "Math::BigInt->new(\"42\")->beq(\$_)",
+                                       "operator" => "CODE(...)"
                                      }, 'Test2::Compare::Custom' ),
-               'zero' => bless( {
-                                  '_file' => '(eval 234)',
-                                  '_lines' => [
+               "zero" => bless( {
+                                  "_file" => "(eval 232)",
+                                  "_lines" => [
                                                 7
                                               ],
-                                  'code' => sub {
+                                  "code" => sub {
                                                 BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                 use strict;
                                                 no feature ':all';
@@ -75,19 +83,19 @@ my $expected1 = {
                                                 my $got = 'Math::BigInt'->new($_);
                                                 'Math::BigInt'->new('0')->beq($got);
                                             },
-                                  'name' => 'Math::BigInt->new("0")->beq($_)',
-                                  'operator' => 'CODE(...)'
+                                  "name" => "Math::BigInt->new(\"0\")->beq(\$_)",
+                                  "operator" => "CODE(...)"
                                 }, 'Test2::Compare::Custom' )
              };
 
 
-my $actual = from_toml(q|answer = 42
-posanswer = +42
-neganswer = -42
-zero = 0
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'integer/integer - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -106,12 +114,13 @@ ok(!$error, 'integer/integer - to_toml - no errors')
 is($reparsed, $expected1, 'integer/integer - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

@@ -6,17 +6,25 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/inline-table/multiline.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'tbl_multiline' => {
-                                    'a' => bless( {
-                                                    '_file' => '(eval 224)',
-                                                    '_lines' => [
+               "tbl_multiline" => {
+                                    "a" => bless( {
+                                                    "_file" => "(eval 224)",
+                                                    "_lines" => [
                                                                   7
                                                                 ],
-                                                    'code' => sub {
+                                                    "code" => sub {
                                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                   use strict;
                                                                   no feature ':all';
@@ -25,19 +33,17 @@ my $expected1 = {
                                                                   my $got = 'Math::BigInt'->new($_);
                                                                   'Math::BigInt'->new('1')->beq($got);
                                                               },
-                                                    'name' => 'Math::BigInt->new("1")->beq($_)',
-                                                    'operator' => 'CODE(...)'
+                                                    "name" => "Math::BigInt->new(\"1\")->beq(\$_)",
+                                                    "operator" => "CODE(...)"
                                                   }, 'Test2::Compare::Custom' ),
-                                    'b' => 'multiline
-',
-                                    'c' => 'and yet
-another line',
-                                    'd' => bless( {
-                                                    '_file' => '(eval 225)',
-                                                    '_lines' => [
+                                    "b" => "multiline\n",
+                                    "c" => "and yet\nanother line",
+                                    "d" => bless( {
+                                                    "_file" => "(eval 225)",
+                                                    "_lines" => [
                                                                   7
                                                                 ],
-                                                    'code' => sub {
+                                                    "code" => sub {
                                                                   BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                                   use strict;
                                                                   no feature ':all';
@@ -46,20 +52,20 @@ another line',
                                                                   my $got = 'Math::BigInt'->new($_);
                                                                   'Math::BigInt'->new('4')->beq($got);
                                                               },
-                                                    'name' => 'Math::BigInt->new("4")->beq($_)',
-                                                    'operator' => 'CODE(...)'
+                                                    "name" => "Math::BigInt->new(\"4\")->beq(\$_)",
+                                                    "operator" => "CODE(...)"
                                                   }, 'Test2::Compare::Custom' )
                                   }
              };
 
 
-my $actual = from_toml(q|tbl_multiline = { a = 1, b = """
-multiline
-""", c = """and yet
-another line""", d = 4 }
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'inline-table/multiline - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -78,12 +84,13 @@ ok(!$error, 'inline-table/multiline - to_toml - no errors')
 is($reparsed, $expected1, 'inline-table/multiline - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

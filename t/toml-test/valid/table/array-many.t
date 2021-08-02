@@ -6,41 +6,42 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/table/array-many.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'people' => [
+               "people" => [
                              {
-                               'first_name' => 'Bruce',
-                               'last_name' => 'Springsteen'
+                               "first_name" => "Bruce",
+                               "last_name" => "Springsteen"
                              },
                              {
-                               'first_name' => 'Eric',
-                               'last_name' => 'Clapton'
+                               "first_name" => "Eric",
+                               "last_name" => "Clapton"
                              },
                              {
-                               'first_name' => 'Bob',
-                               'last_name' => 'Seger'
+                               "first_name" => "Bob",
+                               "last_name" => "Seger"
                              }
                            ]
              };
 
 
-my $actual = from_toml(q|[[people]]
-first_name = "Bruce"
-last_name = "Springsteen"
-
-[[people]]
-first_name = "Eric"
-last_name = "Clapton"
-
-[[people]]
-first_name = "Bob"
-last_name = "Seger"
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'table/array-many - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -59,12 +60,13 @@ ok(!$error, 'table/array-many - to_toml - no errors')
 is($reparsed, $expected1, 'table/array-many - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

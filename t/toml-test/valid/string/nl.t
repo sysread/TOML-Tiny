@@ -6,29 +6,33 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/string/nl.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'lit_nl_end' => 'value\\n',
-               'lit_nl_mid' => 'val\\nue',
-               'lit_nl_uni' => 'val\\ue',
-               'nl_end' => 'value
-',
-               'nl_mid' => 'val
-ue'
+               "lit_nl_end" => "value\\n",
+               "lit_nl_mid" => "val\\nue",
+               "lit_nl_uni" => "val\\ue",
+               "nl_end" => "value\n",
+               "nl_mid" => "val\nue"
              };
 
 
-my $actual = from_toml(q|nl_mid = "val\\nue"
-nl_end = """value\\n"""
-
-lit_nl_end = '''value\\n'''
-lit_nl_mid = 'val\\nue'
-lit_nl_uni = 'val\\ue'
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'string/nl - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -47,12 +51,13 @@ ok(!$error, 'string/nl - to_toml - no errors')
 is($reparsed, $expected1, 'string/nl - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

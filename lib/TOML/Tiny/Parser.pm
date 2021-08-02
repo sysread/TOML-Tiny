@@ -1,6 +1,7 @@
 package TOML::Tiny::Parser;
 # ABSTRACT: parser used by TOML::Tiny
 
+use utf8;
 use strict;
 use warnings;
 no warnings qw(experimental);

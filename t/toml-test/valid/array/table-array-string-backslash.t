@@ -6,22 +6,33 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/array/table-array-string-backslash.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'foo' => [
+               "foo" => [
                           {
-                            'bar' => '"{{baz}}"'
+                            "bar" => "\"{{baz}}\""
                           }
                         ]
              };
 
 
-my $actual = from_toml(q|foo = [ { bar="\\"{{baz}}\\""} ]
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'array/table-array-string-backslash - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -40,12 +51,13 @@ ok(!$error, 'array/table-array-string-backslash - to_toml - no errors')
 is($reparsed, $expected1, 'array/table-array-string-backslash - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

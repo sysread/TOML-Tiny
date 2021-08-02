@@ -6,20 +6,28 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/key/alphanum.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               '000111' => 'leading',
-               '10e3' => 'false float',
-               '123' => 'num',
-               '2018_10' => {
-                              '001' => bless( {
-                                                '_file' => '(eval 261)',
-                                                '_lines' => [
+               "000111" => "leading",
+               "10e3" => "false float",
+               "123" => "num",
+               "2018_10" => {
+                              "001" => bless( {
+                                                "_file" => "(eval 262)",
+                                                "_lines" => [
                                                               7
                                                             ],
-                                                'code' => sub {
+                                                "code" => sub {
                                                               BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                               use strict;
                                                               no feature ':all';
@@ -28,16 +36,16 @@ my $expected1 = {
                                                               my $got = 'Math::BigInt'->new($_);
                                                               'Math::BigInt'->new('1')->beq($got);
                                                           },
-                                                'name' => 'Math::BigInt->new("1")->beq($_)',
-                                                'operator' => 'CODE(...)'
+                                                "name" => "Math::BigInt->new(\"1\")->beq(\$_)",
+                                                "operator" => "CODE(...)"
                                               }, 'Test2::Compare::Custom' )
                             },
-               '34-11' => bless( {
-                                   '_file' => '(eval 262)',
-                                   '_lines' => [
+               "34-11" => bless( {
+                                   "_file" => "(eval 261)",
+                                   "_lines" => [
                                                  7
                                                ],
-                                   'code' => sub {
+                                   "code" => sub {
                                                  BEGIN {${^WARNING_BITS} = "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15\x00\x04\x40\x05\x04\x50"}
                                                  use strict;
                                                  no feature ':all';
@@ -46,36 +54,26 @@ my $expected1 = {
                                                  my $got = 'Math::BigInt'->new($_);
                                                  'Math::BigInt'->new('23')->beq($got);
                                              },
-                                   'name' => 'Math::BigInt->new("23")->beq($_)',
-                                   'operator' => 'CODE(...)'
+                                   "name" => "Math::BigInt->new(\"23\")->beq(\$_)",
+                                   "operator" => "CODE(...)"
                                  }, 'Test2::Compare::Custom' ),
-               'a-a-a' => {
-                            '_' => 0
+               "a-a-a" => {
+                            "_" => 0
                           },
-               'alpha' => 'a',
-               'one1two2' => 'mixed',
-               'under_score' => '___',
-               'with-dash' => 'dashed'
+               "alpha" => "a",
+               "one1two2" => "mixed",
+               "under_score" => "___",
+               "with-dash" => "dashed"
              };
 
 
-my $actual = from_toml(q|alpha = "a"
-123 = "num"
-000111 = "leading"
-10e3 = "false float"
-one1two2 = "mixed"
-with-dash = "dashed"
-under_score = "___"
-34-11 = 23
-
-[2018_10]
-001 = 1
-
-[a-a-a]
-_ = false
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'key/alphanum - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -94,12 +92,13 @@ ok(!$error, 'key/alphanum - to_toml - no errors')
 is($reparsed, $expected1, 'key/alphanum - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

@@ -6,20 +6,30 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/datetime/datetime.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'lower' => '1987-07-05T17:45:00Z',
-               'space' => '1987-07-05T17:45:00Z'
+               "lower" => "1987-07-05T17:45:00Z",
+               "space" => "1987-07-05T17:45:00Z"
              };
 
 
-my $actual = from_toml(q|space = 1987-07-05 17:45:00Z
-lower = 1987-07-05t17:45:00z
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'datetime/datetime - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -38,12 +48,13 @@ ok(!$error, 'datetime/datetime - to_toml - no errors')
 is($reparsed, $expected1, 'datetime/datetime - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

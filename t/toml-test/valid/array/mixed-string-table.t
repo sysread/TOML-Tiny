@@ -6,28 +6,36 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/array/mixed-string-table.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'contributors' => [
-                                   'Foo Bar <foo@example.com>',
+               "contributors" => [
+                                   "Foo Bar <foo\@example.com>",
                                    {
-                                     'email' => 'bazqux@example.com',
-                                     'name' => 'Baz Qux',
-                                     'url' => 'https://example.com/bazqux'
+                                     "email" => "bazqux\@example.com",
+                                     "name" => "Baz Qux",
+                                     "url" => "https://example.com/bazqux"
                                    }
                                  ]
              };
 
 
-my $actual = from_toml(q|contributors = [
-  "Foo Bar <foo@example.com>",
-  { name = "Baz Qux", email = "bazqux@example.com", url = "https://example.com/bazqux" }
-]
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'array/mixed-string-table - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -46,12 +54,13 @@ ok(!$error, 'array/mixed-string-table - to_toml - no errors')
 is($reparsed, $expected1, 'array/mixed-string-table - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

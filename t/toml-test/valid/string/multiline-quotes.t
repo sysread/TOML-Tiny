@@ -6,41 +6,38 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/string/multiline-quotes.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'lit_one' => '\'one quote\'',
-               'lit_one_space' => ' \'one quote\' ',
-               'lit_two' => '\'\'two quotes\'\'',
-               'lit_two_space' => ' \'\'two quotes\'\' ',
-               'mismatch1' => 'aaa\'\'\'bbb',
-               'mismatch2' => 'aaa"""bbb',
-               'one' => '"one quote"',
-               'one_space' => ' "one quote" ',
-               'two' => '""two quotes""',
-               'two_space' => ' ""two quotes"" '
+               "lit_one" => "'one quote'",
+               "lit_one_space" => " 'one quote' ",
+               "lit_two" => "''two quotes''",
+               "lit_two_space" => " ''two quotes'' ",
+               "mismatch1" => "aaa'''bbb",
+               "mismatch2" => "aaa\"\"\"bbb",
+               "one" => "\"one quote\"",
+               "one_space" => " \"one quote\" ",
+               "two" => "\"\"two quotes\"\"",
+               "two_space" => " \"\"two quotes\"\" "
              };
 
 
-my $actual = from_toml(q|# Make sure that quotes inside multiline strings are allowed, including right
-# after the opening '''/""" and before the closing '''/"""
-
-lit_one = ''''one quote''''
-lit_two = '''''two quotes'''''
-lit_one_space = ''' 'one quote' '''
-lit_two_space = ''' ''two quotes'' '''
-
-one = """"one quote""""
-two = """""two quotes"""""
-one_space = """ "one quote" """
-two_space = """ ""two quotes"" """
-
-mismatch1 = """aaa'''bbb"""
-mismatch2 = '''aaa"""bbb'''
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'string/multiline-quotes - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -59,12 +56,13 @@ ok(!$error, 'string/multiline-quotes - to_toml - no errors')
 is($reparsed, $expected1, 'string/multiline-quotes - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

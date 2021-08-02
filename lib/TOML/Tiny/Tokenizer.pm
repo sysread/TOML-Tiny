@@ -173,11 +173,14 @@ sub error {
 sub tokenize_key {
   my $self = shift;
   my $toml = shift;
-  my @keys = $toml =~ /($SimpleKey)\.?/g;
+  my @segs = $toml =~ /($SimpleKey)\.?/g;
+  my @keys;
 
-  for (@keys) {
-    s/^["']//;
-    s/["']$//;
+  for my $seg (@segs) {
+    $seg =~ s/^["']//;
+    $seg =~ s/["']$//;
+    $seg = $self->unescape_str($seg);
+    push @keys, $seg;
   }
 
   return \@keys;

@@ -6,24 +6,32 @@ use Math::BigInt;
 use Math::BigFloat;
 use TOML::Tiny;
 
+local $Data::Dumper::Sortkeys = 1;
+local $Data::Dumper::Useqq    = 1;
+
 binmode STDIN,  ':encoding(UTF-8)';
 binmode STDOUT, ':encoding(UTF-8)';
 
+open my $fh, '<', "./t/toml-test/valid/datetime/timezone.toml" or die $!;
+binmode $fh, ':encoding(UTF-8)';
+my $toml = do{ local $/; <$fh>; };
+close $fh;
+
 my $expected1 = {
-               'nzdt' => '1987-07-05T17:45:56+13:00',
-               'nzst' => '1987-07-05T17:45:56+12:00',
-               'pdt' => '1987-07-05T17:45:56-05:00',
-               'utc' => '1987-07-05T17:45:56Z'
+               "nzdt" => "1987-07-05T17:45:56+13:00",
+               "nzst" => "1987-07-05T17:45:56+12:00",
+               "pdt" => "1987-07-05T17:45:56-05:00",
+               "utc" => "1987-07-05T17:45:56Z"
              };
 
 
-my $actual = from_toml(q|utc  = 1987-07-05T17:45:56Z
-pdt  = 1987-07-05T17:45:56-05:00
-nzst = 1987-07-05T17:45:56+12:00
-nzdt = 1987-07-05T17:45:56+13:00  # DST
-|);
+my $actual = from_toml($toml);
 
 is($actual, $expected1, 'datetime/timezone - from_toml') or do{
+  diag 'TOML INPUT:';
+  diag "$toml";
+
+  diag '';
   diag 'EXPECTED:';
   diag Dumper($expected1);
 
@@ -42,12 +50,13 @@ ok(!$error, 'datetime/timezone - to_toml - no errors')
 is($reparsed, $expected1, 'datetime/timezone - to_toml') or do{
   diag "ERROR: $error" if $error;
 
-  diag 'INPUT:';
+  diag '';
+  diag 'PARSED FROM TEST SOURCE TOML:';
   diag Dumper($actual);
 
   diag '';
   diag 'REGENERATED TOML:';
-  diag Dumper($regenerated);
+  diag $regenerated;
 
   diag '';
   diag 'REPARSED FROM REGENERATED TOML:';

@@ -28,6 +28,8 @@
   of T
 - bugfix: fix support for local dates, local times, fractional second precision
 - bugfix: fix parsing of dotted keys in inline tables
+- bugfix: fixes for escapes and unicode in key names, both in parsing and
+  generating toml
 
 0.13 2021-07-26
 -Fix a spurious warning being raised on trailing spaces in hexadecimal numbers (thanks jjatria)

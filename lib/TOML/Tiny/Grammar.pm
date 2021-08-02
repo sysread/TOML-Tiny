@@ -12,6 +12,7 @@ our @EXPORT = qw(
   $CRLF
   $EOL
   $Comment
+  $NonASCII
 
   $BareKey
   $QuotedKey
@@ -60,26 +61,26 @@ our $NonASCII    = qr/[\x80-\x{D7FF}\x{E000}-\x{10FFFF}]/;
 our $Escape = qr{
   \x5C                       # leading \
   (?>
-      ["\\bfnrt]             # escapes: \" \\ \b \t \n \f \r
+      [\x5C"btfnr]           # escapes: \\ \" \b \t \n \f \r
     | (?> u [_0-9a-fA-F]{4}) # unicode (4 bytes)
     | (?> U [_0-9a-fA-F]{8}) # unicode (8 bytes)
   )
 }x;
 
-our $LiteralChar            = qr{ [ \x09 \x20-\x26 \x28-\x7E ] | $NonASCII }x;
+our $LiteralChar            = qr{ [\x09\x20-\x26\x28-\x7E] | $NonASCII }x;
 our $StringLiteral          = qr{ ' (?: $LiteralChar )* ' }x;
 
-our $MLLChar                = qr{ [ \x09 \x20-\x26 \x28-\x7E ] | $NonASCII }x;
+our $MLLChar                = qr{ [\x09\x20-\x26\x28-\x7E] | $NonASCII }x;
 our $MLLContent             = qr{ $MLLChar | $CRLF }x;
 our $MLLQuotes              = qr{ '{1,2} }x;
 our $MLLBody                = qr{ $MLLContent* (?: $MLLQuotes | $MLLContent{0,1} )*?  $MLLQuotes?  }x;
 our $MultiLineStringLiteral = qr{ ''' (?: $CRLF? $MLLBody ) ''' }x;
 
-our $BasicChar              = qr{ $WS | [ \x21 \x23-\x5B \x5D-\x7E ] | $NonASCII | $Escape }x;
+our $BasicChar              = qr{ $WS | [\x21\x23-\x5B\x5D-\x7E] | $NonASCII | $Escape }x;
 our $BasicString            = qr{ " (?: $BasicChar )* " }x;
 
 our $MLBEscapedNL           = qr{ \x5c $WS* $CRLF (?: $WS | $CRLF)* }x;
-our $MLBUnescaped           = qr{ $WS | [ \x21 \x23-\x5B \x5D-\x7E ] | $NonASCII }x;
+our $MLBUnescaped           = qr{ $WS | [\x21\x23-\x5B\x5D-\x7E] | $NonASCII }x;
 our $MLBQuotes              = qr{ "{1,2} }x;
 our $MLBChar                = qr{ $MLBUnescaped | $Escape }x;
 our $MLBContent             = qr{ $MLBChar | $CRLF | $MLBEscapedNL }x;
@@ -91,7 +92,7 @@ our $String                 = qr/$MultiLineString | $BasicString | $MultiLineStr
 #-------------------------------------------------------------------------------
 # Keys
 #-------------------------------------------------------------------------------
-our $BareKey   = qr/[-_a-zA-Z0-9]+/;
+our $BareKey   = qr/[-_\p{PosixAlnum}]+/;
 our $QuotedKey = qr/$BasicString|$StringLiteral/;
 our $SimpleKey = qr/$QuotedKey|$BareKey/;
 our $DottedKey = qr/$SimpleKey (?: $WS* \. $WS* $SimpleKey)+/x;

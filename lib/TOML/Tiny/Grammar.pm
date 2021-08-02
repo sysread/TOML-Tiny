@@ -93,19 +93,15 @@ our $String                 = qr/$MultiLineString | $BasicString | $MultiLineStr
 #-------------------------------------------------------------------------------
 our $BareKey   = qr/[-_a-zA-Z0-9]+/;
 our $QuotedKey = qr/$BasicString|$StringLiteral/;
-our $SimpleKey = qr/$BareKey|$QuotedKey/;
-our $DottedKey = qr/$SimpleKey(?:\.$SimpleKey)+/;
-our $Key       = qr/$BareKey|$QuotedKey|$DottedKey/;
+our $SimpleKey = qr/$QuotedKey|$BareKey/;
+our $DottedKey = qr/$SimpleKey (?: $WS* \. $WS* $SimpleKey)+/x;
+our $Key       = qr{ (?: $DottedKey | $SimpleKey ) }x;
+
 
 #-----------------------------------------------------------------------------
 # Dates (RFC 3339)
 #   1985-04-12T23:20:50.52Z
 #-----------------------------------------------------------------------------
-#our $Date     = qr/\d{4}-\d{2}-\d{2}/;
-#our $Offset   = qr/(?: [-+] \d{2}:\d{2} ) | Z/x;
-#our $Time     = qr/\d{2}:\d{2}:\d{2} (?: \. \d+)? $Offset?/x;
-#our $DateTime = qr/(?> $Date (?> [T ] $Time )?) | $Time/x;
-
 our $DateFullYear   = qr{ \d{4} }x;
 our $DateMonth      = qr{ (?: 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 ) }x;
 our $DateDay        = qr{ (?: 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 ) }x;

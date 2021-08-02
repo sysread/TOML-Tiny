@@ -407,8 +407,22 @@ sub parse_inline_table {
 
       when ('key') {
         $self->expect_type($self->next_token, 'assign');
-        my $key = $token->{value}[0];
-        $table->{ $key } = $self->parse_value($self->next_token);
+
+        my $node = $table;
+        my @keys = @{ $token->{value} };
+        my $key  = pop @keys;
+
+        for (@keys) {
+          $node->{$_} ||= {};
+          $node = $node->{$_};
+        }
+
+        if (exists $node->{$key}) {
+          $self->parse_error($token, 'duplicate key: ' .  join('.', map{ qq{"$_"} } @{ $token->{value} }));
+        } else {
+          $node->{ $key } = $self->parse_value($self->next_token);
+        }
+
         $expect = 'comma|inline_table_close';
         next TOKEN;
       }

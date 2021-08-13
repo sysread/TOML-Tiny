@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.15 2021-08-13
 - bugfix: strings with "inf" or "nan" in them no longer treated as special
   floats
 

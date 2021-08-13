@@ -71,7 +71,7 @@ sub to_toml {
       }
       #return $data if svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK);
       return $data if $data =~ /$DateTime/;
-      return lc($data) if $data =~ /$SpecialFloat/;
+      return lc($data) if $data =~ /^$SpecialFloat$/;
 
       return to_toml_string($data);
     }

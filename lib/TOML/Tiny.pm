@@ -365,7 +365,7 @@ C<TOML::Tiny> differs in a few significant ways from the L<TOML> module,
 particularly in adding support for newer C<TOML> features and strictness.
 
 L<TOML> defaults to lax parsing and provides C<strict_mode> to (slightly)
-tighten things up. C<TOML::Tiny> defaults to (somehwat) stricter parsing,
+tighten things up. C<TOML::Tiny> defaults to (somewhat) stricter parsing,
 enabling some extra strictures with L</strict>.
 
 C<TOML::Tiny> supports a number of options which do not exist in L<TOML>:

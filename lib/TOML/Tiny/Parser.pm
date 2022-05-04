@@ -7,10 +7,9 @@ use warnings;
 no warnings qw(experimental);
 use v5.18;
 
-use Carp;
-use Data::Dumper;
+use Carp qw(confess);
+use Data::Dumper qw(Dumper);
 use Encode qw(decode FB_CROAK);
-use TOML::Tiny::Util qw(is_strict_array);
 use TOML::Tiny::Grammar;
 
 require Math::BigFloat;

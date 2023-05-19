@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
+use DateTime ();
 use Test2::V0;
-use TOML::Tiny;
-use DateTime::Format::RFC3339;
-use DateTime::Format::ISO8601;
+use TOML::Tiny qw(from_toml to_toml);
+use TOML::Tiny::Writer ();
 
 my $src = do{ local $/; <DATA> };
 

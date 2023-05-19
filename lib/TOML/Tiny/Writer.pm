@@ -6,7 +6,7 @@ no warnings qw(experimental);
 use v5.18;
 
 use B qw(svref_2object SVf_IOK SVf_NOK);
-use Data::Dumper;
+use Data::Dumper qw(Dumper);
 use TOML::Tiny::Grammar;
 use TOML::Tiny::Util qw(is_strict_array);
 

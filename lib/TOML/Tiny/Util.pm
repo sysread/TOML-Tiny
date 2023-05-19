@@ -21,31 +21,40 @@ sub is_strict_array {
     my $value = $_;
     my $type;
 
-    for (ref $value) {
-      $type = 'array'   when 'ARRAY';
-      $type = 'table'   when 'HASH';
-
-      # Do a little heuristic guess-work
-      $type = 'float'   when /Float/;
-      $type = 'integer' when /Int/;
-      $type = 'bool'    when /Boolean/;
-
-      when ('') {
-        for ($value) {
-          $type = 'bool'     when /^$Boolean/;
-          $type = 'float'    when /^$Float/;
-          $type = 'integer'  when /^$Integer/;
-          $type = 'datetime' when /^$DateTime/;
-          default{ $type = 'string' };
-        }
-      }
-
-      default{
-        $type = $_;
-      }
+    my $ref = ref($value);
+    if ($ref eq 'ARRAY') {
+      $type = 'array';
+    }
+    elsif ($ref eq 'HASH') {
+      $type = 'table';
+    }
+    # Do a little heuristic guess-work
+    elsif ( $ref =~ /Float/ ) {
+      $type = 'float';
+    }
+    elsif ( $ref =~ /Int/ ) {
+      $type = 'integer';
+    }
+    elsif ( $ref =~ /Boolean/ ) {
+      $type = 'bool';
+    }
+    elsif ( $ref =~ /^$Boolean/ ) {
+      $type = 'bool';
+    }
+    elsif ( $ref =~ /^$Float/ ) {
+      $type = 'float';
+    }
+    elsif ( $ref =~ /^$Integer/ ) {
+      $type = 'float';
+    }
+    elsif ( $ref =~ /^$DateTime/ ) {
+      $type = 'float';
+    }
+    else {
+      $type = 'string';
     }
 
-    $type;
+    return $type;
   } @$arr;
 
   my $t = shift @types;

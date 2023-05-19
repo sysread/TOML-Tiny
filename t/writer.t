@@ -54,6 +54,12 @@ subtest 'oddballs and regressions' => sub{
   };
 };
 
+subtest 'to_toml_array' => sub{
+    my @to_toml = [1,2,3];
+    my $toml = TOML::Tiny::Writer::to_toml_array(\@to_toml, {strict => 1});
+    ok($toml, 'no exception in strict mode');
+};
+
 done_testing;
 
 __DATA__

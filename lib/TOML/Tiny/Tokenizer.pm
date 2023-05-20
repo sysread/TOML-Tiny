@@ -7,7 +7,19 @@ no warnings qw(experimental);
 use charnames qw(:full);
 use v5.18;
 
-use TOML::Tiny::Grammar;
+use TOML::Tiny::Grammar qw(
+    $Comment
+    $CRLF
+    $DateTime
+    $EOL
+    $Escape
+    $Float
+    $Integer
+    $Key
+    $SimpleKey
+    $String
+    $WS
+);
 
 sub new {
   my ($class, %param) = @_;

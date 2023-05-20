@@ -145,14 +145,14 @@ sub declare_key {
   my $key = $self->current_key || return;
 
   for ($token->{type}) {
-    when ('inline_array') {
+    if ($token->{type} eq 'inline_array') {
       $self->parse_error($token, "duplicate key: $key")
         if exists $self->{array_tables}{$key};
 
       $self->{arrays}{$key} = 1;
     }
 
-    when ('array_table') {
+    elsif ($token->{type} eq 'array_table') {
       if (exists $self->{arrays}{$key}) {
         $self->parse_error($token, "duplicate key: $key");
       }
@@ -160,7 +160,7 @@ sub declare_key {
       $self->{array_tables}{$key} = 1;
     }
 
-    when ('table') {
+    elsif ($token->{type} eq 'table') {
       $self->parse_error($token, "duplicate key: $key")
         if exists $self->{arrays}{$key}
         || exists $self->{array_tables}{$key};
@@ -198,13 +198,16 @@ sub scan_to_key {
 
   for my $key (@$keys) {
     if (exists $node->{$key}) {
-      for (ref $node->{$key}) {
-        $node = $node->{$key}     when 'HASH';
-        $node = $node->{$key}[-1] when 'ARRAY';
-        default{
-          my $full_key = join '.', @$keys;
-          die "$full_key is already defined\n";
+      my $ref = ref $node->{$key};
+        if ( $ref eq 'HASH' ) {
+          $node = $node->{$key};
         }
+        elsif ( $ref eq 'ARRAY' ) {
+          $node = $node->{$key}[-1];
+      }
+      else {
+        my $full_key = join '.', @$keys;
+        die "$full_key is already defined\n";
       }
     }
     else {
@@ -226,37 +229,36 @@ sub parse_table {
   $self->declare_key($token);
 
   TOKEN: while (my $token = $self->next_token) {
-    for ($token->{type}) {
-      next TOKEN when 'EOL';
+    my $type = $token->{type};
+    next TOKEN if $type eq 'EOL';
 
-      when ('key') {
-        $self->expect_type($self->next_token, 'assign');
-        $self->push_keys($token);
-        $self->set_key($self->next_token);
-        $self->pop_keys;
+    if ( $type eq 'key') {
+      $self->expect_type($self->next_token, 'assign');
+      $self->push_keys($token);
+      $self->set_key($self->next_token);
+      $self->pop_keys;
 
-        if (my $eol = $self->next_token) {
-          $self->expect_type($eol, 'EOL');
-        } else {
-          return;
-        }
+      if (my $eol = $self->next_token) {
+        $self->expect_type($eol, 'EOL');
+      } else {
+        return;
       }
+    }
 
-      when ('array_table') {
-        $self->pop_keys;
-        @_ = ($self, $token);
-        goto \&parse_array_table;
-      }
+    elsif ($type eq 'array_table') {
+      $self->pop_keys;
+      @_ = ($self, $token);
+      goto \&parse_array_table;
+    }
 
-      when ('table') {
-        $self->pop_keys;
-        @_ = ($self, $token);
-        goto \&parse_table;
-      }
+    elsif ( $type eq 'table') {
+      $self->pop_keys;
+      @_ = ($self, $token);
+      goto \&parse_table;
+    }
 
-      default{
-        $self->parse_error($token, "expected key-value pair, table, or array of tables but got $_");
-      }
+    else {
+      $self->parse_error($token, "expected key-value pair, table, or array of tables but got $type");
     }
   }
 }
@@ -276,31 +278,30 @@ sub parse_array_table {
   push @{ $node->{$key} }, {};
 
   TOKEN: while (my $token = $self->next_token) {
-    for ($token->{type}) {
-      next TOKEN when 'EOL';
+    my $type = $token->{type};
+   next TOKEN if $type eq 'EOL';
 
-      when ('key') {
-        $self->expect_type($self->next_token, 'assign');
-        $self->push_keys($token);
-        $self->set_key($self->next_token);
-        $self->pop_keys;
-      }
+   if ($type eq 'key') {
+     $self->expect_type($self->next_token, 'assign');
+     $self->push_keys($token);
+     $self->set_key($self->next_token);
+     $self->pop_keys;
+   }
 
-      when ('array_table') {
-        $self->pop_keys;
-        @_ = ($self, $token);
-        goto \&parse_array_table;
-      }
+   elsif ($type eq 'array_table') {
+     $self->pop_keys;
+     @_ = ($self, $token);
+     goto \&parse_array_table;
+   }
 
-      when ('table') {
-        $self->pop_keys;
-        @_ = ($self, $token);
-        goto \&parse_table;
-      }
+   elsif ($type eq 'table') {
+     $self->pop_keys;
+     @_ = ($self, $token);
+     goto \&parse_table;
+   }
 
-      default{
-        $self->parse_error($token, "expected key-value pair, table, or array of tables but got $_");
-      }
+    else {
+        $self->parse_error($token, "expected key-value pair, table, or array of tables but got $type");
     }
   }
 }
@@ -316,19 +317,16 @@ sub parse_value {
   my $self  = shift;
   my $token = shift;
 
-  for ($token->{type}) {
-    return $token->{value} when 'string';
-    return $self->inflate_float($token) when 'float';
-    return $self->inflate_integer($token) when 'integer';
-    return $self->{inflate_boolean}->($token->{value}) when 'bool';
-    return $self->parse_datetime($token) when 'datetime';
-    return $self->parse_inline_table($token) when 'inline_table';
-    return $self->parse_array($token) when 'inline_array';
+  my $type = $token->{type};
+  return $token->{value} if $type eq 'string';
+  return $self->inflate_float($token) if $type eq'float';
+  return $self->inflate_integer($token) if $type eq 'integer';
+  return $self->{inflate_boolean}->($token->{value}) if $type eq 'bool';
+  return $self->parse_datetime($token) if $type eq 'datetime';
+  return $self->parse_inline_table($token) if $type eq 'inline_table';
+  return $self->parse_array($token) if $type eq 'inline_array';
 
-    default{
-      $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $_");
-    }
-  }
+  $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $type");
 }
 
 #-------------------------------------------------------------------------------
@@ -365,20 +363,16 @@ sub parse_array {
     my $token = $self->next_token;
     $self->expect_type($token, $expect);
 
-    for ($token->{type}) {
-      when ('comma') {
-        $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
-        next TOKEN;
-      }
-
-      next TOKEN when 'EOL';
-      last TOKEN when 'inline_array_close';
-
-      default{
-        push @array, $self->parse_value($token);
-        $expect = 'comma|EOL|inline_array_close';
-      }
+    if ( $token->{type} eq 'comma') {
+      $expect = 'EOL|inline_array_close|string|float|integer|bool|datetime|inline_table|inline_array';
+      next TOKEN;
     }
+
+    next TOKEN if $token->{type} eq 'EOL';
+    last TOKEN if $token->{type} eq 'inline_array_close';
+
+    push @array, $self->parse_value($token);
+    $expect = 'comma|EOL|inline_array_close';
   }
 
   return \@array;
@@ -395,43 +389,40 @@ sub parse_inline_table {
     my $token = $self->next_token;
     $self->expect_type($token, $expect);
 
-    for ($token->{type}) {
-      when ('comma') {
-        $expect = $self->{strict}
-          ? 'EOL|key'
-          : 'EOL|key|inline_table_close';
+    my $type = $token->{type};
+    if ($type eq 'comma') {
+      $expect = $self->{strict}
+        ? 'EOL|key'
+        : 'EOL|key|inline_table_close';
 
-        next TOKEN;
-      }
-
-      when ('key') {
-        $self->expect_type($self->next_token, 'assign');
-
-        my $node = $table;
-        my @keys = @{ $token->{value} };
-        my $key  = pop @keys;
-
-        for (@keys) {
-          $node->{$_} ||= {};
-          $node = $node->{$_};
-        }
-
-        if (exists $node->{$key}) {
-          $self->parse_error($token, 'duplicate key: ' .  join('.', map{ qq{"$_"} } @{ $token->{value} }));
-        } else {
-          $node->{ $key } = $self->parse_value($self->next_token);
-        }
-
-        $expect = 'comma|inline_table_close';
-        next TOKEN;
-      }
-
-      last TOKEN when 'inline_table_close';
-
-      default{
-        $self->parse_error($token, "inline table expected key-value pair, but found $_");
-      }
+      next TOKEN;
     }
+
+    if ($type eq 'key') {
+      $self->expect_type($self->next_token, 'assign');
+
+      my $node = $table;
+      my @keys = @{ $token->{value} };
+      my $key  = pop @keys;
+
+      for (@keys) {
+        $node->{$_} ||= {};
+        $node = $node->{$_};
+      }
+
+      if (exists $node->{$key}) {
+        $self->parse_error($token, 'duplicate key: ' .  join('.', map{ qq{"$_"} } @{ $token->{value} }));
+      } else {
+        $node->{ $key } = $self->parse_value($self->next_token);
+      }
+
+      $expect = 'comma|inline_table_close';
+      next TOKEN;
+    }
+
+    last TOKEN if $type eq 'inline_table_close';
+
+    $self->parse_error($token, "inline table expected key-value pair, but found $type");
   }
 
   return $table;

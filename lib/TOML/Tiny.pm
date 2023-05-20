@@ -6,8 +6,8 @@ use warnings;
 no warnings qw(experimental);
 use v5.18;
 
-use TOML::Tiny::Parser;
-use TOML::Tiny::Writer;
+use TOML::Tiny::Parser ();
+use TOML::Tiny::Writer ();
 
 use parent 'Exporter';
 

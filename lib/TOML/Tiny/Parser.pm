@@ -10,11 +10,10 @@ use v5.18;
 use Carp qw(confess);
 use Data::Dumper qw(Dumper);
 use Encode qw(decode FB_CROAK);
-use TOML::Tiny::Grammar;
-
-require Math::BigFloat;
-require Math::BigInt;
-require TOML::Tiny::Tokenizer;
+use Math::BigFloat ();
+use Math::BigInt ();
+use TOML::Tiny::Grammar qw($TimeOffset);
+use TOML::Tiny::Tokenizer ();
 
 our $TRUE  = 1;
 our $FALSE = 0;

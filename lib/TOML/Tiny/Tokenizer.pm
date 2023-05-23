@@ -84,11 +84,7 @@ sub next_token {
 
       last if /\G$/gc;
 
-      # my $res = $_ ~~ /\G$EOL/gc;
-      # print "$res\n";
-
       if (/\G$EOL/gc) {
-          #if ( $_ ~~ /\G$EOL/gc ) {
         ++$self->{line};
         $type = 'EOL';
         last;

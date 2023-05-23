@@ -144,50 +144,49 @@ sub declare_key {
   my ($self, $token) = @_;
   my $key = $self->current_key || return;
 
-  for ($token->{type}) {
-    if ($token->{type} eq 'inline_array') {
-      $self->parse_error($token, "duplicate key: $key")
-        if exists $self->{array_tables}{$key};
+  if ($token->{type} eq 'inline_array') {
+    $self->parse_error($token, "duplicate key: $key")
+      if exists $self->{array_tables}{$key};
 
-      $self->{arrays}{$key} = 1;
+    $self->{arrays}{$key} = 1;
+    return;
+  }
+
+  if ($token->{type} eq 'array_table') {
+    if (exists $self->{arrays}{$key}) {
+      $self->parse_error($token, "duplicate key: $key");
     }
 
-    elsif ($token->{type} eq 'array_table') {
-      if (exists $self->{arrays}{$key}) {
+    $self->{array_tables}{$key} = 1;
+    return;
+  }
+
+  if ($token->{type} eq 'table') {
+    $self->parse_error($token, "duplicate key: $key")
+      if exists $self->{arrays}{$key}
+      || exists $self->{array_tables}{$key};
+
+    if (exists $self->{tables}{$key}) {
+      # Tables cannot be redefined, *except* when doing so within a goddamn
+      # table array. Gawd I hate TOML.
+      my $in_a_stupid_table_array = 0;
+      my $node = $self->{root};
+
+      for my $key ($self->get_keys) {
+        if (exists $node->{$key} && ref($node->{$key}) eq 'ARRAY') {
+          $in_a_stupid_table_array = 1;
+          last;
+        } else {
+          $node = $node->{$key};
+        }
+      }
+
+      unless ($in_a_stupid_table_array) {
         $self->parse_error($token, "duplicate key: $key");
       }
-
-      $self->{array_tables}{$key} = 1;
+      return;
     }
-
-    elsif ($token->{type} eq 'table') {
-      $self->parse_error($token, "duplicate key: $key")
-        if exists $self->{arrays}{$key}
-        || exists $self->{array_tables}{$key};
-
-      if (exists $self->{tables}{$key}) {
-        # Tables cannot be redefined, *except* when doing so within a goddamn
-        # table array. Gawd I hate TOML.
-        my $in_a_stupid_table_array = 0;
-        my $node = $self->{root};
-
-        for my $key ($self->get_keys) {
-          if (exists $node->{$key} && ref($node->{$key}) eq 'ARRAY') {
-            $in_a_stupid_table_array = 1;
-            last;
-          } else {
-            $node = $node->{$key};
-          }
-        }
-
-        unless ($in_a_stupid_table_array) {
-          $self->parse_error($token, "duplicate key: $key");
-        }
-      }
-      else {
-        $self->{tables}{$key} = 1;
-      }
-    }
+    $self->{tables}{$key} = 1;
   }
 }
 
@@ -196,19 +195,20 @@ sub scan_to_key {
   my $keys = shift // [ $self->get_keys ];
   my $node = $self->{root};
 
+  KEY:
   for my $key (@$keys) {
     if (exists $node->{$key}) {
       my $ref = ref $node->{$key};
-        if ( $ref eq 'HASH' ) {
-          $node = $node->{$key};
-        }
-        elsif ( $ref eq 'ARRAY' ) {
-          $node = $node->{$key}[-1];
+      if ( $ref eq 'HASH' ) {
+        $node = $node->{$key};
+        next KEY;
       }
-      else {
-        my $full_key = join '.', @$keys;
-        die "$full_key is already defined\n";
+      if ( $ref eq 'ARRAY' ) {
+        $node = $node->{$key}[-1];
+        next KEY;
       }
+      my $full_key = join '.', @$keys;
+      die "$full_key is already defined\n";
     }
     else {
       $node = $node->{$key} = {};
@@ -243,23 +243,22 @@ sub parse_table {
       } else {
         return;
       }
+      next TOKEN;
     }
 
-    elsif ($type eq 'array_table') {
+    if ($type eq 'array_table') {
       $self->pop_keys;
       @_ = ($self, $token);
       goto \&parse_array_table;
     }
 
-    elsif ( $type eq 'table') {
+    if ( $type eq 'table') {
       $self->pop_keys;
       @_ = ($self, $token);
       goto \&parse_table;
     }
 
-    else {
-      $self->parse_error($token, "expected key-value pair, table, or array of tables but got $type");
-    }
+    $self->parse_error($token, "expected key-value pair, table, or array of tables but got $type");
   }
 }
 
@@ -277,32 +276,32 @@ sub parse_array_table {
   $node->{$key} //= [];
   push @{ $node->{$key} }, {};
 
-  TOKEN: while (my $token = $self->next_token) {
+  TOKEN:
+  while (my $token = $self->next_token) {
     my $type = $token->{type};
-   next TOKEN if $type eq 'EOL';
+    next TOKEN if $type eq 'EOL';
 
-   if ($type eq 'key') {
-     $self->expect_type($self->next_token, 'assign');
-     $self->push_keys($token);
-     $self->set_key($self->next_token);
-     $self->pop_keys;
-   }
-
-   elsif ($type eq 'array_table') {
-     $self->pop_keys;
-     @_ = ($self, $token);
-     goto \&parse_array_table;
-   }
-
-   elsif ($type eq 'table') {
-     $self->pop_keys;
-     @_ = ($self, $token);
-     goto \&parse_table;
-   }
-
-    else {
-        $self->parse_error($token, "expected key-value pair, table, or array of tables but got $type");
+    if ($type eq 'key') {
+      $self->expect_type($self->next_token, 'assign');
+      $self->push_keys($token);
+      $self->set_key($self->next_token);
+      $self->pop_keys;
+      next TOKEN;
     }
+
+    if ($type eq 'array_table') {
+      $self->pop_keys;
+      @_ = ($self, $token);
+      goto \&parse_array_table;
+    }
+
+    if ($type eq 'table') {
+      $self->pop_keys;
+      @_ = ($self, $token);
+      goto \&parse_table;
+    }
+
+    $self->parse_error($token, "expected key-value pair, table, or array of tables but got $type");
   }
 }
 

@@ -14,6 +14,16 @@ our @EXPORT_OK = qw(
   is_strict_array
 );
 
+my @_type_map = (
+  [ qr{Float},      'float' ],
+  [ qr{Int},        'integer' ],
+  [ qr{Boolean},    'bool' ],
+  [ qr{^$Boolean},  'bool' ],
+  [ qr{^$Float},    'float' ],
+  [ qr{^$Integer},  'integer' ],
+  [ qr{^$DateTime}, 'float' ],
+);
+
 sub is_strict_array {
   my $arr = shift;
 
@@ -21,31 +31,25 @@ sub is_strict_array {
     my $value = $_;
     my $type;
 
-    for (ref $value) {
-      $type = 'array'   when 'ARRAY';
-      $type = 'table'   when 'HASH';
-
-      # Do a little heuristic guess-work
-      $type = 'float'   when /Float/;
-      $type = 'integer' when /Int/;
-      $type = 'bool'    when /Boolean/;
-
-      when ('') {
-        for ($value) {
-          $type = 'bool'     when /^$Boolean/;
-          $type = 'float'    when /^$Float/;
-          $type = 'integer'  when /^$Integer/;
-          $type = 'datetime' when /^$DateTime/;
-          default{ $type = 'string' };
-        }
-      }
-
-      default{
-        $type = $_;
+    my $ref = ref($value);
+    if ($ref eq 'ARRAY') {
+      $type = 'array';
+    }
+    elsif ($ref eq 'HASH') {
+      $type = 'table';
+    }
+    # Do a little heuristic guess-work
+    else {
+      for my $pair (@_type_map) {
+        if ( $ref =~ m{$pair->[0]} ) {
+          $type = $pair->[1];
+         }
+         last;
       }
     }
+    $type //= 'string';
 
-    $type;
+    return $type;
   } @$arr;
 
   my $t = shift @types;

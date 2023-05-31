@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.16 2023-05-31
 - Remove when (GH#25) (Olaf Alders)
 - Test strict mode in to_toml_array() (GH#26) (Olaf Alders)
 - Replace @Author::BLUEFEET with equivalent config (GH#23) (Olaf Alders)

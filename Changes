@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.17 2024-06-03
     - regexp for values which match a DateTime should be anchored to start and
       end of string (GH#30) (djerius)
 

@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.18 2024-09-04
 - Support builtin booleans (GH#31) (Tina Mller (tinita))
 
 0.17 2024-06-03

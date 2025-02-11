@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.19 2025-02-11
 - trap and die on undefined values (GH#32) (djerius)
 
 0.18 2024-09-04

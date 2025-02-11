@@ -18,6 +18,8 @@ sub to_toml {
   my $data  = shift;
   my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
 
+  die 'toml: found undefined value, which is unsupported by TOML' if ! defined $data;
+
   my $ref = ref $data;
   if ($ref eq 'HASH') {
     return to_toml_table($data, $param);

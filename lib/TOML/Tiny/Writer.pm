@@ -90,13 +90,14 @@ sub to_toml_inline_table {
   my ($data, $param) = @_;
   my @buff;
 
-  for my $key (keys %$data) {
-    my $value = $data->{$key};
+  for my $k (keys %$data) {
+    my $key = to_toml_key($k);
+    my $val = $data->{$k};
 
-    if (ref $value eq 'HASH') {
-      push @buff, $key . '=' . to_toml_inline_table($value);
+    if (ref $val eq 'HASH') {
+      push @buff, $key . '=' . to_toml_inline_table($val);
     } else {
-      push @buff, $key . '=' . to_toml($value);
+      push @buff, $key . '=' . to_toml($val);
     }
   }
 

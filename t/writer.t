@@ -72,6 +72,16 @@ subtest 'oddballs and regressions' => sub{
       like $@, qr/found undefined value/;
 
   };
+
+  subtest 'encoding a non-hashref' => sub {
+
+      eval { to_toml( q{} ) };
+      like $@, qr/must be a hashref/, 'scalar';
+
+      eval { to_toml( [] ) };
+      like $@, qr/must be a hashref/, 'array';
+  };
+
 };
 
 subtest 'to_toml_array' => sub{

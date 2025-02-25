@@ -73,6 +73,7 @@ subtest 'oddballs and regressions' => sub{
 
   };
 
+
   subtest 'quoted inline table keys' => sub {
 
       my $data = { q{foo} => [ q{bar}, { q{<=} => 33 } ] } ;
@@ -82,6 +83,17 @@ subtest 'oddballs and regressions' => sub{
       ok( lives { $decoded = from_toml( $encoded ) },
           'decode succeeded' ) or note $@;
       is ( $decoded, $data, 'round trip successful' );
+
+  };
+
+  subtest 'encoding a non-hashref' => sub {
+
+      eval { to_toml( q{} ) };
+      like $@, qr/must be a hashref/, 'scalar';
+
+      eval { to_toml( [] ) };
+      like $@, qr/must be a hashref/, 'array';
+
   };
 
 };

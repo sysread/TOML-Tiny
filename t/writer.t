@@ -72,6 +72,18 @@ subtest 'oddballs and regressions' => sub{
       like $@, qr/found undefined value/;
 
   };
+
+  subtest 'quoted inline table keys' => sub {
+
+      my $data = { q{foo} => [ q{bar}, { q{<=} => 33 } ] } ;
+      my $encoded = to_toml( $data );
+
+      my $decoded;
+      ok( lives { $decoded = from_toml( $encoded ) },
+          'decode succeeded' ) or note $@;
+      is ( $decoded, $data, 'round trip successful' );
+  };
+
 };
 
 subtest 'to_toml_array' => sub{

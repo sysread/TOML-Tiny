@@ -81,12 +81,7 @@ subtest 'oddballs and regressions' => sub{
       my $decoded;
       ok( lives { $decoded = from_toml( $encoded ) },
           'decode succeeded' ) or note $@;
-
-      SKIP: {
-            skip 'error in encoding' unless $decoded;
-            is ( $decoded, $data, 'round trip successful' )
-        }
-
+      is ( $decoded, $data, 'round trip successful' );
   };
 
 };

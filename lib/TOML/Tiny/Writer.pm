@@ -16,7 +16,7 @@ my @KEYS;
 
 sub to_toml {
   my $data  = shift;
-  my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
+  my $param = ref($_[0]) eq 'HASH' ? $_[0] : { @_ };
 
   die 'toml: found undefined value, which is unsupported by TOML' if ! defined $data;
 

@@ -132,6 +132,15 @@ hosts = [
   "omega"
 ]
 
+[cfg."something with a 'single-quote'".nested]
+inner = "forty-one"
+
+[cfg.'something with a "double-quote"'.nested]
+inner = "forty-two"
+
+[cfg."something with a 'single-quote' and a \"double-quote\"".nested]
+inner = "forty-three"
+
 [[products]]
 name = "Hammer"
 sku = 738594937

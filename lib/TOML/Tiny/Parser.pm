@@ -344,7 +344,7 @@ sub parse_datetime {
   $value =~ tr/z/Z/;
   $value =~ tr/ /T/;
   $value =~ s/t/T/;
-  $value =~ s/(\.\d+)($TimeOffset)$/sprintf(".%06d%s", $1 * 1000000, $2)/e;
+  $value =~ s/(\.\d+)($TimeOffset)$/sprintf(".%09d%s", $1 * 1000000000, $2)/e;
 
   return $self->{inflate_datetime}->($value);
 }

@@ -16,7 +16,7 @@ my @KEYS;
 
 sub to_toml {
   my $data  = shift;
-  my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
+  my $param = ref($_[0]) eq 'HASH' ? $_[0] : { @_ };
 
   die 'toml: found undefined value, which is unsupported by TOML' if ! defined $data;
 
@@ -76,6 +76,7 @@ sub to_toml {
       return 'nan'  if Math::BigFloat->new($data)->is_nan;
       return $data;
     }
+    return to_toml_string($data) if $param->{no_string_guessing};
     #return $data if svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK);
     return $data if $data =~ /^$DateTime$/;
     return lc($data) if $data =~ /^$SpecialFloat$/;

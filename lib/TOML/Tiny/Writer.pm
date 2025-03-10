@@ -16,6 +16,12 @@ my @KEYS;
 
 sub to_toml {
   my $data  = shift;
+  die 'toml: data to encode must be a hashref' if ref $data ne 'HASH';
+  return _to_toml( $data );
+}
+
+sub _to_toml {
+  my $data  = shift;
   my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
 
   die 'toml: found undefined value, which is unsupported by TOML' if ! defined $data;
@@ -35,7 +41,7 @@ sub to_toml {
     } elsif ($$data eq '0') {
       return 'false';
     } else {
-      return to_toml($$_, $param);
+      return _to_toml($$_, $param);
     }
   }
 
@@ -97,7 +103,7 @@ sub to_toml_inline_table {
     if (ref $val eq 'HASH') {
       push @buff, $key . '=' . to_toml_inline_table($val);
     } else {
-      push @buff, $key . '=' . to_toml($val);
+      push @buff, $key . '=' . _to_toml($val);
     }
   }
 
@@ -112,7 +118,7 @@ sub to_toml_table {
   # Generate simple key/value pairs for scalar data
   for my $k (grep{ ref($data->{$_}) !~ /HASH|ARRAY/ } sort keys %$data) {
     my $key = to_toml_key($k);
-    my $val = to_toml($data->{$k}, $param);
+    my $val = _to_toml($data->{$k}, $param);
     push @buff_assign, "$key=$val";
   }
 
@@ -129,7 +135,7 @@ sub to_toml_table {
     # Mixed array
     if (grep{ ref $_ ne 'HASH' } @{$data->{$k}}) {
       my $key = to_toml_key($k);
-      my $val = to_toml($data->{$k}, $param);
+      my $val = _to_toml($data->{$k}, $param);
       push @buff_assign, "$key=$val";
     }
     # Array of tables
@@ -138,7 +144,7 @@ sub to_toml_table {
 
       for (@{ $data->{$k} }) {
         push @buff_tables, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
-        push @buff_tables, to_toml($_);
+        push @buff_tables, _to_toml($_);
       }
 
       pop @KEYS;
@@ -155,7 +161,7 @@ sub to_toml_table {
       # Generate [table]
       push @KEYS, $k;
       push @buff_tables, '', '[' . join('.', map{ to_toml_key($_) } @KEYS) . ']';
-      push @buff_tables, to_toml($data->{$k}, $param);
+      push @buff_tables, _to_toml($data->{$k}, $param);
       pop @KEYS;
     }
   }
@@ -177,7 +183,7 @@ sub to_toml_array {
     if (ref $item eq 'HASH') {
       push @items, to_toml_inline_table($item, $param);
     } else {
-      push @items, to_toml($item, $param);
+      push @items, _to_toml($item, $param);
     }
   }
 

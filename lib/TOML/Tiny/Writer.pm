@@ -17,12 +17,12 @@ my @KEYS;
 sub to_toml {
   my $data  = shift;
   die 'toml: data to encode must be a hashref' if ref $data ne 'HASH';
-  return _to_toml( $data );
+  return _to_toml( $data, { @_ } );
 }
 
-sub _to_toml {
+sub _to_toml ($$) {
   my $data  = shift;
-  my $param = ref($_[1]) eq 'HASH' ? $_[1] : undef;
+  my $param = shift;
 
   die 'toml: found undefined value, which is unsupported by TOML' if ! defined $data;
 
@@ -103,7 +103,7 @@ sub to_toml_inline_table {
     if (ref $val eq 'HASH') {
       push @buff, $key . '=' . to_toml_inline_table($val);
     } else {
-      push @buff, $key . '=' . _to_toml($val);
+      push @buff, $key . '=' . _to_toml($val, $param);
     }
   }
 
@@ -144,7 +144,7 @@ sub to_toml_table {
 
       for (@{ $data->{$k} }) {
         push @buff_tables, '', '[[' . join('.', map{ to_toml_key($_) } @KEYS) . ']]';
-        push @buff_tables, _to_toml($_);
+        push @buff_tables, _to_toml($_, $param);
       }
 
       pop @KEYS;

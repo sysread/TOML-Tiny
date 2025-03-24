@@ -20,6 +20,7 @@ sub to_toml {
   return _to_toml( $data, { @_ } );
 }
 
+sub _to_toml ($$);
 sub _to_toml ($$) {
   my $data  = shift;
   my $param = shift;

@@ -68,7 +68,11 @@ sub decode {
 
 sub encode {
   my ($self, $data) = @_;
-  TOML::Tiny::Writer::to_toml($data, strict => $self->{strict});
+  TOML::Tiny::Writer::to_toml(
+    $data,
+    strict => $self->{strict},
+    no_string_guessing => $self->{no_string_guessing},
+  );
 }
 
 #-------------------------------------------------------------------------------

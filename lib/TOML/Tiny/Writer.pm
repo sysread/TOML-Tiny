@@ -197,18 +197,10 @@ sub to_toml_key {
 
   if ($str =~ /^$BareKey$/) {
     return $str;
-  }
-
-  # Escape control characters
-  $str =~ s/([\p{General_Category=Control}])/'\\u00' . unpack('H2', $1)/eg;
-
-  # Escape unicode characters
-  #$str =~ s/($NonASCII)/'\\u00' . unpack('H2', $1)/eg;
-
-  if ($str =~ /^"/) {
-    return qq{'$str'};
   } else {
-    return qq{"$str"};
+    # Not valid as a "bare key".  Encode it as a "quoted key"
+    # (in TOML terminology), using the "literal string" format.
+    return to_toml_string($str);
   }
 }
 

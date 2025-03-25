@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.20 2025-03-25
 - Fix parsing of quoted keys (GH#41) (Ian Jackson)
 - Fix writing of more kinds of quote-needing keys (GH#40) (Ian Jackson)
 - Avoid looking at string values to try to find the type (GH#37) (Ian Jackson)

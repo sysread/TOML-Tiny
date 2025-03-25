@@ -196,9 +196,7 @@ sub tokenize_key {
   my @keys;
 
   for my $seg (@segs) {
-    $seg =~ s/^["']//;
-    $seg =~ s/["']$//;
-    $seg = $self->unescape_str($seg);
+    $seg = $self->tokenize_string($seg) if $seg =~ m/^['"]/;
     push @keys, $seg;
   }
 

@@ -8,7 +8,7 @@ TOML::Tiny - a minimal, pure perl TOML parser and serializer
 
 =head1 VERSION
 
-version 0.19
+version 0.20
 
 =head1 SYNOPSIS
 
@@ -251,17 +251,6 @@ routine.
     };
   );
 
-=item no_string_guessing
-
-When encoding a Perl scalar it is not always clear what the TOML type
-of the value is supposed to be.  By default, C<TOML::Tiny> will, for
-unblessed scalars, guess based on the scalar's appearance.  Strings
-that look like datetimes, or special floating point values, will be
-encoded as such.
-
-With no_string_guessing, C<TOML::Tiny> will never guess a scalar's
-TOML type from its string value.
-
 =item strict
 
 C<strict> imposes some miscellaneous strictures on C<TOML> input, such as
@@ -296,7 +285,7 @@ tighten things up. C<TOML::Tiny> defaults to (somewhat) stricter parsing,
 enabling some extra strictures with L</strict>.
 
 C<TOML::Tiny> supports a number of options which do not exist in L<TOML>:
-L</inflate_integer>, L</inflate_float>, L</no_string_guessing>, and L</strict>.
+L</inflate_integer>, L</inflate_float>, and L</strict>.
 
 C<TOML::Tiny> ignores invalid surrogate pairs within basic and multiline
 strings (L<TOML> may attempt to decode an invalid pair). Additionally, only

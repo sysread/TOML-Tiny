@@ -7,6 +7,7 @@ on:
     tags-ignore:
       - '*'
   pull_request:
+  workflow_dispatch:
 
 jobs:
   dzil-test:
@@ -48,4 +49,4 @@ jobs:
       - name: Install Dependencies
         run: cpm install -g --no-test --show-build-log-on-failure --cpanfile cpanfile
       - name: Run tests
-        run: prove -lmfr -j4 t
+        run: prove -lmfrv -j4 t

@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.21 2026-05-10
+
 - removed TOML::Parser from required prerequisites (GH#44) (Karen Etheridge)
 
 0.20 2025-03-25

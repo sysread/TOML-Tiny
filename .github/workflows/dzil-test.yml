@@ -54,4 +54,49 @@ jobs:
       - name: Install Dependencies
         run: cpm install -g --no-test --show-build-log-on-failure --cpanfile cpanfile
       - name: Run tests
-        run: prove -lmfrv -j4 t
+        run: prove -lmrv -j4 t
+
+  # Types::Serialiser is only a 'recommends', so the suite must also pass
+  # without it (GH#46). The perl-tester images ship it preinstalled, so this
+  # job installs deps, removes Types::Serialiser, then runs the suite.
+  dzil-test-without-types-serialiser:
+    env:
+      PERL_USE_UNSAFE_INC: 0
+      PERL_ANYEVENT_MODEL: Perl
+      # Intentionally omit AUTHOR_TESTING/AUTOMATED_TESTING/RELEASE_TESTING:
+      # under any of those, Test::Needs treats a missing Types::Serialiser as a
+      # failure rather than a skip. This job models a plain user install lacking
+      # the recommended dep, where the Serialiser-guarded tests should skip.
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: perldocker/perl-tester:latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: perl -V
+        run: perl -V
+      - name: Set up cpm
+        uses: perl-actions/setup-cpm@v1
+        with:
+          version: compat
+      - name: Install Dependencies
+        run: cpm install -g --no-test --show-build-log-on-failure --cpanfile cpanfile
+      - name: Remove Types::Serialiser
+        run: |
+          # Assert it is installed first, so a future base-image change that
+          # drops it can't quietly turn this job into a no-op.
+          perl -MTypes::Serialiser -e 'print "present before removal: $Types::Serialiser::VERSION\n"'
+          # -f/--force makes cpanm uninstall non-interactively (it prompts otherwise).
+          cpanm --uninstall --force Types::Serialiser
+          perl -e 'die "Types::Serialiser is still loadable\n" if eval { require Types::Serialiser; 1 }; print "confirmed absent\n";'
+      - name: Drop the VCS dir to model a tarball install
+        # t/parity.t compares against TOML::Parser, which itself requires
+        # Types::Serialiser, so it can't load once Serialiser is gone. parity.t
+        # only runs inside a git checkout (it skips when no .git dir is present,
+        # as on a CPAN tarball install). Removing the checkout's .git lets it
+        # self-skip rather than die, matching the install we are modelling here.
+        run: rm -rf .git
+      - name: Run tests
+        run: prove -lmrv -j4 t

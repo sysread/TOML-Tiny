@@ -46,6 +46,11 @@ jobs:
       - uses: actions/checkout@v6.0.2
       - name: perl -V
         run: perl -V
+      - name: Set up cpm
+        uses: perl-actions/setup-cpm@v1
+        with:
+          # 'compat' installs cpm 0.998003 on older Perls and the latest cpm on newer ones.
+          version: compat
       - name: Install Dependencies
         run: cpm install -g --no-test --show-build-log-on-failure --cpanfile cpanfile
       - name: Run tests

@@ -376,7 +376,12 @@ sub parse_datetime {
   $value =~ tr/z/Z/;
   $value =~ tr/ /T/;
   $value =~ s/t/T/;
-  $value =~ s/(\.\d+)($TimeOffset)$/sprintf(".%09d%s", $1 * 1000000000, $2)/e;
+  # Normalize fractional seconds to 9 digits (nanoseconds) by string
+  # truncate/pad -- NOT by multiplying the fraction as a float. The float form
+  # ($1 * 1_000_000_000) is lossy and overflows the field for long fractions
+  # (e.g. .999999999999999999 rounds to 1_000_000_000 -> a bogus 10-digit
+  # ".1000000000"). Truncating excess precision is permitted and faithful.
+  $value =~ s/\.(\d+)($TimeOffset)$/'.' . substr($1 . '000000000', 0, 9) . $2/e;
 
   return $self->{inflate_datetime}->($value);
 }

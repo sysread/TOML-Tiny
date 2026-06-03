@@ -32,6 +32,12 @@ sub new {
     inflate_datetime => $param{inflate_datetime} || sub{ shift },
     inflate_boolean  => $param{inflate_boolean}  || sub{ shift eq 'true' ? $TRUE : $FALSE },
     strict           => $param{strict},
+
+    # Upper bound on inline array/table nesting, guarding against resource
+    # exhaustion from pathologically nested input (a small document can
+    # otherwise drive unbounded recursion, memory growth, and CPU). 128 is far
+    # beyond what real documents require and matches other TOML implementations.
+    max_depth        => defined $param{max_depth} ? $param{max_depth} : 128,
   }, $class;
 }
 
@@ -49,6 +55,7 @@ sub parse {
   }
 
   $self->{tokenizer}    = TOML::Tiny::Tokenizer->new(source => $toml);
+  $self->{depth}        = 0;
   $self->{keys}         = [];
   $self->{root}         = {};
   $self->{tables}       = {}; # "seen" hash of explicitly defined table names (e.g. [foo])
@@ -59,6 +66,7 @@ sub parse {
   my $result = $self->{root};
 
   delete $self->{tokenizer};
+  delete $self->{depth};
   delete $self->{keys};
   delete $self->{root};
   delete $self->{tables};
@@ -104,6 +112,13 @@ sub expect_type {
     unless $actual =~ /$expected/;
 }
 
+
+sub check_depth {
+  my ($self, $token) = @_;
+  if ($self->{depth} > $self->{max_depth}) {
+    $self->parse_error($token, "exceeded maximum nesting depth of $self->{max_depth}");
+  }
+}
 
 sub current_key {
   my $self = shift;
@@ -322,8 +337,17 @@ sub parse_value {
   return $self->inflate_integer($token) if $type eq 'integer';
   return $self->{inflate_boolean}->($token->{value}) if $type eq 'bool';
   return $self->parse_datetime($token) if $type eq 'datetime';
-  return $self->parse_inline_table($token) if $type eq 'inline_table';
-  return $self->parse_array($token) if $type eq 'inline_array';
+
+  if ($type eq 'inline_table' || $type eq 'inline_array') {
+    # parse_value, parse_array, and parse_inline_table form a mutually
+    # recursive cycle whose depth is explicitly bounded by max_depth (see
+    # check_depth). That makes perl's heuristic deep-recursion warning (which
+    # fires at 100 frames) redundant noise within the allowed limit, so it is
+    # suppressed at just the recursive call sites in these three subs.
+    no warnings qw(recursion);
+    return $self->parse_inline_table($token) if $type eq 'inline_table';
+    return $self->parse_array($token);
+  }
 
   $self->parse_error($token, "value expected (bool, number, string, datetime, inline array, inline table), but found $type");
 }
@@ -353,6 +377,11 @@ sub parse_array {
   my $self  = shift;
   my $token = shift;
 
+  # Bound recursion depth before descending; the local is restored as the
+  # stack unwinds, including on error.
+  local $self->{depth} = $self->{depth} + 1;
+  $self->check_depth($token);
+
   $self->declare_key($token);
 
   my @array;
@@ -370,7 +399,10 @@ sub parse_array {
     next TOKEN if $token->{type} eq 'EOL';
     last TOKEN if $token->{type} eq 'inline_array_close';
 
-    push @array, $self->parse_value($token);
+    {
+      no warnings qw(recursion); # recursion bounded by max_depth; see parse_value
+      push @array, $self->parse_value($token);
+    }
     $expect = 'comma|EOL|inline_array_close';
   }
 
@@ -380,6 +412,11 @@ sub parse_array {
 sub parse_inline_table {
   my $self  = shift;
   my $token = shift;
+
+  # Bound recursion depth before descending; the local is restored as the
+  # stack unwinds, including on error.
+  local $self->{depth} = $self->{depth} + 1;
+  $self->check_depth($token);
 
   my $table  = {};
   my $expect = 'EOL|inline_table_close|key';
@@ -412,6 +449,7 @@ sub parse_inline_table {
       if (exists $node->{$key}) {
         $self->parse_error($token, 'duplicate key: ' .  join('.', map{ qq{"$_"} } @{ $token->{value} }));
       } else {
+        no warnings qw(recursion); # recursion bounded by max_depth; see parse_value
         $node->{ $key } = $self->parse_value($self->next_token);
       }
 

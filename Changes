@@ -3,6 +3,13 @@
 - Limit maximum nesting depth of inline arrays, inline tables, and dotted
   keys (default 128, configurable via max_depth) to prevent resource
   exhaustion on pathologically nested input (Olaf Alders, Claude)
+- Keep the tokenizer's end-of-line matching linear, avoiding quadratic CPU
+  growth when parsing very long single lines (Olaf Alders, Claude)
+- Bound dotted-key depth during tokenization so a pathologically long key is
+  rejected without large transient memory use (Olaf Alders, Claude)
+- Normalize datetime fractional seconds by truncating/padding rather than
+  floating-point multiplication, fixing corrupted values for over-precise
+  fractions (Olaf Alders, Claude)
 
 0.22 2026-06-03
 

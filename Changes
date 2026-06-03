@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Limit maximum nesting depth of inline arrays, inline tables, and dotted
+  keys (default 128, configurable via max_depth) to prevent resource
+  exhaustion on pathologically nested input (Olaf Alders, Claude)
+
 0.22 2026-06-03
 
 - Fix tests when Types::Serialiser is absent (GH#46) (Olaf Alders, Claude)

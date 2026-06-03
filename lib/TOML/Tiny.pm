@@ -346,6 +346,15 @@ B<Note:> C<strict> was previously called C<strict_arrays>. Both are accepted
 for backward compatibility, although enforcement of homogenous arrays is no
 longer supported as it has been dropped from the spec.
 
+=item max_depth
+
+Limits how deeply inline arrays, inline tables, and dotted keys may nest. Input
+that nests beyond this limit results in a parse error rather than unbounded
+recursion and memory growth. The default is C<128>, which is far beyond what
+real documents require. Pass a larger value to permit deeper nesting:
+
+  my $parser = TOML::Tiny->new( max_depth => 512 );
+
 =back
 
 

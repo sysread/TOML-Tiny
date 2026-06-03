@@ -210,6 +210,14 @@ sub scan_to_key {
   my $keys = shift // [ $self->get_keys ];
   my $node = $self->{root};
 
+  # A dotted key descends one hash level per segment without recursing, so its
+  # length is the absolute structure depth from the root. Bound it the same way
+  # as inline array/table nesting to prevent a small document from building an
+  # arbitrarily deep structure (see check_depth).
+  if (@$keys > $self->{max_depth}) {
+    $self->parse_error(undef, "exceeded maximum nesting depth of $self->{max_depth}");
+  }
+
   KEY:
   for my $key (@$keys) {
     if (exists $node->{$key}) {
@@ -440,6 +448,13 @@ sub parse_inline_table {
       my $node = $table;
       my @keys = @{ $token->{value} };
       my $key  = pop @keys;
+
+      # A dotted key descends one hash level per intermediate segment without
+      # recursing; charge those levels against the depth budget so they (and
+      # any nested value parsed below) cannot bypass the nesting limit. The
+      # local is restored once this key/value pair is parsed.
+      local $self->{depth} = $self->{depth} + @keys;
+      $self->check_depth($token);
 
       for (@keys) {
         $node->{$_} ||= {};

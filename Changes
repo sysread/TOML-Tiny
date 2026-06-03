@@ -1,8 +1,8 @@
 {{$NEXT}}
 
-- Limit maximum nesting depth of inline arrays and tables (default 128,
-  configurable via max_depth) to prevent resource exhaustion on
-  pathologically nested input (Olaf Alders, Claude)
+- Limit maximum nesting depth of inline arrays, inline tables, and dotted
+  keys (default 128, configurable via max_depth) to prevent resource
+  exhaustion on pathologically nested input (Olaf Alders, Claude)
 
 0.22 2026-06-03
 

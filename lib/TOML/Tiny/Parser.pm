@@ -54,7 +54,7 @@ sub parse {
     $toml = decode('UTF-8', "$toml", FB_CROAK);
   }
 
-  $self->{tokenizer}    = TOML::Tiny::Tokenizer->new(source => $toml);
+  $self->{tokenizer}    = TOML::Tiny::Tokenizer->new(source => $toml, max_depth => $self->{max_depth});
   $self->{depth}        = 0;
   $self->{keys}         = [];
   $self->{root}         = {};

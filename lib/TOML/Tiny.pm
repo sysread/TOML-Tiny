@@ -348,10 +348,10 @@ longer supported as it has been dropped from the spec.
 
 =item max_depth
 
-Limits how deeply inline arrays and inline tables may nest. Input that nests
-beyond this limit results in a parse error rather than unbounded recursion and
-memory growth. The default is C<128>, which is far beyond what real documents
-require. Pass a larger value to permit deeper nesting:
+Limits how deeply inline arrays, inline tables, and dotted keys may nest. Input
+that nests beyond this limit results in a parse error rather than unbounded
+recursion and memory growth. The default is C<128>, which is far beyond what
+real documents require. Pass a larger value to permit deeper nesting:
 
   my $parser = TOML::Tiny->new( max_depth => 512 );
 

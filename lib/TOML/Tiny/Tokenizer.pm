@@ -7,6 +7,8 @@ no warnings qw(experimental);
 use charnames qw(:full);
 use v5.18;
 
+use Carp qw(croak);
+
 use TOML::Tiny::Grammar qw(
     $Comment
     $CRLF
@@ -27,6 +29,13 @@ sub new {
   # parser's nesting-depth guard. Defaults to the parser's default so a
   # standalone tokenizer is guarded too.
   my $max_depth = defined $param{max_depth} ? $param{max_depth} : 128;
+
+  # max_depth is interpolated into regex quantifiers ({0,N} / {N}) below. A
+  # negative or non-integer value would build a malformed regex (a literal,
+  # non-matching "{0,-5}") that silently breaks all key matching, so reject it
+  # up front as the usage error it is.
+  croak "max_depth must be a non-negative integer (got '$max_depth')"
+    unless $max_depth =~ /\A[0-9]+\z/;
 
   # A dotted key bounded to at most $max_depth + 1 segments. The key-matching
   # regexes below use this instead of the unbounded $Key: matching an unbounded

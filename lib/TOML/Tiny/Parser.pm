@@ -7,7 +7,7 @@ use warnings;
 no warnings qw(experimental);
 use v5.18;
 
-use Carp qw(confess);
+use Carp qw(confess croak);
 use Data::Dumper qw(Dumper);
 use Encode qw(decode FB_CROAK);
 use Math::BigFloat ();
@@ -26,6 +26,15 @@ eval{
 
 sub new {
   my ($class, %param) = @_;
+
+  # An invalid max_depth would build malformed regex quantifiers in the
+  # tokenizer; reject it here too so misuse fails loudly at construction rather
+  # than as a misleading parse error. See TOML::Tiny::Tokenizer::new.
+  if (defined $param{max_depth}) {
+    croak "max_depth must be a non-negative integer (got '$param{max_depth}')"
+      unless $param{max_depth} =~ /\A[0-9]+\z/;
+  }
+
   bless{
     inflate_integer  => $param{inflate_integer},
     inflate_float    => $param{inflate_float},

@@ -10,6 +10,8 @@
 - Normalize datetime fractional seconds by truncating/padding rather than
   floating-point multiplication, fixing corrupted values for over-precise
   fractions (Olaf Alders, Claude)
+- Validate max_depth as a non-negative integer, failing with a clear error
+  instead of building a malformed regex on invalid input (Olaf Alders, Claude)
 
 0.22 2026-06-03
 

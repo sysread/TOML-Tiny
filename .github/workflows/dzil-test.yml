@@ -74,7 +74,7 @@ jobs:
       image: perldocker/perl-tester:latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6.0.2
       - name: perl -V
         run: perl -V
       - name: Set up cpm

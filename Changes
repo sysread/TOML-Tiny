@@ -5,7 +5,8 @@
   exhaustion on pathologically nested input (Olaf Alders, Claude)
 - Normalize datetime fractional seconds by truncating/padding rather than
   floating-point multiplication, fixing corrupted values for over-precise
-  fractions (Olaf Alders, Claude)
+  fractions. Cap the captured fraction at nine digits so over-precise input
+  cannot force an oversized string allocation (Olaf Alders, Claude)
 
 0.22 2026-06-03
 

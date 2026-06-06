@@ -15,12 +15,18 @@ use TOML::Tiny qw(from_toml);
 # the parsed value directly.
 #-------------------------------------------------------------------------------
 
+# Returns the normalized fractional-seconds portion of a parsed datetime. The
+# offset defaults to "Z"; pass a numeric offset (e.g. "+05:30") to exercise the
+# substitution's offset-reattachment ($2) branch. The match is anchored on the
+# offset, so it also asserts that the offset survives normalization intact.
 sub frac {
-  my $input = shift;
-  my ($data, $err) = from_toml("t = 1985-04-12T23:20:50${input}Z");
-  die "parse failed for '$input': $err" if $err;
+  my ($input, $offset) = @_;
+  $offset //= 'Z';
+  my ($data, $err) = from_toml("t = 1985-04-12T23:20:50${input}${offset}");
+  die "parse failed for '$input$offset': $err" if $err;
   my $v = $data->{t};
-  $v =~ /(\.\d+)Z$/ or die "no fractional seconds in '$v'";
+  my $quoted = quotemeta $offset;
+  $v =~ /(\.\d+)$quoted$/ or die "no fractional seconds with offset '$offset' in '$v'";
   return $1;
 }
 
@@ -34,5 +40,12 @@ is(frac('.123456789999'),       '.123456789', 'over-precise fraction truncated t
 is(frac('.999999999999999999'), '.999999999', 'all-nines fraction truncates, does not overflow to 10 digits');
 is(frac('.1234567890000000000000000000001'),
                                  '.123456789', 'absurdly long fraction handled without float error');
+
+# Numeric offsets exercise the $2 reattachment branch: the rewritten fraction
+# and the multi-character offset must both survive, with no digit bleed between.
+is(frac('.52', '+05:30'),        '.520000000', 'short fraction padded with a positive numeric offset');
+is(frac('.52', '-08:00'),        '.520000000', 'short fraction padded with a negative numeric offset');
+is(frac('.999999999999999999', '+05:30'),
+                                 '.999999999', 'over-precise fraction truncates cleanly with a numeric offset');
 
 done_testing;

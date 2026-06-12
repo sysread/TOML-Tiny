@@ -79,12 +79,28 @@ sub next_token {
     my $newline = !!($prev eq 'EOL' || $prev eq 'table' || $prev eq 'array_table');
 
     for ($self->{source}) {
-      /\G$WS+/gc;                # ignore whitespace
-      /\G$Comment$/mgc && next;  # ignore comments
+      /\G$WS+/gc;             # ignore whitespace
+      /\G$Comment/gc && next; # ignore comments
 
       last if /\G$/gc;
 
-      if (/\G$EOL/gc) {
+      # Match only the bare line terminator here, NOT $EOL ($Comment?$CRLF).
+      #
+      # A comment at the cursor was already consumed just above, so the optional
+      # leading comment group is dead weight -- and worse, that optional group
+      # defeats the regex engine's \G start-anchor optimization, making this
+      # per-token test forward-scan to end-of-string on every failure: O(n^2)
+      # on a long single line (a cheap CPU-exhaustion vector). $CRLF alone
+      # keeps the match anchored and linear.
+      #
+      # The comment match above uses bare $Comment (no anchoring $): $Comment's
+      # character class already stops at the line terminator (CR and LF are
+      # control chars), so it consumes exactly the comment body regardless of
+      # whether the line ends in LF or CRLF, leaving the terminator for $CRLF
+      # here. (The previous /\G$Comment$/m relied on $EOL's $Comment? to mop up
+      # CRLF-terminated comments, since $ in /m matches before LF but not before
+      # CRLF.)
+      if (/\G$CRLF/gc) {
         ++$self->{line};
         $type = 'EOL';
         last;

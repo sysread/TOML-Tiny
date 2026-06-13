@@ -364,8 +364,8 @@ sub parse_value {
 # TOML permits a space instead of a T, which RFC3339 does not allow. TOML (at
 # least, according to BurntSushi/toml-tests) allows z instead of Z, which
 # RFC3339 also does not permit. We will be flexible and allow them both, but
-# fix them up. TOML also specifies millisecond precision. If fractional seconds
-# are specified. Whatever.
+# fix them up. TOML does not mandate a specific sub-second precision; when
+# fractional seconds are present we normalize them to nanoseconds (9 digits).
 #-------------------------------------------------------------------------------
 sub parse_datetime {
   my $self  = shift;
@@ -376,7 +376,14 @@ sub parse_datetime {
   $value =~ tr/z/Z/;
   $value =~ tr/ /T/;
   $value =~ s/t/T/;
-  $value =~ s/(\.\d+)($TimeOffset)$/sprintf(".%09d%s", $1 * 1000000000, $2)/e;
+  # Normalize fractional seconds to 9 digits (nanoseconds) by string
+  # truncate/pad -- NOT by multiplying the fraction as a float. The float form
+  # ($1 * 1_000_000_000) is lossy and overflows the field for long fractions
+  # (e.g. .999999999999999999 rounds to 1_000_000_000 -> a bogus 10-digit
+  # ".1000000000"). Truncating excess precision is permitted and faithful.
+  # Capture at most 9 digits (discarding the rest) so we never allocate a
+  # string proportional to an attacker-controlled fraction length.
+  $value =~ s/\.(\d{1,9})\d*($TimeOffset)$/'.' . $1 . ('0' x (9 - length $1)) . $2/e;
 
   return $self->{inflate_datetime}->($value);
 }

@@ -78,9 +78,10 @@ sub _to_toml ($$) {
     # https://stackoverflow.com/questions/12686335/how-to-tell-apart-numeric-scalars-and-string-scalars-in-perl/12693984#12693984
     # note: this must come before any regex can flip this flag off
     if (svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK)) {
-      return 'inf'  if Math::BigFloat->new($data)->is_inf;
-      return '-inf' if Math::BigFloat->new($data)->is_inf('-');
-      return 'nan'  if Math::BigFloat->new($data)->is_nan;
+      my $lc = lc $data;
+      return 'inf'  if $lc eq 'inf';
+      return '-inf' if $lc eq '-inf';
+      return 'nan'  if $lc eq 'nan';
       return $data;
     }
     return to_toml_string($data) if $param->{no_string_guessing};

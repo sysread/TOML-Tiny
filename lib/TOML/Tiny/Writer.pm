@@ -6,7 +6,6 @@ no warnings qw(experimental);
 use v5.18;
 
 use B qw(SVf_IOK SVf_NOK svref_2object);
-use Data::Dumper qw(Dumper);
 use TOML::Tiny::Grammar qw($BareKey $DateTime $SpecialFloat);
 use TOML::Tiny::Util qw(is_strict_array);
 
@@ -78,9 +77,10 @@ sub _to_toml ($$) {
     # https://stackoverflow.com/questions/12686335/how-to-tell-apart-numeric-scalars-and-string-scalars-in-perl/12693984#12693984
     # note: this must come before any regex can flip this flag off
     if (svref_2object(\$data)->FLAGS & (SVf_IOK | SVf_NOK)) {
-      return 'inf'  if Math::BigFloat->new($data)->is_inf;
-      return '-inf' if Math::BigFloat->new($data)->is_inf('-');
-      return 'nan'  if Math::BigFloat->new($data)->is_nan;
+      my $lc = lc $data;
+      return 'inf'  if $lc eq 'inf';
+      return '-inf' if $lc eq '-inf';
+      return 'nan'  if $lc eq 'nan';
       return $data;
     }
     return to_toml_string($data) if $param->{no_string_guessing};
@@ -91,7 +91,8 @@ sub _to_toml ($$) {
     return to_toml_string($data);
   }
 
-  die 'unhandled: '.Dumper($ref);
+  require Data::Dumper;
+  die 'unhandled: '.Data::Dumper::Dumper($ref);
 }
 
 sub to_toml_inline_table {

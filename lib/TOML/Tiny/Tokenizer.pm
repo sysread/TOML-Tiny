@@ -4,7 +4,6 @@ package TOML::Tiny::Tokenizer;
 use strict;
 use warnings;
 no warnings qw(experimental);
-use charnames qw(:full);
 use v5.18;
 
 use TOML::Tiny::Grammar qw(
@@ -256,7 +255,7 @@ sub unescape_chars {
 
   my $hex = hex substr($_[0], 2);
 
-  if ($hex < 0x10FFFF && charnames::viacode($hex)) {
+  if ($hex <= 0x10FFFF && ($hex < 0xD800 || $hex > 0xDFFF)) {
     return chr $hex;
   }
 

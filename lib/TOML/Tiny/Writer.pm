@@ -6,7 +6,6 @@ no warnings qw(experimental);
 use v5.18;
 
 use B qw(SVf_IOK SVf_NOK svref_2object);
-use Data::Dumper qw(Dumper);
 use TOML::Tiny::Grammar qw($BareKey $DateTime $SpecialFloat);
 use TOML::Tiny::Util qw(is_strict_array);
 
@@ -92,7 +91,8 @@ sub _to_toml ($$) {
     return to_toml_string($data);
   }
 
-  die 'unhandled: '.Dumper($ref);
+  require Data::Dumper;
+  die 'unhandled: '.Data::Dumper::Dumper($ref);
 }
 
 sub to_toml_inline_table {

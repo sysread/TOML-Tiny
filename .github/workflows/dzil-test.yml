@@ -43,7 +43,7 @@ jobs:
       image: perldocker/perl-tester:${{ matrix.perl-version }}
 
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
       - name: perl -V
         run: perl -V
       - name: Set up cpm
@@ -74,7 +74,7 @@ jobs:
       image: perldocker/perl-tester:latest
 
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
       - name: perl -V
         run: perl -V
       - name: Set up cpm

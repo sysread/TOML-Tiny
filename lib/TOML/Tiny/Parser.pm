@@ -8,10 +8,9 @@ no warnings qw(experimental);
 use v5.18;
 
 use Carp qw(confess);
-use Data::Dumper qw(Dumper);
-use Encode qw(decode FB_CROAK);
-use Math::BigFloat ();
-use Math::BigInt ();
+# Math::BigFloat and Math::BigInt are loaded lazily when a value exceeds
+# native perl range.  This avoids paying the ~0.024 s startup cost on every
+# invocation for the common case where all numbers fit inside a perl scalar.
 use TOML::Tiny::Grammar qw($TimeOffset);
 use TOML::Tiny::Tokenizer ();
 
@@ -51,7 +50,8 @@ sub parse {
   my ($self, $toml) = @_;
 
   if ($self->{strict}) {
-    $toml = decode('UTF-8', "$toml", FB_CROAK);
+    require Encode;
+    $toml = Encode::decode('UTF-8', "$toml", Encode::FB_CROAK());
   }
 
   $self->{tokenizer}    = TOML::Tiny::Tokenizer->new(source => $toml);
@@ -80,8 +80,9 @@ sub parse_error {
   my ($self, $token, $msg) = @_;
   my $line = $token ? $token->{line} : 'EOF';
   if ($ENV{TOML_TINY_DEBUG}) {
-    my $root = Dumper($self->{root});
-    my $tok  = Dumper($token);
+    require Data::Dumper;
+    my $root = Data::Dumper::Dumper($self->{root});
+    my $tok  = Data::Dumper::Dumper($token);
     my $src  = substr $self->{tokenizer}{source}, $self->{tokenizer}{position}, 30;
 
     confess qq{
@@ -511,11 +512,13 @@ sub inflate_float {
   # is capable of holding the number.
   #-----------------------------------------------------------------------------
   if ($value =~ /[eE]/) {
+    require Math::BigFloat;
     if (Math::BigFloat->new($value)->beq(0 + $value)) {
       return 0 + $value;
     }
   }
 
+  require Math::BigFloat;
   return Math::BigFloat->new($value);
 }
 
@@ -528,6 +531,8 @@ sub inflate_integer {
   if ($self->{inflate_integer}) {
     return $self->{inflate_integer}->($value);
   }
+
+  require Math::BigInt;
 
   # Hex
   if ($value =~ /^0x/) {
